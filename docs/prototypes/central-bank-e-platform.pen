@@ -28,8 +28,8 @@
           "children": [
             {
               "type": "frame",
-              "id": "LNe2l",
-              "name": "一级导航-金融服务",
+              "id": "xZHJM",
+              "name": "一级导航-乡村振兴",
               "width": 171,
               "height": 48,
               "fill": "$primary",
@@ -49,10 +49,10 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "q0e8Dy",
-                  "name": "一级导航文字-金融服务",
+                  "id": "m1QuY",
+                  "name": "一级导航文字-乡村振兴",
                   "fill": "#FFFFFF",
-                  "content": "金融服务",
+                  "content": "乡村振兴",
                   "fontFamily": "$font-body",
                   "fontSize": 16,
                   "fontWeight": "700"
@@ -61,8 +61,8 @@
             },
             {
               "type": "frame",
-              "id": "xZHJM",
-              "name": "一级导航-乡村振兴",
+              "id": "LNe2l",
+              "name": "一级导航-金融服务",
               "width": 171,
               "height": 48,
               "fill": "#FFFFFF00",
@@ -72,10 +72,10 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "m1QuY",
-                  "name": "一级导航文字-乡村振兴",
+                  "id": "q0e8Dy",
+                  "name": "一级导航文字-金融服务",
                   "fill": "#52647F",
-                  "content": "乡村振兴",
+                  "content": "金融服务",
                   "fontFamily": "$font-body",
                   "fontSize": 16,
                   "fontWeight": "700"
@@ -591,8 +591,8 @@
           "children": [
             {
               "type": "frame",
-              "id": "Z2KEux",
-              "name": "一级导航-金融服务",
+              "id": "CFJtN",
+              "name": "一级导航-乡村振兴",
               "width": 171,
               "height": 48,
               "fill": "$primary",
@@ -612,10 +612,10 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "zrd0c",
-                  "name": "一级导航文字-金融服务",
+                  "id": "J0Q6aq",
+                  "name": "一级导航文字-乡村振兴",
                   "fill": "#FFFFFF",
-                  "content": "金融服务",
+                  "content": "乡村振兴",
                   "fontFamily": "$font-body",
                   "fontSize": 16,
                   "fontWeight": "700"
@@ -624,8 +624,8 @@
             },
             {
               "type": "frame",
-              "id": "CFJtN",
-              "name": "一级导航-乡村振兴",
+              "id": "Z2KEux",
+              "name": "一级导航-金融服务",
               "width": 171,
               "height": 48,
               "fill": "#FFFFFF00",
@@ -635,10 +635,10 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "J0Q6aq",
-                  "name": "一级导航文字-乡村振兴",
+                  "id": "zrd0c",
+                  "name": "一级导航文字-金融服务",
                   "fill": "#52647F",
-                  "content": "乡村振兴",
+                  "content": "金融服务",
                   "fontFamily": "$font-body",
                   "fontSize": 16,
                   "fontWeight": "700"
@@ -1154,8 +1154,8 @@
           "children": [
             {
               "type": "frame",
-              "id": "x49iS",
-              "name": "一级导航-金融服务",
+              "id": "a7AaHM",
+              "name": "一级导航-乡村振兴",
               "width": 171,
               "height": 48,
               "fill": "$primary",
@@ -1175,10 +1175,10 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "P2fPl0",
-                  "name": "一级导航文字-金融服务",
+                  "id": "H10s2",
+                  "name": "一级导航文字-乡村振兴",
                   "fill": "#FFFFFF",
-                  "content": "金融服务",
+                  "content": "乡村振兴",
                   "fontFamily": "$font-body",
                   "fontSize": 16,
                   "fontWeight": "700"
@@ -1187,8 +1187,8 @@
             },
             {
               "type": "frame",
-              "id": "a7AaHM",
-              "name": "一级导航-乡村振兴",
+              "id": "x49iS",
+              "name": "一级导航-金融服务",
               "width": 171,
               "height": 48,
               "fill": "#FFFFFF00",
@@ -1198,10 +1198,10 @@
               "children": [
                 {
                   "type": "text",
-                  "id": "H10s2",
-                  "name": "一级导航文字-乡村振兴",
+                  "id": "P2fPl0",
+                  "name": "一级导航文字-金融服务",
                   "fill": "#52647F",
-                  "content": "乡村振兴",
+                  "content": "金融服务",
                   "fontFamily": "$font-body",
                   "fontSize": 16,
                   "fontWeight": "700"
@@ -1718,29 +1718,6 @@
           "children": [
             {
               "type": "frame",
-              "id": "IH9eq",
-              "name": "一级导航-金融服务",
-              "width": 171,
-              "height": 48,
-              "fill": "#FFFFFF00",
-              "cornerRadius": 8,
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "VSAhZ",
-                  "name": "一级导航文字-金融服务",
-                  "fill": "#52647F",
-                  "content": "金融服务",
-                  "fontFamily": "$font-body",
-                  "fontSize": 16,
-                  "fontWeight": "700"
-                }
-              ]
-            },
-            {
-              "type": "frame",
               "id": "TjV02",
               "name": "一级导航-乡村振兴",
               "width": 171,
@@ -1766,6 +1743,29 @@
                   "name": "一级导航文字-乡村振兴",
                   "fill": "#FFFFFF",
                   "content": "乡村振兴",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "IH9eq",
+              "name": "一级导航-金融服务",
+              "width": 171,
+              "height": 48,
+              "fill": "#FFFFFF00",
+              "cornerRadius": 8,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "VSAhZ",
+                  "name": "一级导航文字-金融服务",
+                  "fill": "#52647F",
+                  "content": "金融服务",
                   "fontFamily": "$font-body",
                   "fontSize": 16,
                   "fontWeight": "700"
@@ -2386,29 +2386,6 @@
           "children": [
             {
               "type": "frame",
-              "id": "S9Uph",
-              "name": "一级导航-金融服务",
-              "width": 171,
-              "height": 48,
-              "fill": "#FFFFFF00",
-              "cornerRadius": 8,
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "LjMPd",
-                  "name": "一级导航文字-金融服务",
-                  "fill": "#52647F",
-                  "content": "金融服务",
-                  "fontFamily": "$font-body",
-                  "fontSize": 16,
-                  "fontWeight": "700"
-                }
-              ]
-            },
-            {
-              "type": "frame",
               "id": "EpgT2",
               "name": "一级导航-乡村振兴",
               "width": 171,
@@ -2434,6 +2411,29 @@
                   "name": "一级导航文字-乡村振兴",
                   "fill": "#FFFFFF",
                   "content": "乡村振兴",
+                  "fontFamily": "$font-body",
+                  "fontSize": 16,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "S9Uph",
+              "name": "一级导航-金融服务",
+              "width": 171,
+              "height": 48,
+              "fill": "#FFFFFF00",
+              "cornerRadius": 8,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "LjMPd",
+                  "name": "一级导航文字-金融服务",
+                  "fill": "#52647F",
+                  "content": "金融服务",
                   "fontFamily": "$font-body",
                   "fontSize": 16,
                   "fontWeight": "700"
@@ -9663,7 +9663,8 @@
                           "fill": "$text-secondary",
                           "content": "请输入准入条件",
                           "fontFamily": "$font-body",
-                          "fontSize": 13
+                          "fontSize": 13,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -9706,7 +9707,8 @@
                           "fill": "$text-secondary",
                           "content": "请输入产品介绍",
                           "fontFamily": "$font-body",
-                          "fontSize": 13
+                          "fontSize": 13,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -9808,7 +9810,8 @@
                               "fill": "$text-secondary",
                               "content": "请输入联系方式",
                               "fontFamily": "$font-body",
-                              "fontSize": 13
+                              "fontSize": 13,
+                              "fontWeight": "normal"
                             }
                           ]
                         }
