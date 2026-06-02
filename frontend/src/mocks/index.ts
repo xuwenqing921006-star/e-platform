@@ -428,7 +428,9 @@ function login(data: unknown) {
     !credentials ||
     typeof credentials !== 'object' ||
     !('username' in credentials) ||
-    !('password' in credentials)
+    !('password' in credentials) ||
+    credentials.username !== 'admin' ||
+    credentials.password !== 'Admin123!'
   ) {
     return error(401, '用户名或密码错误')
   }
@@ -439,7 +441,7 @@ function login(data: unknown) {
     expires_in: 7200,
     user: {
       id: 1,
-      username: String(credentials.username),
+      username: 'admin',
       display_name: '[Mock] 系统管理员',
       role: 'ADMIN',
       office_code: null,
@@ -457,12 +459,26 @@ function login(data: unknown) {
 }
 
 function dashboardSummary() {
-  const recentContents: DashboardRecentContent[] = mockContents.map((content) => ({
-    id: content.id,
-    title: content.title,
-    category: content.category,
-    published_at: content.published_at,
-  }))
+  const recentContents: DashboardRecentContent[] = [
+    {
+      id: 301,
+      title: '[Mock] 中国人民银行公告〔2025〕第12号',
+      category: 'POLICY_PROMOTION',
+      published_at: '2026-05-30T16:42:00+08:00',
+    },
+    {
+      id: 101,
+      title: '[Mock] 肇州县金融服务便民联系指南',
+      category: 'SERVICE_GUIDE',
+      published_at: '2026-05-29T09:30:00+08:00',
+    },
+    {
+      id: 201,
+      title: '[Mock] 征信代理查询网点地址及电话',
+      category: 'SERVICE_GUIDE',
+      published_at: '2026-05-28T09:30:00+08:00',
+    },
+  ]
   const data: DashboardSummaryData = {
     published_content_count: 48,
     product_count: 112,

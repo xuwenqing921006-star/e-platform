@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 
-import api from '../services/api'
-import type { ApiResponse, AuthUser, LoginResponseData } from '../types/api'
+import { loginAdmin } from '../services/authService'
+import type { AuthUser } from '../types/api'
 import { clearAdminToken, getAdminToken, saveAdminToken } from './authToken'
 
 interface LoginPayload {
@@ -20,17 +20,10 @@ export const useAuthStore = defineStore('auth', {
   },
   actions: {
     async login(payload: LoginPayload) {
-      const response = await api.post<ApiResponse<LoginResponseData>>(
-        '/auth/login',
-        {
-          username: payload.username,
-          password: payload.password,
-        },
-      )
-      const result = response.data.data
-      if (!result) {
-        throw new Error(response.data.message)
-      }
+      const result = await loginAdmin({
+        username: payload.username,
+        password: payload.password,
+      })
 
       saveAdminToken(result.access_token, payload.remember)
       this.token = result.access_token

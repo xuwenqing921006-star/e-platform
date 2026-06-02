@@ -899,6 +899,8 @@ input {
   padding: 16px;
   border-radius: 6px;
   background: #f6f8fc;
+  color: inherit;
+  text-decoration: none;
 }
 
 .quick-entry svg {

@@ -5,6 +5,16 @@
 > 产品定义：`docs/PRD.md`
 > 接口契约：`docs/api-contracts.md`
 
+## 零、若依接入架构决策
+
+> 2026-06-02 确认：后台与后端基础能力基于本地若依框架裁剪适配，若依源码仅作为 `vendor/ruoyi/` 下的参考源，不作为提交内容。
+
+- 保留当前已完成的 H5 Vue 3/TypeScript 前端，不推倒重来。
+- 后端从“从零初始化 Spring Boot”调整为“基于 `RuoYi-Vue-v3.9.1` 后端能力裁剪到 `backend/`”，优先复用登录、权限、用户、角色、菜单、日志、代码生成和 MyBatis 基础设施。
+- 后台管理端可参考 `RuoYi-Vue3-v3.9.1` 的页面组织与权限菜单，但现有 H5 页面继续由当前 `frontend/` 承载。
+- API 契约仍以 `docs/api-contracts.md` 为准。若依默认返回字段、权限结构或路由命名与契约不同，必须在后端适配到本项目约定的 `{ code, message, data }` 格式。
+- 若依源码不得写入 `harness-core/`，不得作为 SDD 核心规则维护；业务代码只能写入当前项目目录。
+
 ## 一、功能清单总览
 
 | 编号 | 功能名称 | 一句话描述 | 对应页面 | 优先级 | 状态 |
@@ -183,7 +193,7 @@ frontend/
 ### 4.1 Java 环境
 
 - **JDK**：进入开发阶段后由 Agent 执行 `java -version` 和 `javac -version`，必须为 17+。
-- **构建工具**：默认 Maven Wrapper，路径 `backend/mvnw.cmd`。
+- **构建工具**：基于若依 Maven 多模块工程裁剪，路径 `backend/mvnw.cmd`；如若依原包缺少 Wrapper，由 Agent 在 `backend/` 内补齐。
 - **后端启动端口**：Agent 自动验证 `8099`，用户验收 `8003`。
 - [ ] Agent 已确认 `java` / `javac` 均为 17+。
 - [ ] Agent 已确认 Maven Wrapper 可执行。
@@ -216,29 +226,32 @@ backend/
   mvnw
   mvnw.cmd
   .mvn/wrapper/
-  src/main/java/com/centralbank/eplatform/
-    config/
-    controller/
-    dto/
-    entity/
-    exception/
-    repository/
-    security/
-    service/
-  src/main/resources/
-    application.yml
-    db/migration/
-  src/test/java/com/centralbank/eplatform/
+  ruoyi-admin/
+  ruoyi-common/
+  ruoyi-framework/
+  ruoyi-system/
+  ruoyi-generator/
+  ruoyi-quartz/
+  central-bank-business/
+    src/main/java/com/centralbank/eplatform/
+      controller/
+      domain/
+      mapper/
+      service/
+      dto/
+      config/
+    src/main/resources/
+      mapper/
 ```
 
 ### 4.4 后端实现规则
 
-- 使用 Java 17+、Spring Boot 3.x、Spring Web、Spring Validation、Spring Security、Spring Data JPA。
-- 使用 Flyway 管理数据库迁移。
-- 运行时使用 MySQL 8，自动化测试使用物理隔离 H2。
+- 使用 Java 17+、Spring Boot 3.x 和若依后端基础能力；若若依原始版本为 Spring Boot 2.x，进入 B00 时必须先升级或确认兼容策略，不得降级本项目技术栈。
+- 使用若依 MyBatis/MyBatis-Plus 风格的数据访问与 SQL 初始化/迁移能力；不再强制使用 Spring Data JPA 或 Flyway。
+- 运行时使用 MySQL 8；自动化测试优先使用若依兼容的隔离测试数据库或 H2 fallback，若兼容性不足，必须在测试报告中明确标记降级边界。
 - 真实密钥仅进入本地 secret 配置。
-- Controller、Service、Repository、DTO、Entity 分层明确。
-- DTO 与 Entity 分离，禁止直接返回 JPA Entity。
+- Controller、Service、Mapper、Domain、DTO 分层明确。
+- DTO 与 Domain 分离，禁止直接把持久化对象作为公开接口响应。
 - 普通账号办公室隔离与产品管理权限必须在服务端校验。
 - 富文本保存前执行白名单过滤。
 - 附件目录通过 `APP_STORAGE_ROOT` 配置。
@@ -251,8 +264,9 @@ backend/
 ### B00 Spring Boot 基础设施
 
 - [ ] 补充分层实现思路。
-- [ ] 初始化 Maven Wrapper 和 Spring Boot 项目。
-- [ ] 增加统一响应、全局异常、CORS、H2 测试配置和 `GET /health`。
+- [ ] 从 `vendor/ruoyi/RuoYi-Vue-v3.9.1` 裁剪后端模块到 `backend/`，保留若依基础权限、用户、日志与配置能力。
+- [ ] 补齐 Maven Wrapper、Java 17+、Spring Boot 3.x 兼容策略和本项目业务模块 `central-bank-business`。
+- [ ] 增加契约适配层、统一响应、全局异常、CORS、测试配置和 `GET /health`。
 - [ ] 执行 Maven 测试。
 - [ ] 短时启动后执行 `curl http://localhost:8099/health`。
 - [ ] 自动验证通过。

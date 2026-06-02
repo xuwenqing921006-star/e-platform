@@ -35,9 +35,9 @@ const metrics = computed(() => [
 ])
 
 const quickEntries = [
-  { icon: 'file-plus-2', label: '发布内容' },
-  { icon: 'badge-plus', label: '新增金融产品' },
-  { icon: 'sheet', label: '导入产品表格' },
+  { icon: 'file-plus-2', label: '发布内容', to: '/admin/contents/new' },
+  { icon: 'badge-plus', label: '新增金融产品', to: '/admin/products/new' },
+  { icon: 'sheet', label: '导入产品表格', to: '/admin/products/import' },
 ]
 
 const categoryLabels: Record<ContentCategory, string> = {
@@ -82,10 +82,15 @@ function dateOnly(dateTime: string) {
       <section class="dashboard-card">
         <h2>快捷操作</h2>
         <div class="quick-entry-list">
-          <div v-for="entry in quickEntries" :key="entry.label" class="quick-entry">
+          <RouterLink
+            v-for="entry in quickEntries"
+            :key="entry.label"
+            class="quick-entry"
+            :to="entry.to"
+          >
             <AppIcon :name="entry.icon" />
             <strong>{{ entry.label }}</strong>
-          </div>
+          </RouterLink>
         </div>
       </section>
     </div>
