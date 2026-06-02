@@ -10,6 +10,7 @@ import type {
   PublicAttachment,
   PublicContentDetailData,
   PublicContentListItem,
+  PublicProductDetailData,
   PublicProductListItem,
   PublicScope,
   ProductType,
@@ -218,10 +219,10 @@ const featuredProducts: MockProductEntity[] = [
     bank_name: '[Mock] 中国农业银行',
     product_name: '[Mock] 惠农e贷',
     product_type: 'AGRICULTURAL',
-    admission_conditions: '面向符合条件的涉农经营主体。',
-    product_intro: '用于满足农业生产经营流动资金需求。',
-    business_manager: '张经理',
-    contact_info: '0459-0002001',
+    admission_conditions: '[Mock] 面向符合条件的涉农经营主体。',
+    product_intro: '[Mock] 用于满足农业生产经营流动资金需求。',
+    business_manager: '[Mock] 张经理',
+    contact_info: '[Mock] 0459-0002001',
   },
   {
     id: 2002,
@@ -229,10 +230,10 @@ const featuredProducts: MockProductEntity[] = [
     bank_name: '[Mock] 大庆农商银行',
     product_name: '[Mock] 小微企业流动资金贷款',
     product_type: 'SMALL_MICRO',
-    admission_conditions: '面向符合条件的小微企业。',
-    product_intro: '用于满足企业日常流动资金需求。',
-    business_manager: '李经理',
-    contact_info: '0459-0002002',
+    admission_conditions: '[Mock] 面向符合条件的小微企业。',
+    product_intro: '[Mock] 用于满足企业日常流动资金需求。',
+    business_manager: '[Mock] 李经理',
+    contact_info: '[Mock] 0459-0002002',
   },
   {
     id: 2003,
@@ -240,10 +241,10 @@ const featuredProducts: MockProductEntity[] = [
     bank_name: '[Mock] 中国建设银行',
     product_name: '[Mock] 裕农快贷',
     product_type: 'AGRICULTURAL',
-    admission_conditions: '面向符合条件的县域经营主体。',
-    product_intro: '用于支持农业经营与县域产业发展。',
-    business_manager: '王经理',
-    contact_info: '0459-0002003',
+    admission_conditions: '[Mock] 面向符合条件的县域经营主体。',
+    product_intro: '[Mock] 用于支持农业经营与县域产业发展。',
+    business_manager: '[Mock] 王经理',
+    contact_info: '[Mock] 0459-0002003',
   },
   {
     id: 2004,
@@ -251,10 +252,10 @@ const featuredProducts: MockProductEntity[] = [
     bank_name: '[Mock] 光大银行',
     product_name: '[Mock] 普惠经营贷',
     product_type: 'SMALL_MICRO',
-    admission_conditions: '面向符合条件的普惠经营客户。',
-    product_intro: '用于经营周转与生产投入。',
-    business_manager: '赵经理',
-    contact_info: '0459-0002004',
+    admission_conditions: '[Mock] 面向符合条件的普惠经营客户。',
+    product_intro: '[Mock] 用于经营周转与生产投入。',
+    business_manager: '[Mock] 赵经理',
+    contact_info: '[Mock] 0459-0002004',
   },
 ]
 
@@ -271,10 +272,10 @@ const mockProducts: MockProductEntity[] = [
       bank_name: `[Mock] 示例银行 ${sequence}`,
       product_name: `[Mock] 助企金融产品 ${sequence}`,
       product_type: productType,
-      admission_conditions: '面向符合条件的经营主体。',
-      product_intro: '用于模拟 H5 分页加载展示。',
-      business_manager: '示例经理',
-      contact_info: `0459-${String(sequence).padStart(7, '0')}`,
+      admission_conditions: '[Mock] 面向符合条件的经营主体。',
+      product_intro: '[Mock] 用于模拟 H5 分页加载展示。',
+      business_manager: '[Mock] 示例经理',
+      contact_info: `[Mock] 0459-${String(sequence).padStart(7, '0')}`,
     }
   }),
 ]
@@ -398,6 +399,27 @@ function listPublicProducts(params: Record<string, unknown> = {}) {
   return success(data)
 }
 
+function getPublicProductDetail(id: number) {
+  const product = mockProducts.find((item) => item.id === id)
+
+  if (!product) {
+    return error(404, '产品不存在')
+  }
+
+  const data: PublicProductDetailData = {
+    id: product.id,
+    bank_name: product.bank_name,
+    product_name: product.product_name,
+    product_type: product.product_type,
+    admission_conditions: product.admission_conditions,
+    product_intro: product.product_intro,
+    business_manager: product.business_manager,
+    contact_info: product.contact_info,
+  }
+
+  return success(data)
+}
+
 function login(data: unknown) {
   const credentials =
     typeof data === 'string' ? (JSON.parse(data) as Record<string, unknown>) : data
@@ -464,6 +486,9 @@ export function dispatchMockRequest(request: MockRequest): MockResponse<unknown>
   }
   if (method === 'GET' && path === '/public/products') {
     return listPublicProducts(request.params)
+  }
+  if (method === 'GET' && /^\/public\/products\/\d+$/.test(path)) {
+    return getPublicProductDetail(Number(path.split('/').pop()))
   }
   if (method === 'POST' && path === '/auth/login') {
     return login(request.data)

@@ -31,3 +31,5 @@ uploads/
 # Frontend build
 dist/
 
+# Vendor reference source
+vendor/

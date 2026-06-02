@@ -223,10 +223,11 @@ onMounted(loadList)
       </p>
 
       <section v-else-if="showingProducts" class="h5-card-list">
-        <article
+        <RouterLink
           v-for="item in productItems"
           :key="item.id"
           class="h5-product-card"
+          :to="`/h5/products/${item.id}`"
         >
           <div>
             <span>{{ item.bank_name }}</span>
@@ -235,7 +236,7 @@ onMounted(loadList)
             </strong>
           </div>
           <h1>{{ item.product_name }}</h1>
-        </article>
+        </RouterLink>
       </section>
 
       <section v-else class="h5-card-list">

@@ -55,6 +55,17 @@ export interface PublicProductListItem {
 
 export type PublicProductListData = PaginatedData<PublicProductListItem>
 
+export interface PublicProductDetailData {
+  id: number
+  bank_name: string
+  product_name: string
+  product_type: ProductType
+  admission_conditions: string
+  product_intro: string
+  business_manager: string
+  contact_info: string
+}
+
 export interface AuthUser {
   id: number
   username: string
