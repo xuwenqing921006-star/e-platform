@@ -12,6 +12,10 @@ export interface PaginatedData<T> {
 }
 
 export type ContentCategory = 'SERVICE_GUIDE' | 'POLICY_PROMOTION'
+export type CountyCode = 'ZHAOZHOU' | 'ZHAOYUAN' | 'LINDIAN' | 'DUMENG'
+export type PublicScope = 'FINANCIAL' | 'RURAL'
+export type ProductType = 'AGRICULTURAL' | 'SMALL_MICRO'
+export type AttachmentFileType = 'PDF' | 'WORD' | 'EXCEL'
 export type UserRole = 'ADMIN' | 'OFFICE_USER'
 
 export interface PublicContentListItem {
@@ -21,6 +25,35 @@ export interface PublicContentListItem {
   office_name: string
   published_at: string
 }
+
+export type PublicContentListData = PaginatedData<PublicContentListItem>
+
+export interface PublicAttachment {
+  id: number
+  file_name: string
+  file_type: AttachmentFileType
+  file_size: number
+  download_url: string
+}
+
+export interface PublicContentDetailData {
+  id: number
+  title: string
+  category: ContentCategory
+  office_name: string
+  published_at: string
+  rich_text_html: string
+  attachments: PublicAttachment[]
+}
+
+export interface PublicProductListItem {
+  id: number
+  bank_name: string
+  product_name: string
+  product_type: ProductType
+}
+
+export type PublicProductListData = PaginatedData<PublicProductListItem>
 
 export interface AuthUser {
   id: number

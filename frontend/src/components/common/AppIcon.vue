@@ -44,6 +44,15 @@ defineProps<{
     <template v-else-if="name === 'chevron-down'">
       <path d="m6 9 6 6 6-6" />
     </template>
+    <template v-else-if="name === 'chevron-left'">
+      <path d="m15 18-6-6 6-6" />
+    </template>
+    <template v-else-if="name === 'x'">
+      <path d="M18 6 6 18M6 6l12 12" />
+    </template>
+    <template v-else-if="name === 'paperclip'">
+      <path d="m21.4 11.6-8.5 8.5a6 6 0 0 1-8.5-8.5l9.2-9.2a4 4 0 0 1 5.7 5.7l-9.2 9.2a2 2 0 1 1-2.8-2.8l8.5-8.5" />
+    </template>
     <template v-else-if="name === 'file-check'">
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" />
       <path d="M14 2v6h6m-7.5 5.5-3 3-1.5-1.5" />
@@ -69,6 +78,9 @@ defineProps<{
     <template v-else-if="name === 'clock-3'">
       <circle cx="12" cy="12" r="9" />
       <path d="M12 7v5h4" />
+    </template>
+    <template v-else-if="name === 'phone'">
+      <path d="M22 16.9v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.68 2.8a2 2 0 0 1-.45 2.11L8.07 9.9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.32 1.84.55 2.8.68A2 2 0 0 1 22 16.9Z" />
     </template>
   </svg>
 </template>
