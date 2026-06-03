@@ -631,15 +631,18 @@
                       "priority":  11,
                       "rules_files":  [
                                           "dev-standards/frontend.md",
-                                          "dev-standards/backend-dev.md",
-                                          "dev-standards/backend-layers.md"
+                                          "dev-standards/ruoyi-backend.md"
                                       ],
-                      "status":  "pending",
+                      "framework_profiles":  [
+                                          "framework-profiles/fullstack-ruoyi-vue.md",
+                                          "framework-profiles/ruoyi-business-module-patterns.md"
+                                      ],
+                      "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已实现 GET /api/public/products 与 /api/public/products/{id}，列表/详情 DTO 按契约收敛，frontend 在 VITE_USE_MOCK=false 时走真实 /api/public/products*；真实 MySQL 8 仍按 local_fallback 边界未宣称完整联调。",
                       "user_gate":  true
                   },
                   {

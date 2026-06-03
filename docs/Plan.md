@@ -324,11 +324,17 @@ frontend/
 
 ### B04 公开 H5 产品查询
 
-- [ ] 补充分层实现思路。
-- [ ] 实现产品摘要列表和 7 字段详情。
-- [ ] 确认响应不包含参考利率等额外字段。
-- [ ] 前端 H5 产品页面切到真实接口验证。
-- [ ] 自动验证通过。
+- [x] 补充分层实现思路。
+- 分层实现思路：
+  - Mapper：在 `CbFinancialProductMapper` 中补充公开产品分页查询，列表只取 `id`、`bank_name`、`product_name`、`product_type` 摘要字段。
+  - Service：`PublicProductService` 负责分页参数校验、摘要 DTO 映射和详情 DTO 映射；详情严格限制为产品 ID + 已确认 7 个业务字段。
+  - Controller：`PublicProductController` 提供 `GET /api/public/products` 与 `GET /api/public/products/{id}`，400/404 返回统一 `{ code, message, data }`。
+  - 前端：现有 `publicProductService` 在 `VITE_USE_MOCK=false` 下通过 Axios 命中 `/api/public/products*`；H5 Mock 提示仅 Mock 模式显示。
+  - 测试：用 service 单测、MockMvc 路径测试、前端 typecheck/test/build 和后端全量 Maven 测试验证契约。当前完整 112 条产品数据仍归 B12/T-019 导入闭环。
+- [x] 实现产品摘要列表和 7 字段详情。
+- [x] 确认响应不包含参考利率等额外字段。
+- [x] 前端 H5 产品页面切到真实接口验证。
+- [x] 自动验证通过：`frontend npm run typecheck/test/build`、`backend .\mvnw.cmd -q -pl central-bank-business -am test`、`backend .\mvnw.cmd -q test`。
 
 ### B05 本地附件存储
 

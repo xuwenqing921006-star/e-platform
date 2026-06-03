@@ -97,3 +97,7 @@
 - **陷阱**：前端切到 `VITE_USE_MOCK=false` 后，如果页面仍无条件渲染 Mock 提示，即使数据来自真实接口也会失败。
 - **避坑**：Mock 提示、Mock banner 和 Mock-only 文案必须绑定 mock mode；真实接口联调任务除了 service 路径，还要检查页面可见文案。
 - **后续边界**：真实 MySQL 未提供时，只能用 H2 seed 与 MockMvc 验证契约路径；不要宣称真实数据库已联调。附件下载文件流仍归 T-012。
+### T-011: H5 公开金融产品查询真实联调闭环
+- **陷阱**：产品列表和产品详情容易共用数据库 domain 直接返回，进而把 `bank_code`、`updated_at` 或后台扩展字段泄露到公开 H5 接口。
+- **经验**：公开产品列表使用独立 `PublicProductListItem`，只暴露 `id`、`bank_name`、`product_name`、`product_type`；公开详情使用独立 `PublicProductDetailData`，严格映射产品 ID + 7 个业务字段。
+- **避坑**：T-011 只实现接口能力和 H5 真实路径闭环；完整 112 条产品初始化仍属于 T-019/B12，不在本任务提前混入 seed，避免任务边界膨胀。

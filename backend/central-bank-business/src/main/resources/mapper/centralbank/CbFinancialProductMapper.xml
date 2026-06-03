@@ -21,6 +21,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select count(1) from cb_financial_product
     </select>
 
+    <select id="selectPublicProducts" resultMap="CbFinancialProductResult">
+        select id, bank_name, product_name, product_type
+        from cb_financial_product
+        order by id asc
+        limit #{pageSize} offset #{offset}
+    </select>
+
     <select id="selectProductById" parameterType="long" resultMap="CbFinancialProductResult">
         select * from cb_financial_product where id = #{id}
     </select>
