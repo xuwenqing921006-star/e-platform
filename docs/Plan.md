@@ -340,10 +340,14 @@ frontend/
 
 - [x] 补充分层实现思路。
 - 分层实现思路：
-  - 本轮只完成 `APP_STORAGE_ROOT` 配置入口适配；上传、删除、公开下载实现留给 T-012。
-- [ ] 实现上传、格式校验、大小校验、删除和公开下载。
-- [ ] 使用临时测试目录完成自动化验证。
-- [ ] 自动验证通过。
+  - 配置：继续复用若依 `RuoYiConfig.getUploadPath()`，由 `APP_STORAGE_ROOT` 注入本地附件根目录，不在代码中硬编码真实路径。
+  - Mapper：扩展 `CbAttachmentMapper` 的插入、查询和删除能力，附件元数据写入 `cb_attachment`。
+  - Service：`AttachmentStorageService` 校验单文件 20MB、PDF/Word/Excel 扩展名与 MIME 类型，保存真实文件到配置目录，生成公开下载 URL，并提供每篇内容最多 3 个附件的复用校验。
+  - Controller：`AdminAttachmentController` 实现后台上传和删除；`PublicAttachmentController` 实现公开下载文件流。
+  - 测试：使用 JUnit 临时目录验证真实文件写入、下载和删除，不触碰真实附件目录；用 MockMvc 验证契约响应。
+- [x] 实现上传、格式校验、大小校验、删除和公开下载。
+- [x] 使用临时测试目录完成自动化验证。
+- [x] 自动验证通过：`frontend npm run typecheck/test/build`、`backend .\mvnw.cmd -q -pl central-bank-business -am test`、`backend .\mvnw.cmd -q test`。
 
 ### B06 后台内容管理
 

@@ -17,6 +17,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select count(1) from cb_attachment
     </select>
 
+    <insert id="insertAttachment" parameterType="com.centralbank.eplatform.domain.CbAttachment">
+        insert into cb_attachment (
+            id, content_id, file_name, file_type, file_size, storage_path, created_at
+        ) values (
+            #{id}, #{contentId}, #{fileName}, #{fileType}, #{fileSize}, #{storagePath}, #{createdAt}
+        )
+    </insert>
+
     <select id="selectAttachmentById" parameterType="long" resultMap="CbAttachmentResult">
         select * from cb_attachment where id = #{id}
     </select>
@@ -24,4 +32,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectAttachmentsByContentId" parameterType="long" resultMap="CbAttachmentResult">
         select * from cb_attachment where content_id = #{contentId} order by id
     </select>
+
+    <delete id="deleteAttachmentById" parameterType="long">
+        delete from cb_attachment where id = #{id}
+    </delete>
 </mapper>

@@ -172,6 +172,12 @@ class PublicContentServiceTest
         }
 
         @Override
+        public int insertAttachment(CbAttachment attachment)
+        {
+            throw new UnsupportedOperationException("not needed in this test");
+        }
+
+        @Override
         public CbAttachment selectAttachmentById(Long id)
         {
             return attachments.stream()
@@ -186,6 +192,12 @@ class PublicContentServiceTest
             return attachments.stream()
                     .filter(attachment -> Objects.equals(attachment.getContentId(), contentId))
                     .toList();
+        }
+
+        @Override
+        public int deleteAttachmentById(Long id)
+        {
+            throw new UnsupportedOperationException("not needed in this test");
         }
     }
 }

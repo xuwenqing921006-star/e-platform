@@ -686,17 +686,20 @@
                                            "T-011"
                                        ],
                       "priority":  12,
-                      "rules_files":  [
-                                          "dev-standards/frontend.md",
-                                          "dev-standards/backend-dev.md",
-                                          "dev-standards/backend-layers.md"
-                                      ],
-                      "status":  "pending",
+    "rules_files":  [
+                        "dev-standards/frontend.md",
+                        "dev-standards/ruoyi-backend.md"
+                    ],
+    "framework_profiles":  [
+                               "framework-profiles/fullstack-ruoyi-vue.md",
+                               "framework-profiles/ruoyi-business-module-patterns.md"
+                           ],
+    "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已实现 POST /api/admin/attachments、DELETE /api/admin/attachments/{id} 与 GET /api/public/attachments/{id}/download；附件写入复用若依 APP_STORAGE_ROOT/upload 根目录，自动测试使用 JUnit 临时目录验证真实写入、下载、删除。超过 3 个附件的校验已在 AttachmentStorageService 提供给后续内容保存接口复用；T-013 前不宣称内容 CRUD 已闭环。",
                       "user_gate":  true
                   },
                   {

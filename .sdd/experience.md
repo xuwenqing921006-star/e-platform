@@ -101,3 +101,7 @@
 - **陷阱**：产品列表和产品详情容易共用数据库 domain 直接返回，进而把 `bank_code`、`updated_at` 或后台扩展字段泄露到公开 H5 接口。
 - **经验**：公开产品列表使用独立 `PublicProductListItem`，只暴露 `id`、`bank_name`、`product_name`、`product_type`；公开详情使用独立 `PublicProductDetailData`，严格映射产品 ID + 7 个业务字段。
 - **避坑**：T-011 只实现接口能力和 H5 真实路径闭环；完整 112 条产品初始化仍属于 T-019/B12，不在本任务提前混入 seed，避免任务边界膨胀。
+### T-012: 附件上传、删除与公开下载真实联调闭环
+- **陷阱**：若直接复用若依 `/common/upload`，返回字段会变成 `url/fileName/newFileName/originalFilename`，不符合本项目 `file_name/file_type/file_size/download_url` 契约。
+- **经验**：本项目附件需要独立业务 service：文件写入仍复用 `APP_STORAGE_ROOT` 对应的若依 profile/upload 根目录，但响应 DTO、业务表写入、公开下载 URL 都按 `docs/api-contracts.md` 收敛。
+- **避坑**：附件格式校验不能只看扩展名；至少同时校验 MIME 类型。自动测试必须使用 JUnit 临时目录验证真实写入/下载/删除，不能只检查 mapper 或 DTO。

@@ -8,7 +8,11 @@ public interface CbAttachmentMapper
 {
     int countAttachments();
 
+    int insertAttachment(CbAttachment attachment);
+
     CbAttachment selectAttachmentById(@Param("id") Long id);
 
     List<CbAttachment> selectAttachmentsByContentId(@Param("contentId") Long contentId);
+
+    int deleteAttachmentById(@Param("id") Long id);
 }

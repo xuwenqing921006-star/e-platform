@@ -3,7 +3,7 @@
     "mode":  "new",
     "design_ready":  true,
     "development_ready":  true,
-    "current_task":  "T-011",
+    "current_task":  "T-013",
     "blocked":  false,
     "external_services_mode":  "local_fallback",
     "external_services":  {
@@ -18,5 +18,5 @@
                  "version":  "21.0.11",
                  "home":  "local JAVA_HOME / PATH"
              },
-    "notes":  "用户要求暂停开发。当前已提交至 T-010，暂停点为 T-011 H5 公开金融产品查询真实联调开始前；真实 MySQL 8 仍使用 H2/local fallback 边界，不宣称已联调。"
+    "notes":  "T-012 附件上传、删除与公开下载真实联调闭环已通过自动验证并本地提交，下一步进入 T-013 若依后台内容管理真实闭环；真实 MySQL 8 仍使用 H2/local fallback 边界，不宣称已联调。"
 }
