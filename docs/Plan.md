@@ -295,11 +295,18 @@ frontend/
 
 ### B02 登录认证与本人密码
 
-- [ ] 补充分层实现思路。
+- [x] 补充分层实现思路。
+- 分层实现思路：
+  - Security：复用若依 JWT 过滤器与 Spring Security 链，显式放行 `/health`、`/api/public/**` 和登录验证码等公开路径，`/api/admin/**` 默认要求认证。
+  - 响应契约：调整若依 `AjaxResult`，把 `msg` 统一为 `message`，错误响应也返回 `data: null`。
+  - 401/403：认证失败由 `AuthenticationEntryPointImpl` 返回 `{ code: 401, message, data: null }`；权限不足由专用 `AccessDeniedHandler` 返回 `{ code: 403, message, data: null }`。
+  - 配置：`token.secret` 读取 `APP_JWT_SECRET`，上传目录读取 `APP_STORAGE_ROOT`，数据库连接读取 `DB_URL`、`DB_USERNAME`、`DB_PASSWORD`。
+  - 测试：直接验证 401/403 handler 输出结构、AjaxResult 字段结构、安全链源码公开/受保护路径声明和配置文件敏感值占位。
 - [ ] 实现 JWT 登录、当前用户和修改密码。
-- [ ] 实现后台路由保护和权限上下文。
+- [x] 实现后台路由保护和权限上下文基础适配。
 - [ ] 前端切换到真实认证接口验证。
 - [ ] 自动验证通过。
+- T-009 验收：已适配 `/health`、`/api/public/**` 放行与 `/api/admin/**` 认证要求；401/403 返回 `{ code, message, data }`，JWT、数据库与附件目录配置从本地环境变量读取。验证命令：`backend/.mvnw.cmd -q test`、`backend/.mvnw.cmd -q -pl ruoyi-admin -am -DskipTests package`、health profile jar 短启动与敏感值扫描。
 
 ### B03 公开 H5 内容查询
 
@@ -319,7 +326,9 @@ frontend/
 
 ### B05 本地附件存储
 
-- [ ] 补充分层实现思路。
+- [x] 补充分层实现思路。
+- 分层实现思路：
+  - 本轮只完成 `APP_STORAGE_ROOT` 配置入口适配；上传、删除、公开下载实现留给 T-012。
 - [ ] 实现上传、格式校验、大小校验、删除和公开下载。
 - [ ] 使用临时测试目录完成自动化验证。
 - [ ] 自动验证通过。

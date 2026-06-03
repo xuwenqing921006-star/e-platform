@@ -18,6 +18,7 @@ import org.springframework.web.filter.CorsFilter;
 import com.ruoyi.framework.config.properties.PermitAllUrlProperties;
 import com.ruoyi.framework.security.filter.JwtAuthenticationTokenFilter;
 import com.ruoyi.framework.security.handle.AuthenticationEntryPointImpl;
+import com.ruoyi.framework.security.handle.ContractAccessDeniedHandler;
 import com.ruoyi.framework.security.handle.LogoutSuccessHandlerImpl;
 
 /**
@@ -35,6 +36,12 @@ public class SecurityConfig
      */
     @Autowired
     private AuthenticationEntryPointImpl unauthorizedHandler;
+
+    /**
+     * 权限不足处理类。
+     */
+    @Autowired
+    private ContractAccessDeniedHandler accessDeniedHandler;
 
     /**
      * 退出处理类
@@ -95,14 +102,17 @@ public class SecurityConfig
                 headersCustomizer.cacheControl(cache -> cache.disable()).frameOptions(options -> options.sameOrigin());
             })
             // 认证失败处理类
-            .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
+            .exceptionHandling(exception -> exception
+                    .authenticationEntryPoint(unauthorizedHandler)
+                    .accessDeniedHandler(accessDeniedHandler))
             // 基于token，所以不需要session
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             // 注解标记允许匿名访问的url
             .authorizeHttpRequests((requests) -> {
                 permitAllUrl.getUrls().forEach(url -> requests.requestMatchers(url).permitAll());
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                requests.requestMatchers("/health", "/error", "/login", "/register", "/captchaImage").permitAll()
+                requests.requestMatchers("/health", "/error", "/login", "/register", "/captchaImage", "/api/public/**").permitAll()
+                    .requestMatchers("/api/admin/**").authenticated()
                     // 静态资源，可匿名访问
                     .requestMatchers(HttpMethod.GET, "/", "/*.html", "/**.html", "/**.css", "/**.js", "/profile/**").permitAll()
                     .requestMatchers("/swagger-ui.html", "/v3/api-docs/**", "/swagger-ui/**", "/druid/**").permitAll()

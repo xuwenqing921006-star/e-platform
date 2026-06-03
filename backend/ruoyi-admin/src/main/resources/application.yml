@@ -6,8 +6,8 @@ ruoyi:
   version: 3.9.2
   # 版权年份
   copyrightYear: 2026
-  # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
-  profile: D:/ruoyi/uploadPath
+  # 文件路径通过 APP_STORAGE_ROOT 设置，默认使用本地 ./data/uploadPath
+  profile: ${APP_STORAGE_ROOT:./data/uploadPath}
   # 获取ip地址开关
   addressEnabled: false
   # 验证码类型 math 数字计算 char 字符验证
@@ -94,7 +94,7 @@ token:
   # 令牌自定义标识
   header: Authorization
   # 令牌密钥
-  secret: abcdefghijklmnopqrstuvwxyz
+  secret: ${APP_JWT_SECRET:central-bank-dev-placeholder}
   # 令牌有效期（默认30分钟）
   expireTime: 30
 

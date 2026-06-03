@@ -84,3 +84,10 @@
 - **经验**：业务模块使用独立 Maven 子模块 `central-bank-business`，同时在 `ruoyi-admin` 引入依赖，并把 `com.centralbank.eplatform` 加入 Spring 扫描和 MyBatis mapper 扫描。
 - **避坑**：真实 MySQL 未提供时，只能声明 H2 fallback 验证通过；测试必须真实执行 H2 schema/seed，不能只检查 SQL 文件存在。
 - **后续边界**：T-008 只落基础表结构、固定选项和最小 seed；完整账号与 112 条金融产品数据仍归 T-019。
+### T-009: 若依安全、契约响应与 H5 公开路由适配
+- **陷阱**：若依 `ServletUtils.renderString` 默认会把 HTTP 状态码设为 200；认证失败和权限不足如果只在 body 中写 `code`，前端按 HTTP status 判断时会失真。
+- **经验**：为 `ServletUtils.renderString` 增加带 status 的重载，并在 `AuthenticationEntryPointImpl` 与专用 `AccessDeniedHandler` 中分别写入真实 401/403。
+- **陷阱**：Fastjson 手写响应默认会省略 map 中的 null 值，即使 `AjaxResult` 内部已经包含 `data: null`，序列化后也可能丢失契约字段。
+- **经验**：安全过滤器中使用 `JSONWriter.Feature.WriteMapNullValue` 输出 401/403，保证 `{ code, message, data }` 结构稳定。
+- **避坑**：`spring-boot:run` 带 `-am` 时可能在父工程执行并找不到 main class；短启动验证优先用 `-pl ruoyi-admin -am -DskipTests package` 打 jar，再 `java -jar` 指定 profile 和端口。
+- **后续边界**：T-009 只完成安全链、契约响应和配置入口适配；完整 `/api/auth/*` 登录、当前用户、本人改密和具体业务 API 联调留给后续闭环任务。

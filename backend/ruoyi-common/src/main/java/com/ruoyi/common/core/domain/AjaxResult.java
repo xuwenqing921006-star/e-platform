@@ -3,7 +3,6 @@ package com.ruoyi.common.core.domain;
 import java.util.HashMap;
 import java.util.Objects;
 import com.ruoyi.common.constant.HttpStatus;
-import com.ruoyi.common.utils.StringUtils;
 
 /**
  * 操作消息提醒
@@ -18,7 +17,7 @@ public class AjaxResult extends HashMap<String, Object>
     public static final String CODE_TAG = "code";
 
     /** 返回内容 */
-    public static final String MSG_TAG = "msg";
+    public static final String MSG_TAG = "message";
 
     /** 数据对象 */
     public static final String DATA_TAG = "data";
@@ -53,10 +52,7 @@ public class AjaxResult extends HashMap<String, Object>
     {
         super.put(CODE_TAG, code);
         super.put(MSG_TAG, msg);
-        if (StringUtils.isNotNull(data))
-        {
-            super.put(DATA_TAG, data);
-        }
+        super.put(DATA_TAG, data);
     }
 
     /**
@@ -66,7 +62,7 @@ public class AjaxResult extends HashMap<String, Object>
      */
     public static AjaxResult success()
     {
-        return AjaxResult.success("操作成功");
+        return AjaxResult.success("success");
     }
 
     /**
@@ -76,7 +72,7 @@ public class AjaxResult extends HashMap<String, Object>
      */
     public static AjaxResult success(Object data)
     {
-        return AjaxResult.success("操作成功", data);
+        return AjaxResult.success("success", data);
     }
 
     /**

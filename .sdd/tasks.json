@@ -528,12 +528,12 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
-                      "developer_id":  null,
-                      "tester_id":  null,
+                      "status":  "passed",
+                      "developer_id":  "xuwenqing",
+                      "tester_id":  "codex-main",
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "RuoYi Security allowlist/protected routes, unified AjaxResult keys, 401/403 contract handlers, env-backed JWT/storage/DB/Druid config; verified by backend tests, health jar startup, and secret scan.",
                       "user_gate":  true
                   },
                   {

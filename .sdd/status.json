@@ -3,7 +3,7 @@
     "mode":  "new",
     "design_ready":  true,
     "development_ready":  true,
-    "current_task":  "T-007",
+    "current_task":  "T-010",
     "blocked":  false,
     "external_services_mode":  "local_fallback",
     "external_services":  {
@@ -14,9 +14,9 @@
                               "wechat_menu":  "excluded_from_local_development"
                           },
     "java":  {
-                 "distribution":  "Temurin",
-                 "version":  "17.0.19",
-                 "home":  "C:\\Program Files\\Eclipse Adoptium\\jdk-17.0.19.10-hotspot"
+                 "distribution":  "OpenJDK",
+                 "version":  "21.0.11",
+                 "home":  "local JAVA_HOME / PATH"
              },
-    "notes":  "用户确认立即切换若依路线；T-007 已重排为若依全栈基座接入，原 T-007/T-008/T-009 自研后台 Mock 不再执行。T-006 已通过但尚未提交。"
+    "notes":  "T-009 已完成若依安全、统一响应契约、公开/受保护路由和环境变量配置适配；下一步进入 T-010 H5 公开内容查询真实联调。真实 MySQL 8 仍使用 H2/local fallback 边界，不宣称已联调。"
 }

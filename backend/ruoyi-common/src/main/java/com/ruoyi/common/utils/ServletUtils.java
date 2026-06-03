@@ -138,9 +138,21 @@ public class ServletUtils
      */
     public static void renderString(HttpServletResponse response, String string)
     {
+        renderString(response, 200, string);
+    }
+
+    /**
+     * 灏嗗瓧绗︿覆娓叉煋鍒板鎴风
+     *
+     * @param response 娓叉煋瀵硅薄
+     * @param status HTTP 鐘舵€佺爜
+     * @param string 寰呮覆鏌撶殑瀛楃涓?
+     */
+    public static void renderString(HttpServletResponse response, int status, String string)
+    {
         try
         {
-            response.setStatus(200);
+            response.setStatus(status);
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
             response.getWriter().print(string);
