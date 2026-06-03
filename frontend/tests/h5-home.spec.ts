@@ -159,7 +159,7 @@ describe('T-002 H5 home composition', () => {
     expect(configSource).toContain('肇源县金融业务服务队')
     expect(configSource).toContain('林甸县金融业务服务队')
     expect(configSource).toContain('杜蒙县金融业务服务队')
-    expect(configSource).toContain('[Mock] 当前页面使用模拟数据')
+    expect(configSource).not.toContain('[Mock]')
   })
 
   it('loads list data through dedicated services and exposes loading states', () => {
@@ -172,8 +172,13 @@ describe('T-002 H5 home composition', () => {
     expect(pageSource).not.toContain("from '../../services/api'")
     expect(pageSource).not.toContain('加载更多')
     expect(pageSource).not.toContain('h5-load-more')
-    expect(pageSource).toContain("import.meta.env.VITE_USE_MOCK !== 'false'")
-    expect(pageSource).toContain('v-if="showMockNotice"')
+    expect(source('.env')).toContain('VITE_USE_MOCK=false')
+    expect(source('.env.test')).toContain('VITE_USE_MOCK=true')
+    expect(source('src/services/api.ts')).toContain(
+      "import.meta.env.VITE_USE_MOCK === 'true'",
+    )
+    expect(pageSource).not.toContain('showMockNotice')
+    expect(pageSource).not.toContain('h5-mock-notice')
     expect(pageSource).toContain('暂无相关内容')
     expect(pageSource).toContain('重新加载')
     expect(contentServiceSource).toContain("api.get<ApiResponse<PublicContentListData>>")

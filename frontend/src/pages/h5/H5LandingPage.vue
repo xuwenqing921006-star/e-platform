@@ -5,7 +5,6 @@ import AppIcon from '../../components/common/AppIcon.vue'
 import {
   COUNTY_SERVICE_TEAMS,
   FINANCIAL_TABS,
-  H5_MOCK_NOTICE,
   PRIMARY_TABS,
   RURAL_SECTION_TABS,
   RURAL_TABS,
@@ -26,7 +25,6 @@ type FinancialTab = (typeof FINANCIAL_TABS)[number]['id']
 
 const PAGE_SIZE = 3
 const PRODUCT_PAGE_SIZE = 4
-const showMockNotice = import.meta.env.VITE_USE_MOCK !== 'false'
 
 const primaryTab = ref<PrimaryTab>('RURAL')
 const countyCode = ref<CountyCode>('ZHAOZHOU')
@@ -171,7 +169,6 @@ onBeforeUnmount(() => {
 
 <template>
   <main class="h5-page">
-    <p v-if="showMockNotice" class="h5-mock-notice">{{ H5_MOCK_NOTICE }}</p>
     <nav class="h5-primary-tabs" aria-label="首页栏目">
       <button
         v-for="tab in PRIMARY_TABS"

@@ -1128,12 +1128,12 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
+                      "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已验证 H5 VITE_USE_MOCK=false 默认真实路径，service 经 /api 调用 /api/public/*；若依 centralbank API 调用 /api/admin/*；页面源码与若依业务入口未发现 [Mock]、Mock-only、源码/文档/捐赠等原型外可见文案；frontend typecheck/lint/test/build、backend central-bank-business test、ruoyi-admin package、health profile 短启动和 ruoyi-ui build:prod 均通过。",
                       "user_gate":  true
                   },
                   {

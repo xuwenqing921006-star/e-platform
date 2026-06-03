@@ -20,7 +20,7 @@ const mockAdapter: AxiosAdapter = async (config) => {
   } satisfies AxiosResponse
 }
 
-const useMock = import.meta.env.VITE_USE_MOCK !== 'false'
+const useMock = import.meta.env.VITE_USE_MOCK === 'true'
 
 const api = axios.create({
   adapter: useMock ? mockAdapter : undefined,

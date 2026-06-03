@@ -3,7 +3,7 @@
     "mode":  "new",
     "design_ready":  true,
     "development_ready":  true,
-    "current_task":  "T-020",
+    "current_task":  "T-021",
     "blocked":  false,
     "external_services_mode":  "local_fallback",
     "external_services":  {
@@ -18,5 +18,5 @@
                  "version":  "21.0.11",
                  "home":  "local JAVA_HOME / PATH"
              },
-    "notes":  "T-019 已通过 Tester 验证；T-020 全部页面退出 Mock 联调审计待用户确认后开始。"
+    "notes":  "T-020 已通过 Tester 验证；T-021 E2E 回归、启动文档与交付检查待用户确认后开始。"
 }

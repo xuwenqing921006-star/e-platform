@@ -64,13 +64,6 @@ select {
   box-shadow: 0 8px 16px rgb(21 86 209 / 18%);
 }
 
-.h5-mock-notice {
-  margin: 0 0 8px;
-  color: #7d91ae;
-  font-size: 11px;
-  text-align: right;
-}
-
 .h5-pill-tabs {
   display: flex;
   justify-content: center;

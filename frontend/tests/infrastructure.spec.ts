@@ -96,7 +96,7 @@ describe('frontend infrastructure', () => {
     const apiSource = source('src/services/api.ts')
 
     expect(apiSource).toContain('mockAdapter')
-    expect(apiSource).toContain("import.meta.env.VITE_USE_MOCK !== 'false'")
+    expect(apiSource).toContain("import.meta.env.VITE_USE_MOCK === 'true'")
     expect(apiSource).not.toContain("baseURL: 'http")
   })
 

@@ -217,7 +217,7 @@ frontend/
 | B10 | 操作日志 | B02 | `GET /api/admin/audit-logs` | 已完成 |
 | B11 | 工作概览 | B06、B07、B09、B10 | `GET /api/admin/dashboard/summary` | 已完成 |
 | B12 | 初始数据 | B01、B07、B09 | 管理员、10 条真实样本产品、演示内容 | 已完成 |
-| B13 | 真实前后端联调 | B02 至 B12 | 所有接口 | 待开发 |
+| B13 | 真实前后端联调 | B02 至 B12 | 所有接口 | 已完成 |
 | B14 | E2E 与交付文档 | B13 | `docs/startup.md` | 待开发 |
 
 ### 4.3 后端文件结构
@@ -445,10 +445,16 @@ frontend/
 
 ### B13 真实前后端联调
 
-- [ ] 全部业务页面使用 `VITE_USE_MOCK=false` 验证。
-- [ ] 页面不得显示 `[Mock]` 标识或 Mock-only 文案。
-- [ ] 证明浏览器请求命中真实后端接口。
-- [ ] 自动验证通过。
+- [x] 补充分层实现思路。
+- 分层实现思路（T-020）：
+  - 审计脚本：新增 `scripts/audit-mock-exit.mjs`，检查 H5 默认环境、Mock adapter 开关、H5 可见页面/config、若依后台登录/首页/布局/业务 API 的 Mock-only 与若依默认内容残留。
+  - H5：`frontend/.env` 与 `.env.example` 默认 `VITE_USE_MOCK=false`；`frontend/src/services/api.ts` 仅在 `VITE_USE_MOCK=true` 时启用集中 Mock adapter；页面层不再保留 Mock 横幅文案。
+  - 若依后台：移除导航栏源码/文档入口、默认若依标题/版权、登录页默认账号密码与 MockJs 上线提示；`api/centralbank/**` 继续命中 `/api/admin/*` Spring Boot API。
+  - 测试边界：前端单测通过 `.env.test` 显式启用集中 Mock fixture，避免影响默认真实验收路径。
+- [x] 全部业务页面默认真实路径静态审计完成：`node scripts/audit-mock-exit.mjs`。
+- [x] 页面与业务入口无 `[Mock]` 或等价 Mock-only 可见文案残留。
+- [x] H5、后端业务模块、`ruoyi-admin` 与 `ruoyi-ui` 自动验证通过。
+- [x] Tester 复核完成：H5 service 默认经 `/api` 命中 `/api/public/*`，若依 centralbank service 命中 `/api/admin/*`；已通过后端 health profile 短启动验证 Spring Boot 进程路径，真实 MySQL 环境未在本轮宣称。
 
 ### B14 E2E 与交付文档
 

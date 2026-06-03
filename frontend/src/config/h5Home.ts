@@ -1,7 +1,5 @@
 import type { CountyCode } from '../types/api'
 
-export const H5_MOCK_NOTICE = '[Mock] 当前页面使用模拟数据'
-
 export const PRIMARY_TABS = [
   { id: 'RURAL', label: '乡村振兴' },
   { id: 'FINANCIAL', label: '金融服务' },
