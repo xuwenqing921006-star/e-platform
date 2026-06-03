@@ -215,8 +215,8 @@ frontend/
 | B08 | Excel 导入产品 | B07 | `/api/admin/products/import/*` | 已完成 |
 | B09 | 后台账号管理 | B01、B02 | `/api/admin/accounts*` | 已完成 |
 | B10 | 操作日志 | B02 | `GET /api/admin/audit-logs` | 已完成 |
-| B11 | 工作概览 | B06、B07、B09、B10 | `GET /api/admin/dashboard/summary` | 待开发 |
-| B12 | 初始数据 | B01、B07、B09 | 管理员、112 条产品、演示内容 | 待开发 |
+| B11 | 工作概览 | B06、B07、B09、B10 | `GET /api/admin/dashboard/summary` | 已完成 |
+| B12 | 初始数据 | B01、B07、B09 | 管理员、10 条真实样本产品、演示内容 | 已完成 |
 | B13 | 真实前后端联调 | B02 至 B12 | 所有接口 | 待开发 |
 | B14 | E2E 与交付文档 | B13 | `docs/startup.md` | 待开发 |
 
@@ -330,7 +330,7 @@ frontend/
   - Service：`PublicProductService` 负责分页参数校验、摘要 DTO 映射和详情 DTO 映射；详情严格限制为产品 ID + 已确认 7 个业务字段。
   - Controller：`PublicProductController` 提供 `GET /api/public/products` 与 `GET /api/public/products/{id}`，400/404 返回统一 `{ code, message, data }`。
   - 前端：现有 `publicProductService` 在 `VITE_USE_MOCK=false` 下通过 Axios 命中 `/api/public/products*`；H5 Mock 提示仅 Mock 模式显示。
-  - 测试：用 service 单测、MockMvc 路径测试、前端 typecheck/test/build 和后端全量 Maven 测试验证契约。当前完整 112 条产品数据仍归 B12/T-019 导入闭环。
+  - 测试：用 service 单测、MockMvc 路径测试、前端 typecheck/test/build 和后端全量 Maven 测试验证契约。当前完整 112 条产品来源已确认，B12/T-019 本轮仅抽取 10 条真实样本初始化。
 - [x] 实现产品摘要列表和 7 字段详情。
 - [x] 确认响应不包含参考利率等额外字段。
 - [x] 前端 H5 产品页面切到真实接口验证。
@@ -419,23 +419,29 @@ frontend/
 
 ### B11 工作概览
 
-- [ ] 补充分层实现思路。
-- [ ] 实现统计指标和最近发布内容。
-- [ ] 前端概览页切到真实接口验证。
-- [ ] 自动验证通过。
+- 分层实现思路（T-018）：
+  - Service：组合内容、产品、账号和操作日志 mapper，计算已发布内容数、金融产品数、后台账号数、当日操作数和最近 3 条内容。
+  - Controller：提供 `GET /api/admin/dashboard/summary`，响应字段严格对齐 `docs/api-contracts.md`。
+  - ruoyi-ui：替换若依默认首页为 A02 工作概览，删除框架介绍、技术选型、联系方式、捐赠等无关内容，只展示统计、最近发布内容和快捷入口。
+  - 测试：覆盖契约响应、真实 mapper 计数、最近内容时间格式和前端构建。
+- [x] 补充分层实现思路。
+- [x] 实现统计指标和最近发布内容。
+- [x] 前端概览页切到真实接口验证。
+- [x] 自动验证通过：`backend mvn -q -pl central-bank-business -am test`、`backend mvn -q -pl ruoyi-admin -am -DskipTests package`、`ruoyi-ui npm.cmd run build:prod`。
 
 ### B12 初始数据
 
 - [x] 补充分层实现思路。
 - 分层实现思路：
-  - 本任务仅落基础 seed 与表结构，完整 112 条金融产品和初始账号在 T-019 真实闭环中完成。
+  - 真实产品来源为用户提供的 `全市银行机构涉农、小微信贷产品汇总表.xlsx`，该来源共有 112 条产品。
+  - 本轮 T-019 按用户确认只抽取 10 条真实样本进行初始化闭环：涉农 5 条、小微 5 条；不声明 112 条全量已初始化。
   - seed 脚本必须可重复执行，采用固定 ID 与 `MERGE`/幂等插入策略；测试环境使用 H2 版本，运行环境使用 MySQL 版本。
   - seed 中不得写真实密码、JWT Secret 或生产数据库连接信息。
 - [x] 建立基础业务表 schema 与最小 seed，并通过 H2 fallback 初始化测试。
-- [ ] 创建管理员和演示账号初始化策略。
-- [ ] 导入 112 条产品：涉农 52 条，小微 60 条。
-- [ ] 验证固定银行与特殊行。
-- [ ] 完整初始数据自动验证通过。
+- [x] 创建管理员和演示账号初始化策略。
+- [x] 导入 10 条真实样本产品：涉农 5 条，小微 5 条。
+- [x] 验证固定银行与 `阳光惠农贷` 特殊样本。
+- [x] 完整初始数据自动验证通过。
 
 ### B13 真实前后端联调
 
@@ -484,7 +490,7 @@ H5 公开内容
   -> 若依账号管理
   -> 若依操作日志
   -> 若依工作概览
-  -> 112 条产品与初始账号数据
+  -> 10 条真实样本产品与初始账号数据
   -> 全部页面退出 Mock 审计
 ```
 

@@ -3,7 +3,7 @@
     "mode":  "new",
     "design_ready":  true,
     "development_ready":  true,
-    "current_task":  "T-018",
+    "current_task":  "T-020",
     "blocked":  false,
     "external_services_mode":  "local_fallback",
     "external_services":  {
@@ -18,5 +18,5 @@
                  "version":  "21.0.11",
                  "home":  "local JAVA_HOME / PATH"
              },
-    "notes":  "T-017 若依操作日志真实闭环已通过；准备进入 T-018 若依工作概览真实闭环。"
+    "notes":  "T-019 已通过 Tester 验证；T-020 全部页面退出 Mock 联调审计待用户确认后开始。"
 }

@@ -1016,12 +1016,12 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
+                      "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已实现 GET /api/admin/dashboard/summary 真实统计、最近 3 条发布内容和 ruoyi-ui A02 工作概览；首页已删除若依默认框架介绍、技术选型、联系方式和捐赠等无关内容。",
                       "user_gate":  true
                   },
                   {
@@ -1071,12 +1071,12 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
+                      "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已按用户最新口径验证 10 条真实产品样本初始化闭环；Excel 来源为 112 条产品，本轮不声明 112 全量初始化。seed 覆盖涉农 5 条、小微 5 条，包含阳光惠农贷特殊行；未发现真实密码/JWT Secret/数据库密码泄露；backend 指定测试、central-bank-business -am test 与 ruoyi-admin package 均通过。",
                       "user_gate":  true
                   },
                   {
