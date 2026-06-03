@@ -14,5 +14,9 @@ public interface CbAttachmentMapper
 
     List<CbAttachment> selectAttachmentsByContentId(@Param("contentId") Long contentId);
 
+    int updateAttachmentContentId(@Param("id") Long id, @Param("contentId") Long contentId);
+
+    int clearAttachmentsByContentId(@Param("contentId") Long contentId);
+
     int deleteAttachmentById(@Param("id") Long id);
 }

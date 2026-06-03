@@ -130,6 +130,27 @@ class AttachmentStorageServiceTest
         }
 
         @Override
+        public int updateAttachmentContentId(Long id, Long contentId)
+        {
+            CbAttachment attachment = selectAttachmentById(id);
+            if (attachment == null)
+            {
+                return 0;
+            }
+            attachment.setContentId(contentId);
+            return 1;
+        }
+
+        @Override
+        public int clearAttachmentsByContentId(Long contentId)
+        {
+            attachments.stream()
+                    .filter(attachment -> Objects.equals(attachment.getContentId(), contentId))
+                    .forEach(attachment -> attachment.setContentId(null));
+            return 1;
+        }
+
+        @Override
         public int deleteAttachmentById(Long id)
         {
             return attachments.removeIf(attachment -> Objects.equals(attachment.getId(), id)) ? 1 : 0;

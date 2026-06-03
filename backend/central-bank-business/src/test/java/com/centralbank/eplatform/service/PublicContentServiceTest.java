@@ -131,9 +131,41 @@ class PublicContentServiceTest
         }
 
         @Override
+        public int countAdminContents(String keyword, String category, String officeCode, LocalDateTime publishedFrom,
+                LocalDateTime publishedTo)
+        {
+            throw new UnsupportedOperationException("not needed in this test");
+        }
+
+        @Override
+        public int insertContent(CbContent content)
+        {
+            throw new UnsupportedOperationException("not needed in this test");
+        }
+
+        @Override
+        public int updateContent(CbContent content)
+        {
+            throw new UnsupportedOperationException("not needed in this test");
+        }
+
+        @Override
+        public int deleteContentById(Long id)
+        {
+            throw new UnsupportedOperationException("not needed in this test");
+        }
+
+        @Override
         public CbContent selectContentById(Long id)
         {
             return contents.stream().filter(content -> Objects.equals(content.getId(), id)).findFirst().orElse(null);
+        }
+
+        @Override
+        public List<CbContent> selectAdminContents(String keyword, String category, String officeCode,
+                LocalDateTime publishedFrom, LocalDateTime publishedTo, int offset, int pageSize)
+        {
+            throw new UnsupportedOperationException("not needed in this test");
         }
 
         @Override
@@ -192,6 +224,18 @@ class PublicContentServiceTest
             return attachments.stream()
                     .filter(attachment -> Objects.equals(attachment.getContentId(), contentId))
                     .toList();
+        }
+
+        @Override
+        public int updateAttachmentContentId(Long id, Long contentId)
+        {
+            throw new UnsupportedOperationException("not needed in this test");
+        }
+
+        @Override
+        public int clearAttachmentsByContentId(Long contentId)
+        {
+            throw new UnsupportedOperationException("not needed in this test");
         }
 
         @Override

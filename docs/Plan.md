@@ -351,10 +351,17 @@ frontend/
 
 ### B06 后台内容管理
 
-- [ ] 补充分层实现思路。
-- [ ] 实现办公室权限隔离、县域分类限制、富文本过滤、CRUD 和日志。
-- [ ] 前端内容管理切到真实接口验证。
-- [ ] 自动验证通过。
+- [x] 补充分层实现思路。
+- 分层实现思路：
+  - 后端：沿用 `central-bank-business` 业务模块，新增 `AdminContentController` 与 `AdminContentService`，不改若依登录、JWT、菜单加载或安全核心。
+  - Mapper：扩展 `CbContentMapper` 的后台列表、创建、编辑、删除能力，并扩展 `CbAttachmentMapper` 的内容附件绑定/解绑能力。
+  - 权限：Service 层基于若依登录 userId 查询 `cb_account_extension`，管理员可管理全部内容；普通办公室账号只能管理本办公室内容；县域办公室只能发布服务指引。
+  - 前端：`ruoyi-ui/src/views/centralbank/content/index.vue` 使用若依 Vue2 + Element UI 页面模式，真实调用 `/api/admin/contents*`、`/api/admin/attachments*` 与 `/api/admin/options`。
+  - 菜单：提供 `central_bank_content_menu.sql` 用于挂载若依菜单与按钮权限；真实菜单 SQL 执行归部署/初始化流程。
+  - 边界：操作日志查询闭环归 T-017，本轮不提前实现审计日志页面。
+- [x] 实现办公室权限隔离、县域分类限制、富文本过滤、CRUD 和附件绑定。
+- [x] 前端内容管理切到真实接口验证。
+- [x] 自动验证通过：backend Maven test/package、ruoyi-ui build、H5 frontend typecheck/test/build。
 
 ### B07 后台产品管理
 

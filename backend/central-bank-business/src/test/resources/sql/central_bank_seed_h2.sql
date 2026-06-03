@@ -11,7 +11,7 @@ where id = 101;
 
 merge into cb_content key(id) values (
     102, '大庆市征信代理查询网点地址及电话', 'SERVICE_GUIDE', 'FINANCIAL', null,
-    'CREDIT', '征信管理科', '<h2>办理说明</h2><p>申请人可携带有效身份证件前往就近服务网点办理。</p>',
+    'CREDIT_REPORT', '征信管理科', '<h2>办理说明</h2><p>申请人可携带有效身份证件前往就近服务网点办理。</p>',
     timestamp '2026-05-30 09:30:00', current_timestamp, current_timestamp
 );
 

@@ -105,3 +105,7 @@
 - **陷阱**：若直接复用若依 `/common/upload`，返回字段会变成 `url/fileName/newFileName/originalFilename`，不符合本项目 `file_name/file_type/file_size/download_url` 契约。
 - **经验**：本项目附件需要独立业务 service：文件写入仍复用 `APP_STORAGE_ROOT` 对应的若依 profile/upload 根目录，但响应 DTO、业务表写入、公开下载 URL 都按 `docs/api-contracts.md` 收敛。
 - **避坑**：附件格式校验不能只看扩展名；至少同时校验 MIME 类型。自动测试必须使用 JUnit 临时目录验证真实写入/下载/删除，不能只检查 mapper 或 DTO。
+### T-013: 若依后台内容管理真实闭环
+- **陷阱**：后台列表如果复用详情 DTO，容易把 `attachments` 或附件数量带到 A03 列表，违反“列表不展示附件个数”的产品口径。
+- **经验**：后台内容列表、详情、创建、更新、删除必须拆分独立 DTO；附件上传先生成未绑定附件，内容保存时通过 `attachment_ids` 绑定。
+- **避坑**：办公室隔离不要只靠前端筛选；service 层必须根据若依登录 userId 查询 `cb_account_extension`，普通办公室账号强制限定本办公室，县域办公室强制限定 `SERVICE_GUIDE`。操作日志查询闭环留给 T-017，不要在 T-013 膨胀任务边界。

@@ -1,6 +1,7 @@
 package com.centralbank.eplatform.service;
 
 import java.util.List;
+import java.util.Optional;
 import org.springframework.stereotype.Service;
 import com.centralbank.eplatform.dto.OptionItem;
 import com.centralbank.eplatform.dto.OptionsResponse;
@@ -54,5 +55,19 @@ public class FixedOptionsService
     public OptionsResponse getOptions()
     {
         return new OptionsResponse(CONTENT_CATEGORIES, PRODUCT_TYPES, OFFICES, BANKS);
+    }
+
+    public Optional<OptionItem> findOffice(String officeCode)
+    {
+        return OFFICES.stream()
+                .filter(office -> office.value().equals(officeCode))
+                .findFirst();
+    }
+
+    public boolean isCountyOffice(String officeCode)
+    {
+        return findOffice(officeCode)
+                .map(office -> office.countyCode() != null && !office.countyCode().isBlank())
+                .orElse(false);
     }
 }

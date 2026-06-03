@@ -33,6 +33,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select * from cb_attachment where content_id = #{contentId} order by id
     </select>
 
+    <update id="updateAttachmentContentId">
+        update cb_attachment set content_id = #{contentId} where id = #{id}
+    </update>
+
+    <update id="clearAttachmentsByContentId" parameterType="long">
+        update cb_attachment set content_id = null where content_id = #{contentId}
+    </update>
+
     <delete id="deleteAttachmentById" parameterType="long">
         delete from cb_attachment where id = #{id}
     </delete>

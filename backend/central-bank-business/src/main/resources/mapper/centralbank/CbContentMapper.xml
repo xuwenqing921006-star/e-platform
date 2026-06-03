@@ -31,8 +31,81 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </if>
     </select>
 
+    <select id="countAdminContents" resultType="int">
+        select count(1)
+        from cb_content
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and title like concat('%', #{keyword}, '%')
+            </if>
+            <if test="category != null and category != ''">
+                and category = #{category}
+            </if>
+            <if test="officeCode != null and officeCode != ''">
+                and office_code = #{officeCode}
+            </if>
+            <if test="publishedFrom != null">
+                and published_at &gt;= #{publishedFrom}
+            </if>
+            <if test="publishedTo != null">
+                and published_at &lt; #{publishedTo}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insertContent" parameterType="com.centralbank.eplatform.domain.CbContent">
+        insert into cb_content (
+            id, title, category, scope, county_code, office_code, office_name,
+            rich_text_html, published_at, created_at, updated_at
+        ) values (
+            #{id}, #{title}, #{category}, #{scope}, #{countyCode}, #{officeCode}, #{officeName},
+            #{richTextHtml}, #{publishedAt}, #{createdAt}, #{updatedAt}
+        )
+    </insert>
+
+    <update id="updateContent" parameterType="com.centralbank.eplatform.domain.CbContent">
+        update cb_content
+        set title = #{title},
+            category = #{category},
+            scope = #{scope},
+            county_code = #{countyCode},
+            office_code = #{officeCode},
+            office_name = #{officeName},
+            rich_text_html = #{richTextHtml},
+            updated_at = #{updatedAt}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteContentById" parameterType="long">
+        delete from cb_content where id = #{id}
+    </delete>
+
     <select id="selectContentById" parameterType="long" resultMap="CbContentResult">
         select * from cb_content where id = #{id}
+    </select>
+
+    <select id="selectAdminContents" resultMap="CbContentResult">
+        select *
+        from cb_content
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and title like concat('%', #{keyword}, '%')
+            </if>
+            <if test="category != null and category != ''">
+                and category = #{category}
+            </if>
+            <if test="officeCode != null and officeCode != ''">
+                and office_code = #{officeCode}
+            </if>
+            <if test="publishedFrom != null">
+                and published_at &gt;= #{publishedFrom}
+            </if>
+            <if test="publishedTo != null">
+                and published_at &lt; #{publishedTo}
+            </if>
+        </where>
+        order by published_at desc, id desc
+        limit #{pageSize} offset #{offset}
     </select>
 
     <select id="selectPublicContents" resultMap="CbContentResult">

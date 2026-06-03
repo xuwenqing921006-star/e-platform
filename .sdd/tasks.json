@@ -746,15 +746,18 @@
                       "priority":  13,
                       "rules_files":  [
                                           "dev-standards/frontend.md",
-                                          "dev-standards/backend-dev.md",
-                                          "dev-standards/backend-layers.md"
+                                          "dev-standards/ruoyi-backend.md"
                                       ],
-                      "status":  "pending",
+                      "framework_profiles":  [
+                                                 "framework-profiles/fullstack-ruoyi-vue.md",
+                                                 "framework-profiles/ruoyi-business-module-patterns.md"
+                                             ],
+                      "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已实现 /api/admin/contents 列表、创建、详情、编辑、删除；列表 DTO 不暴露附件，详情 DTO 返回附件；service 层基于 cb_account_extension 完成办公室隔离和县域服务指引限制；ruoyi-ui 内容管理页真实调用 /api/admin/contents*、/api/admin/attachments* 与 /api/admin/options。操作日志查询仍归 T-017。",
                       "user_gate":  true
                   },
                   {
