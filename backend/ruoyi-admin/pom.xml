@@ -42,6 +42,13 @@
             <artifactId>ruoyi-framework</artifactId>
         </dependency>
 
+        <!-- 央行 E 平台业务模块 -->
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>central-bank-business</artifactId>
+            <version>${ruoyi.version}</version>
+        </dependency>
+
         <!-- 定时任务-->
         <dependency>
             <groupId>com.ruoyi</groupId>

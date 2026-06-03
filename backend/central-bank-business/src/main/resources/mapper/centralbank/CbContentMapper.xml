@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.centralbank.eplatform.mapper.CbContentMapper">
+    <resultMap id="CbContentResult" type="com.centralbank.eplatform.domain.CbContent">
+        <id property="id" column="id" />
+        <result property="title" column="title" />
+        <result property="category" column="category" />
+        <result property="scope" column="scope" />
+        <result property="countyCode" column="county_code" />
+        <result property="officeCode" column="office_code" />
+        <result property="officeName" column="office_name" />
+        <result property="richTextHtml" column="rich_text_html" />
+        <result property="publishedAt" column="published_at" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <select id="countContents" resultType="int">
+        select count(1) from cb_content
+    </select>
+
+    <select id="selectContentById" parameterType="long" resultMap="CbContentResult">
+        select * from cb_content where id = #{id}
+    </select>
+
+    <select id="selectRecentContents" parameterType="int" resultMap="CbContentResult">
+        select * from cb_content order by published_at desc limit #{limit}
+    </select>
+</mapper>

@@ -309,21 +309,21 @@ select {
 }
 
 .h5-article-page {
-  padding: 28px 16px 56px;
+  padding: 20px 16px 48px;
 }
 
 .article-topbar {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 26px;
+  gap: 10px;
+  margin-bottom: 16px;
   color: #172033;
 }
 
 .article-topbar button {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   place-items: center;
   color: #172033;
@@ -331,17 +331,17 @@ select {
 }
 
 .article-topbar svg {
-  width: 31px;
-  height: 31px;
+  width: 22px;
+  height: 22px;
 }
 
 .article-topbar span {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 800;
 }
 
 .article-detail-card {
-  padding: 28px 16px 28px;
+  padding: 20px 16px 22px;
   border: 1px solid #d8e3f5;
   border-radius: 10px;
   background: var(--surface);
@@ -350,41 +350,41 @@ select {
 .article-detail-card > h1 {
   margin: 0;
   color: #172033;
-  font-size: 28px;
-  line-height: 1.28;
+  font-size: 21px;
+  line-height: 1.38;
 }
 
 .article-meta {
   display: flex;
-  gap: 26px;
-  margin: 20px 0 28px;
-  padding-bottom: 22px;
+  gap: 12px;
+  margin: 12px 0 18px;
+  padding-bottom: 14px;
   border-bottom: 1px solid var(--border);
   color: #647895;
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 700;
 }
 
 .article-rich-text {
   color: #33425c;
-  font-size: 20px;
-  line-height: 1.58;
+  font-size: 16px;
+  line-height: 1.72;
 }
 
 .article-rich-text h2 {
-  margin: 28px 0 18px;
+  margin: 22px 0 12px;
   color: #172033;
-  font-size: 24px;
+  font-size: 18px;
   line-height: 1.35;
 }
 
 .article-rich-text p {
-  margin: 0 0 22px;
+  margin: 0 0 16px;
 }
 
 .article-rich-text ul {
-  margin: 0 0 22px;
-  padding-left: 22px;
+  margin: 0 0 16px;
+  padding-left: 20px;
 }
 
 .article-rich-text img {
@@ -400,12 +400,12 @@ select {
 .article-attachments {
   display: grid;
   gap: 12px;
-  margin-top: 34px;
+  margin-top: 22px;
 }
 
 .article-attachments h2 {
   margin: 0 0 4px;
-  font-size: 22px;
+  font-size: 17px;
 }
 
 .article-attachment-link {
@@ -476,7 +476,7 @@ select {
 }
 
 .h5-product-detail-page {
-  padding: 28px 16px 56px;
+  padding: 20px 16px 48px;
 }
 
 .product-identity-card,
@@ -490,45 +490,45 @@ select {
 .product-identity-card {
   display: grid;
   justify-items: start;
-  gap: 18px;
-  min-height: 136px;
-  padding: 28px 16px 30px;
+  gap: 12px;
+  min-height: 112px;
+  padding: 20px 16px 22px;
 }
 
 .product-identity-card h1 {
   margin: 0 0 2px;
   color: #172033;
-  font-size: 32px;
-  line-height: 1.15;
+  font-size: 22px;
+  line-height: 1.32;
 }
 
 .product-bank-pill {
-  padding: 8px 12px;
+  padding: 6px 10px;
   border-radius: 6px;
   color: #09866a;
   background: #e1f8f0;
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 800;
 }
 
 .product-identity-card strong {
-  padding: 8px 12px;
+  padding: 5px 9px;
   border-radius: 6px;
-  font-size: 18px;
+  font-size: 13px;
 }
 
 .product-detail-card {
-  margin-top: 16px;
-  padding: 28px 16px 8px;
+  margin-top: 12px;
+  padding: 18px 16px 4px;
 }
 
 .product-detail-field {
-  padding-bottom: 24px;
+  padding-bottom: 18px;
   border-bottom: 1px solid var(--border);
 }
 
 .product-detail-field + .product-detail-field {
-  padding-top: 24px;
+  padding-top: 18px;
 }
 
 .product-detail-field:last-child {
@@ -536,18 +536,18 @@ select {
 }
 
 .product-detail-field h2 {
-  margin: 0 0 14px;
+  margin: 0 0 8px;
   color: #8a9ab3;
-  font-size: 22px;
+  font-size: 14px;
   line-height: 1.3;
 }
 
 .product-detail-field p {
   margin: 0;
   color: #172033;
-  font-size: 20px;
-  font-weight: 800;
-  line-height: 1.6;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.68;
 }
 
 .safe-entry {

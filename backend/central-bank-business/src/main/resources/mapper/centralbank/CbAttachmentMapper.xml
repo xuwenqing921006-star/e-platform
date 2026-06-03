@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.centralbank.eplatform.mapper.CbAttachmentMapper">
+    <resultMap id="CbAttachmentResult" type="com.centralbank.eplatform.domain.CbAttachment">
+        <id property="id" column="id" />
+        <result property="contentId" column="content_id" />
+        <result property="fileName" column="file_name" />
+        <result property="fileType" column="file_type" />
+        <result property="fileSize" column="file_size" />
+        <result property="storagePath" column="storage_path" />
+        <result property="createdAt" column="created_at" />
+    </resultMap>
+
+    <select id="countAttachments" resultType="int">
+        select count(1) from cb_attachment
+    </select>
+
+    <select id="selectAttachmentById" parameterType="long" resultMap="CbAttachmentResult">
+        select * from cb_attachment where id = #{id}
+    </select>
+
+    <select id="selectAttachmentsByContentId" parameterType="long" resultMap="CbAttachmentResult">
+        select * from cb_attachment where content_id = #{contentId} order by id
+    </select>
+</mapper>

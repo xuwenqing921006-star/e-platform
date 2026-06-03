@@ -475,9 +475,9 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
-                      "developer_id":  null,
-                      "tester_id":  null,
+                      "status":  "passed",
+                      "developer_id":  "xuwenqing",
+                      "tester_id":  "codex-main",
                       "retry_count":  0,
                       "blocked":  false,
                       "notes":  "真实 MySQL 8 未提供时使用隔离测试库或 H2 fallback。",

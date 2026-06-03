@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.centralbank.eplatform.mapper.CbFinancialProductMapper">
+    <resultMap id="CbFinancialProductResult" type="com.centralbank.eplatform.domain.CbFinancialProduct">
+        <id property="id" column="id" />
+        <result property="bankCode" column="bank_code" />
+        <result property="bankName" column="bank_name" />
+        <result property="productName" column="product_name" />
+        <result property="productType" column="product_type" />
+        <result property="admissionConditions" column="admission_conditions" />
+        <result property="productIntro" column="product_intro" />
+        <result property="businessManager" column="business_manager" />
+        <result property="contactInfo" column="contact_info" />
+        <result property="createdAt" column="created_at" />
+        <result property="updatedAt" column="updated_at" />
+    </resultMap>
+
+    <select id="countProducts" resultType="int">
+        select count(1) from cb_financial_product
+    </select>
+
+    <select id="selectProductById" parameterType="long" resultMap="CbFinancialProductResult">
+        select * from cb_financial_product where id = #{id}
+    </select>
+</mapper>

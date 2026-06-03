@@ -170,7 +170,8 @@ describe('T-002 H5 home composition', () => {
     expect(pageSource).toContain("from '../../services/publicContentService'")
     expect(pageSource).toContain("from '../../services/publicProductService'")
     expect(pageSource).not.toContain("from '../../services/api'")
-    expect(pageSource).toContain('加载更多')
+    expect(pageSource).not.toContain('加载更多')
+    expect(pageSource).not.toContain('h5-load-more')
     expect(pageSource).toContain('暂无相关内容')
     expect(pageSource).toContain('重新加载')
     expect(contentServiceSource).toContain("api.get<ApiResponse<PublicContentListData>>")
@@ -179,7 +180,7 @@ describe('T-002 H5 home composition', () => {
     expect(productServiceSource).toContain("'/public/products'")
   })
 
-  it('switches home columns, loads more products and renders empty state and service team', async () => {
+  it('switches home columns, auto-loads on scroll and keeps load-more controls hidden', async () => {
     const { host, unmount } = mount(H5LandingPage)
     await flushUi()
 
@@ -201,11 +202,14 @@ describe('T-002 H5 home composition', () => {
 
     expect(host.querySelectorAll('.h5-product-card')).toHaveLength(4)
     expect(host.textContent).toContain('共 112 项助企金融产品')
+    expect(host.querySelector('.h5-load-more')).toBeNull()
+    expect(host.textContent).not.toContain('加载更多')
 
-    host.querySelector<HTMLButtonElement>('.h5-load-more')?.click()
+    window.dispatchEvent(new Event('scroll'))
     await flushUi()
 
     expect(host.querySelectorAll('.h5-product-card')).toHaveLength(8)
+    expect(host.querySelector('.h5-load-more')).toBeNull()
 
     primaryTabs[0]?.click()
     await flushUi()

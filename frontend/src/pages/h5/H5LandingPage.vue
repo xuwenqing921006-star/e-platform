@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 
 import AppIcon from '../../components/common/AppIcon.vue'
 import {
@@ -37,6 +37,7 @@ const page = ref(1)
 const total = ref(0)
 const loading = ref(false)
 const errorMessage = ref('')
+let autoLoadTimer = 0
 
 const showingProducts = computed(
   () => primaryTab.value === 'FINANCIAL' && financialTab.value === 'PRODUCTS',
@@ -108,6 +109,7 @@ async function loadList(reset = true) {
     errorMessage.value = '内容加载失败，请检查网络后重试。'
   } finally {
     loading.value = false
+    scheduleViewportAutoLoad()
   }
 }
 
@@ -131,12 +133,39 @@ async function selectFinancialTab(tab: FinancialTab) {
   await loadList()
 }
 
-async function loadMore() {
+async function loadNextPage() {
+  if (loading.value || !hasMore.value) return
+
   page.value += 1
   await loadList(false)
 }
 
-onMounted(loadList)
+function scheduleViewportAutoLoad() {
+  window.clearTimeout(autoLoadTimer)
+  autoLoadTimer = window.setTimeout(() => {
+    const root = document.documentElement
+    if (root.scrollHeight > 0 && root.scrollHeight <= window.innerHeight + 160) {
+      void loadNextPage()
+    }
+  }, 120)
+}
+
+function handleWindowScroll() {
+  const root = document.documentElement
+  const distanceToBottom = root.scrollHeight - window.innerHeight - window.scrollY
+
+  if (distanceToBottom <= 160) void loadNextPage()
+}
+
+onMounted(() => {
+  void loadList()
+  window.addEventListener('scroll', handleWindowScroll, { passive: true })
+})
+
+onBeforeUnmount(() => {
+  window.clearTimeout(autoLoadTimer)
+  window.removeEventListener('scroll', handleWindowScroll)
+})
 </script>
 
 <template>
@@ -256,15 +285,6 @@ onMounted(loadList)
         </RouterLink>
       </section>
 
-      <button
-        v-if="hasMore"
-        class="h5-load-more"
-        :disabled="loading"
-        type="button"
-        @click="loadMore"
-      >
-        {{ loading ? '加载中...' : '加载更多' }}
-      </button>
     </template>
   </main>
 </template>

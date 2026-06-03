@@ -183,4 +183,17 @@ describe('T-003 H5 article detail wiring', () => {
 
     unmount()
   })
+
+  it('keeps the mobile article detail typography compact', () => {
+    const styles = source('src/styles/global.css')
+
+    expect(styles).toContain('.article-detail-card > h1')
+    expect(styles).toContain('font-size: 21px;')
+    expect(styles).toContain('.article-rich-text')
+    expect(styles).toContain('font-size: 16px;')
+    expect(styles).toContain('.article-rich-text h2')
+    expect(styles).toContain('font-size: 18px;')
+    expect(styles).not.toContain('font-size: 28px;\n  line-height: 1.28;')
+    expect(styles).not.toContain('font-size: 20px;\n  line-height: 1.58;')
+  })
 })

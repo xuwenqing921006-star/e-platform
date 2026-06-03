@@ -143,4 +143,17 @@ describe('T-004 H5 product detail wiring', () => {
 
     unmount()
   })
+
+  it('keeps the mobile product detail typography compact', () => {
+    const styles = source('src/styles/global.css')
+
+    expect(styles).toContain('.product-identity-card h1')
+    expect(styles).toContain('font-size: 22px;')
+    expect(styles).toContain('.product-detail-field h2')
+    expect(styles).toContain('font-size: 14px;')
+    expect(styles).toContain('.product-detail-field p')
+    expect(styles).toContain('font-size: 16px;')
+    expect(styles).not.toContain('font-size: 32px;\n  line-height: 1.15;')
+    expect(styles).not.toContain('font-size: 20px;\n  font-weight: 800;')
+  })
 })
