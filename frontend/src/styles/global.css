@@ -24,7 +24,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -726,13 +727,15 @@ input {
   overflow-x: auto;
 }
 
-.admin-nav span {
+.admin-nav a {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 8px;
   border-radius: 6px;
+  color: inherit;
   font-size: 13px;
+  text-decoration: none;
   white-space: nowrap;
 }
 
@@ -909,6 +912,380 @@ input {
   color: var(--primary);
 }
 
+.admin-content-page {
+  padding: 20px 16px;
+}
+
+.admin-page-title-row,
+.admin-page-actions,
+.content-date-range,
+.attachment-heading {
+  display: flex;
+  align-items: center;
+}
+
+.admin-page-title-row {
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.admin-page-title-row h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.admin-page-title-row p {
+  margin: 12px 0 0;
+  color: var(--text-secondary);
+}
+
+.admin-page-actions {
+  gap: 10px;
+}
+
+.admin-primary-button,
+.admin-secondary-button {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-primary-button {
+  color: white;
+  background: var(--primary);
+}
+
+.admin-secondary-button {
+  border-color: var(--border);
+  color: var(--text-primary);
+  background: var(--surface);
+}
+
+.content-filter-card {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+.content-filter-card input,
+.content-filter-card select,
+.content-form-grid input,
+.content-form-grid select {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  background: white;
+}
+
+.content-date-range {
+  gap: 8px;
+}
+
+.content-date-range input {
+  width: 100%;
+}
+
+.admin-feedback {
+  margin: 18px 0 0;
+  padding: 12px 14px;
+  border-radius: 6px;
+  color: #087448;
+  background: #e8f7ee;
+  font-weight: 700;
+}
+
+.admin-table-card {
+  margin-top: 28px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+.admin-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 16px 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-table th {
+  color: #667895;
+  background: #f7f9fc;
+}
+
+.admin-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.admin-table-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.admin-table-actions a,
+.admin-table-actions button {
+  padding: 0;
+  border: 0;
+  color: var(--primary);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.admin-empty-cell {
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.admin-table-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+.admin-table-summary {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.admin-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.admin-pagination button {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  background: var(--surface);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.admin-pagination button.active {
+  border-color: var(--primary);
+  color: white;
+  background: var(--primary);
+}
+
+.admin-pagination button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.content-editor-card,
+.content-detail-card {
+  margin-top: 28px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+}
+
+.content-editor-card h2 {
+  margin: 0 0 20px;
+}
+
+.content-form-grid {
+  display: grid;
+  gap: 16px;
+}
+
+.content-form-grid label {
+  display: grid;
+  gap: 8px;
+  font-weight: 700;
+}
+
+.content-rich-label {
+  display: block;
+  margin: 24px 0 10px;
+  font-weight: 700;
+}
+
+.rich-text-box {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.rich-text-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  background: #f6f8fc;
+}
+
+.rich-text-toolbar button {
+  min-width: 34px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 4px;
+  color: #637590;
+  background: transparent;
+  cursor: pointer;
+}
+
+.rich-text-toolbar button:hover {
+  background: white;
+}
+
+.rich-text-toolbar svg {
+  width: 16px;
+  height: 16px;
+}
+
+.rich-text-editor {
+  min-height: 240px;
+  padding: 16px;
+  outline: 0;
+  line-height: 1.7;
+}
+
+.attachment-heading {
+  justify-content: space-between;
+  margin-top: 24px;
+}
+
+.attachment-heading span {
+  color: var(--text-secondary);
+}
+
+.attachment-upload-button {
+  display: flex;
+  width: 100%;
+  min-height: 68px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+  border: 1px dashed #a9c4ff;
+  border-radius: 6px;
+  color: #637590;
+  background: #f7f9fd;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.attachment-upload-button svg,
+.admin-attachment-list svg,
+.content-detail-attachments svg {
+  width: 20px;
+  height: 20px;
+  color: var(--primary);
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  overflow: hidden;
+}
+
+.admin-attachment-list {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-attachment-list li,
+.content-detail-attachments a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 6px;
+  background: #f4f7fc;
+}
+
+.admin-attachment-list span {
+  flex: 1 1 auto;
+}
+
+.admin-attachment-list button {
+  border: 0;
+  color: var(--primary);
+  background: transparent;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.content-category-badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 5px;
+  color: var(--primary);
+  background: var(--primary-soft);
+}
+
+.content-detail-card h2 {
+  margin: 22px 0 14px;
+  font-size: 30px;
+}
+
+.content-detail-meta {
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.content-detail-rich-text {
+  color: #33425c;
+  line-height: 1.75;
+}
+
+.content-detail-attachments {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+
+.content-detail-attachments h3 {
+  margin: 0;
+}
+
+.content-detail-attachments a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
 @media (min-width: 768px) {
   .h5-page {
     width: 390px;
@@ -965,7 +1342,7 @@ input {
     overflow-x: visible;
   }
 
-  .admin-nav span {
+  .admin-nav a {
     gap: 12px;
     padding: 14px 16px;
     font-size: 16px;
@@ -988,6 +1365,26 @@ input {
     font-size: 32px;
   }
 
+  .admin-content-page {
+    padding: 36px;
+  }
+
+  .admin-page-title-row h1 {
+    font-size: 32px;
+  }
+
+  .content-filter-card {
+    grid-template-columns: minmax(180px, 1.3fr) minmax(130px, 0.8fr) minmax(150px, 0.9fr);
+  }
+
+  .content-date-range {
+    grid-column: span 2;
+  }
+
+  .content-form-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(180px, 0.32fr) minmax(180px, 0.32fr);
+  }
+
   .metric-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1003,16 +1400,33 @@ input {
   .metric-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+
+  .content-filter-card {
+    grid-template-columns: minmax(180px, 1.3fr) minmax(130px, 0.8fr) minmax(150px, 0.9fr) minmax(290px, 1.2fr) auto auto;
+  }
+
+  .content-date-range {
+    grid-column: auto;
+  }
 }
 
 @media (min-width: 1440px) {
   .dashboard-page {
     padding: 42px;
   }
+
+  .admin-content-page {
+    padding: 42px;
+  }
 }
 
 @media (min-width: 1920px) {
   .dashboard-page {
+    padding-right: 72px;
+    padding-left: 72px;
+  }
+
+  .admin-content-page {
     padding-right: 72px;
     padding-left: 72px;
   }

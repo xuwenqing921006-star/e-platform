@@ -5,6 +5,9 @@ import {
 } from 'vue-router'
 
 import AdminLayout from '../components/admin/AdminLayout.vue'
+import AdminContentDetailPage from '../pages/admin/AdminContentDetailPage.vue'
+import AdminContentEditorPage from '../pages/admin/AdminContentEditorPage.vue'
+import AdminContentListPage from '../pages/admin/AdminContentListPage.vue'
 import AdminDashboardPage from '../pages/admin/AdminDashboardPage.vue'
 import AdminLoginPage from '../pages/admin/AdminLoginPage.vue'
 import H5ArticleDetailPage from '../pages/h5/H5ArticleDetailPage.vue'
@@ -50,6 +53,22 @@ export function createAppRouter(history: RouterHistory = createWebHistory()) {
           {
             path: 'dashboard',
             component: AdminDashboardPage,
+          },
+          {
+            path: 'contents',
+            component: AdminContentListPage,
+          },
+          {
+            path: 'contents/new',
+            component: AdminContentEditorPage,
+          },
+          {
+            path: 'contents/:id/edit',
+            component: AdminContentEditorPage,
+          },
+          {
+            path: 'contents/:id',
+            component: AdminContentDetailPage,
           },
         ],
       },

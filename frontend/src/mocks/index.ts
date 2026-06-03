@@ -1,4 +1,13 @@
 import type {
+  AdminAttachmentDeleteData,
+  AdminAttachmentUploadData,
+  AdminContentCreateData,
+  AdminContentDeleteData,
+  AdminContentDetailData,
+  AdminContentListData,
+  AdminContentListItem,
+  AdminContentSaveRequest,
+  AdminContentUpdateData,
   ApiResponse,
   AttachmentFileType,
   ContentCategory,
@@ -42,6 +51,25 @@ interface MockProductEntity extends PublicProductListItem {
   product_intro: string
   business_manager: string
   contact_info: string
+}
+
+const officeNames: Record<string, string> = {
+  ANTI_MONEY_LAUNDERING: '反洗钱科',
+  CREDIT_REPORT: '征信管理科',
+  CURRENCY_GOLD_SILVER: '货币金银科',
+  DUMENG: '杜蒙县',
+  FINANCIAL_CONSUMER: '金融消保科',
+  FINANCIAL_STABILITY: '金融稳定科',
+  FOREIGN_EXCHANGE: '外汇管理科',
+  LINDIAN: '林甸县',
+  MACRO_PRUDENTIAL: '宏观审慎与金融市场管理科',
+  MONETARY_CREDIT: '货币信贷政策管理科',
+  PAYMENT_SETTLEMENT: '支付结算科',
+  POLICY_PUBLICITY: '法规宣传',
+  STATISTICS_RESEARCH: '统计研究科',
+  TREASURY: '国库科',
+  ZHAOYUAN: '肇源县',
+  ZHAOZHOU: '肇州县',
 }
 
 const mockContents: MockContentEntity[] = [
@@ -302,6 +330,227 @@ function error(status: number, message: string): MockResponse<null> {
   }
 }
 
+const uploadedAttachments: PublicAttachment[] = []
+let nextAttachmentId = 9100
+let nextContentId = 1000
+
+function bodyAs<T>(data: unknown) {
+  return (typeof data === 'string' ? JSON.parse(data) : data) as T
+}
+
+function mapAdminAttachment(
+  attachment: PublicAttachment,
+): AdminAttachmentUploadData {
+  return {
+    id: attachment.id,
+    file_name: attachment.file_name,
+    file_type: attachment.file_type,
+    file_size: attachment.file_size,
+    download_url: attachment.download_url,
+  }
+}
+
+function getAttachment(id: number) {
+  return (
+    uploadedAttachments.find((attachment) => attachment.id === id) ||
+    mockContents
+      .flatMap((content) => content.attachments)
+      .find((attachment) => attachment.id === id)
+  )
+}
+
+function getAttachments(ids: number[]) {
+  return ids
+    .map((id) => getAttachment(id))
+    .filter((attachment): attachment is PublicAttachment => Boolean(attachment))
+    .map((attachment) => mapAdminAttachment(attachment))
+}
+
+function validateAttachmentCount(ids: number[]) {
+  return ids.length > 3 ? error(400, '每篇内容最多上传 3 个附件') : null
+}
+
+function fileTypeOf(fileName: string): AttachmentFileType | null {
+  const extension = fileName.split('.').pop()?.toLowerCase()
+
+  if (extension === 'pdf') return 'PDF'
+  if (extension === 'doc' || extension === 'docx') return 'WORD'
+  if (extension === 'xls' || extension === 'xlsx') return 'EXCEL'
+  return null
+}
+
+function uploadAdminAttachment(data: unknown) {
+  const file = data instanceof FormData ? data.get('file') : null
+
+  if (!(file instanceof File)) {
+    return error(400, '请选择需要上传的附件')
+  }
+  if (file.size > 20 * 1024 * 1024) {
+    return error(413, '单个附件不能超过 20MB')
+  }
+
+  const fileType = fileTypeOf(file.name)
+  if (!fileType) {
+    return error(400, '仅支持 PDF、Word 或 Excel 文件')
+  }
+
+  const attachment: PublicAttachment = {
+    id: nextAttachmentId++,
+    file_name: file.name,
+    file_type: fileType,
+    file_size: file.size,
+    download_url: `/api/public/attachments/${nextAttachmentId - 1}/download`,
+  }
+  uploadedAttachments.push(attachment)
+
+  return success(mapAdminAttachment(attachment))
+}
+
+function deleteAdminAttachment(id: number) {
+  const uploadedIndex = uploadedAttachments.findIndex(
+    (attachment) => attachment.id === id,
+  )
+  if (uploadedIndex >= 0) {
+    uploadedAttachments.splice(uploadedIndex, 1)
+    return success<AdminAttachmentDeleteData>({ deleted: true })
+  }
+
+  for (const content of mockContents) {
+    const attachmentIndex = content.attachments.findIndex(
+      (attachment) => attachment.id === id,
+    )
+    if (attachmentIndex >= 0) {
+      content.attachments.splice(attachmentIndex, 1)
+      return success<AdminAttachmentDeleteData>({ deleted: true })
+    }
+  }
+
+  return error(404, '附件不存在')
+}
+
+function listAdminContents(params: Record<string, unknown> = {}) {
+  const page = Number(params.page || 1)
+  const pageSize = Number(params.page_size || 20)
+  const keyword = String(params.keyword || '').trim()
+  const category = String(params.category || '')
+  const officeCode = String(params.office_code || '')
+  const publishedFrom = String(params.published_from || '')
+  const publishedTo = String(params.published_to || '')
+
+  if (page < 1 || pageSize < 1 || pageSize > 50) {
+    return error(400, '分页参数不合法')
+  }
+
+  const items: AdminContentListItem[] = mockContents
+    .filter(
+      (content) =>
+        (!keyword || content.title.includes(keyword)) &&
+        (!category || content.category === category) &&
+        (!officeCode || content.office_code === officeCode) &&
+        (!publishedFrom || content.published_at.slice(0, 10) >= publishedFrom) &&
+        (!publishedTo || content.published_at.slice(0, 10) <= publishedTo),
+    )
+    .sort((left, right) => right.published_at.localeCompare(left.published_at))
+    .map((content) => ({
+      id: content.id,
+      title: content.title,
+      category: content.category,
+      office_code: content.office_code,
+      office_name: content.office_name,
+      published_at: content.published_at,
+    }))
+  const offset = (page - 1) * pageSize
+  const data: AdminContentListData = {
+    items: items.slice(offset, offset + pageSize),
+    total: items.length,
+    page,
+    page_size: pageSize,
+  }
+
+  return success(data)
+}
+
+function getAdminContentDetail(id: number) {
+  const content = mockContents.find((item) => item.id === id)
+  if (!content) {
+    return error(404, '内容不存在')
+  }
+
+  const data: AdminContentDetailData = {
+    id: content.id,
+    title: detailTitle(content),
+    category: content.category,
+    office_code: content.office_code,
+    office_name: content.office_name,
+    rich_text_html: content.rich_text_html,
+    published_at: content.published_at,
+    attachments: content.attachments.slice(0, 3).map(mapAdminAttachment),
+  }
+
+  return success(data)
+}
+
+function createAdminContent(data: unknown) {
+  const request = bodyAs<AdminContentSaveRequest>(data)
+  const attachmentError = validateAttachmentCount(request.attachment_ids)
+  if (attachmentError) return attachmentError
+
+  const publishedAt = '2026-06-02T10:00:00+08:00'
+  const content: MockContentEntity = {
+    id: nextContentId++,
+    title: request.title,
+    category: request.category,
+    county_code: null,
+    office_code: request.office_code,
+    office_name: officeNames[request.office_code] || request.office_code,
+    published_at: publishedAt,
+    rich_text_html: request.rich_text_html,
+    scope: 'FINANCIAL',
+    attachments: getAttachments(request.attachment_ids),
+  }
+  mockContents.push(content)
+
+  const response: AdminContentCreateData = {
+    id: content.id,
+    published_at: publishedAt,
+  }
+  return success(response)
+}
+
+function updateAdminContent(id: number, data: unknown) {
+  const content = mockContents.find((item) => item.id === id)
+  if (!content) {
+    return error(404, '内容不存在')
+  }
+
+  const request = bodyAs<AdminContentSaveRequest>(data)
+  const attachmentError = validateAttachmentCount(request.attachment_ids)
+  if (attachmentError) return attachmentError
+
+  content.title = request.title
+  content.category = request.category
+  content.office_code = request.office_code
+  content.office_name = officeNames[request.office_code] || request.office_code
+  content.rich_text_html = request.rich_text_html
+  content.attachments = getAttachments(request.attachment_ids)
+
+  const response: AdminContentUpdateData = {
+    id,
+    updated: true,
+  }
+  return success(response)
+}
+
+function deleteAdminContent(id: number) {
+  const contentIndex = mockContents.findIndex((item) => item.id === id)
+  if (contentIndex < 0) {
+    return error(404, '内容不存在')
+  }
+
+  mockContents.splice(contentIndex, 1)
+  return success<AdminContentDeleteData>({ deleted: true })
+}
+
 function listPublicContents(params: Record<string, unknown> = {}) {
   const page = Number(params.page || 1)
   const pageSize = Number(params.page_size || 10)
@@ -511,6 +760,27 @@ export function dispatchMockRequest(request: MockRequest): MockResponse<unknown>
   }
   if (method === 'GET' && path === '/admin/dashboard/summary') {
     return dashboardSummary()
+  }
+  if (method === 'POST' && path === '/admin/attachments') {
+    return uploadAdminAttachment(request.data)
+  }
+  if (method === 'DELETE' && /^\/admin\/attachments\/\d+$/.test(path)) {
+    return deleteAdminAttachment(Number(path.split('/').pop()))
+  }
+  if (method === 'GET' && path === '/admin/contents') {
+    return listAdminContents(request.params)
+  }
+  if (method === 'POST' && path === '/admin/contents') {
+    return createAdminContent(request.data)
+  }
+  if (method === 'GET' && /^\/admin\/contents\/\d+$/.test(path)) {
+    return getAdminContentDetail(Number(path.split('/').pop()))
+  }
+  if (method === 'PUT' && /^\/admin\/contents\/\d+$/.test(path)) {
+    return updateAdminContent(Number(path.split('/').pop()), request.data)
+  }
+  if (method === 'DELETE' && /^\/admin\/contents\/\d+$/.test(path)) {
+    return deleteAdminContent(Number(path.split('/').pop()))
   }
 
   return error(404, 'Mock 接口不存在')

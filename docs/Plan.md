@@ -7,11 +7,11 @@
 
 ## 零、若依接入架构决策
 
-> 2026-06-02 确认：后台与后端基础能力基于本地若依框架裁剪适配，若依源码仅作为 `vendor/ruoyi/` 下的参考源，不作为提交内容。
+> 2026-06-02 确认：后台与后端基础能力基于 Harness 级若依 Spring Boot 3 模板裁剪适配，模板路径为 `templates/fullstack-ruoyi-vue/`。
 
 - 保留当前已完成的 H5 Vue 3/TypeScript 前端，不推倒重来。
-- 后端从“从零初始化 Spring Boot”调整为“基于 `RuoYi-Vue-v3.9.1` 后端能力裁剪到 `backend/`”，优先复用登录、权限、用户、角色、菜单、日志、代码生成和 MyBatis 基础设施。
-- 后台管理端可参考 `RuoYi-Vue3-v3.9.1` 的页面组织与权限菜单，但现有 H5 页面继续由当前 `frontend/` 承载。
+- 项目 `backend_profile = "ruoyi-springboot3"`，后端从“从零初始化 Spring Boot”调整为“基于 `templates/fullstack-ruoyi-vue/` 裁剪到项目 `backend/`”，优先复用登录、权限、用户、角色、菜单、日志、代码生成和 MyBatis 基础设施。
+- 若依后台管理端保留模板内 `ruoyi-ui` 既有结构；SDD 后续只在若依约定内新增业务菜单、权限、路由、接口和页面，不重新生成一套替代后台管理框架。
 - API 契约仍以 `docs/api-contracts.md` 为准。若依默认返回字段、权限结构或路由命名与契约不同，必须在后端适配到本项目约定的 `{ code, message, data }` 格式。
 - 若依源码不得写入 `harness-core/`，不得作为 SDD 核心规则维护；业务代码只能写入当前项目目录。
 
@@ -136,6 +136,8 @@
 
 ### 3.3 WEB 管理后台页面
 
+> 架构切换说明：A01 至 A12 后台管理页面后续在若依 `ruoyi-ui` 中实现。当前 `frontend/` 中已完成的 A01 至 A04/A12 Mock 页面仅作为需求和交互参考，不再继续扩展自研后台 Mock。`frontend/` 后续只保留公众号 H5 端。
+
 | 编号 | 页面 | 涉及功能 | Mock 数据来源 | 跳转 | 状态 |
 | --- | --- | --- | --- | --- | --- |
 | P09 | A01 登录 | 账号、密码、记住登录状态、错误提示 | `POST /api/auth/login` | 登录后到 A02 | 待开发 |
@@ -242,6 +244,11 @@ backend/
       config/
     src/main/resources/
       mapper/
+ruoyi-ui/
+  package.json
+  src/
+frontend/
+  # 公众号 H5 端，后续不再承载后台管理扩展
 ```
 
 ### 4.4 后端实现规则
@@ -264,7 +271,7 @@ backend/
 ### B00 Spring Boot 基础设施
 
 - [ ] 补充分层实现思路。
-- [ ] 从 `vendor/ruoyi/RuoYi-Vue-v3.9.1` 裁剪后端模块到 `backend/`，保留若依基础权限、用户、日志与配置能力。
+- [ ] 从 `templates/fullstack-ruoyi-vue/` 裁剪后端模块与 `ruoyi-ui` 到项目工程，保留若依基础权限、用户、日志与配置能力。
 - [ ] 补齐 Maven Wrapper、Java 17+、Spring Boot 3.x 兼容策略和本项目业务模块 `central-bank-business`。
 - [ ] 增加契约适配层、统一响应、全局异常、CORS、测试配置和 `GET /health`。
 - [ ] 执行 Maven 测试。
@@ -380,37 +387,37 @@ backend/
 
 ## 六、开发顺序
 
-### 阶段 1：前端 MVP Mock
+### 阶段 1：H5 与已完成后台 Mock 参考
 
 ```text
 P00 基础设施
   -> P01-P08 H5
-  -> P09-P20 WEB 后台
-  -> 前端自动验收
+  -> P09-P12/P20 自研后台 Mock 参考（已到 T-006 为止）
+  -> 停止继续扩展自研后台 Mock
 ```
 
-### 阶段 2：后端基础设施
+### 阶段 2：若依全栈基座
 
 ```text
-B00 Spring Boot 基础设施
-  -> B01 固定配置
-  -> B02 登录认证
+T-007 若依 Spring Boot 3 + ruoyi-ui 基座接入
+  -> T-008 业务数据层、固定选项与初始化
+  -> T-009 若依安全、接口契约与 H5 公开路由适配
 ```
 
 ### 阶段 3：逐功能闭环
 
 ```text
-B03 公开内容
-  -> B04 公开产品
-  -> B05 附件
-  -> B06 内容管理
-  -> B07 产品管理
-  -> B08 Excel 导入
-  -> B09 账号管理
-  -> B10 日志
-  -> B11 概览
-  -> B12 初始数据
-  -> B13 真实联调
+H5 公开内容
+  -> H5 公开产品
+  -> 附件上传与公开下载
+  -> 若依后台内容管理
+  -> 若依后台产品管理
+  -> 若依 Excel 导入
+  -> 若依账号管理
+  -> 若依操作日志
+  -> 若依工作概览
+  -> 112 条产品与初始账号数据
+  -> 全部页面退出 Mock 审计
 ```
 
 ### 阶段 4：E2E 与交付

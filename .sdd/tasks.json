@@ -1,0 +1,1192 @@
+{
+    "project":  "央行 E 平台",
+    "project_type":  "web",
+    "created":  "2026-06-02",
+    "source_files":  {
+                         "prd":  "docs/PRD.md",
+                         "plan":  "docs/Plan.md",
+                         "api_contracts":  "docs/api-contracts.md",
+                         "status":  ".sdd/status.json"
+                     },
+    "explicit_constraints":  [
+                                 "H5 公开访问，不接入微信授权，不采集访客信息。",
+                                 "MVP 不实现草稿、审核、发布或下架状态；内容保存后立即展示，删除后立即移除。",
+                                 "银行机构、县域服务队、SAFE 地址和 Logo 为固定配置，不提供后台维护入口。",
+                                 "产品详情和产品编辑严格限制为已确认的 7 个业务字段。",
+                                 "普通账号按办公室隔离；四县账号只能管理本县服务指引；货币信贷政策管理科账号可管理金融产品；服务端逐接口校验权限。",
+                                 "微信公众号菜单不进入本地开发，不作为开发阻塞依赖。"
+                             ],
+    "external_services":  [
+                              {
+                                  "name":  "MySQL 8",
+                                  "required":  true,
+                                  "config_keys":  [
+                                                      "DB_URL",
+                                                      "DB_USERNAME",
+                                                      "DB_PASSWORD"
+                                                  ],
+                                  "tester_access_required":  "MVP 运行与真实联调需要本地或测试环境 MySQL 8 数据库；开发阶段 Tester 使用隔离 H2 fallback。",
+                                  "fallback_allowed":  true,
+                                  "status":  "fallback",
+                                  "notes":  "开发阶段使用隔离 H2；真实 MySQL 8 留待联调，不得宣称真实 MySQL 已验证。"
+                              },
+                              {
+                                  "name":  "本地附件目录",
+                                  "required":  true,
+                                  "config_keys":  [
+                                                      "APP_STORAGE_ROOT"
+                                                  ],
+                                  "tester_access_required":  "Tester 可读写项目内临时测试目录。",
+                                  "fallback_allowed":  true,
+                                  "status":  "confirmed",
+                                  "notes":  "开发与自动测试使用项目内临时目录，部署时改为服务器配置化目录并纳入备份。"
+                              },
+                              {
+                                  "name":  "JWT 签名密钥",
+                                  "required":  true,
+                                  "config_keys":  [
+                                                      "APP_JWT_SECRET"
+                                                  ],
+                                  "tester_access_required":  "Tester 使用不提交 Git 的本地测试值。",
+                                  "fallback_allowed":  false,
+                                  "status":  "confirmed",
+                                  "notes":  "tasks.json 不记录任何真实值或可还原片段。"
+                              },
+                              {
+                                  "name":  "SAFE 外部地址",
+                                  "required":  true,
+                                  "config_keys":  [
+
+                                                  ],
+                                  "tester_access_required":  "固定地址 http://zwfw.safe.gov.cn/asone/，无密钥；有网络时验证跳转，无网络时只校验链接地址。",
+                                  "fallback_allowed":  true,
+                                  "status":  "confirmed",
+                                  "notes":  "固定地址，无敏感配置。"
+                              },
+                              {
+                                  "name":  "微信公众号菜单",
+                                  "required":  false,
+                                  "config_keys":  [
+
+                                                  ],
+                                  "tester_access_required":  "正式发布前由具备公众号后台权限的人员配置；本地开发无需权限。",
+                                  "fallback_allowed":  true,
+                                  "status":  "confirmed",
+                                  "notes":  "不进入本地开发，不作为阻塞依赖；本地直接访问 H5 路径。"
+                              }
+                          ],
+    "tasks":  [
+                  {
+                      "id":  "T-001",
+                      "title":  "前端双入口与 Mock 基础设施",
+                      "type":  "frontend",
+                      "description":  "初始化 Vue 3、TypeScript、Vite、Pinia、Vue Router、Axios 项目，建立 /h5/* 与 /admin/* 双入口、后台路由守卫、统一 API 封装、frontend/src/mocks/ 集中 Mock 层和公共样式。Mock 响应必须对齐接口契约，不调用真实后端。",
+                      "source_feature":  "P00-01 至 P00-06",
+                      "acceptanceCriteria":  [
+                                                 "用户打开 /h5/ 和 /admin/login，预期看到可访问的 H5 入口和后台登录入口。",
+                                                 "用户在手机宽度和桌面宽度打开页面，预期看到 H5 卡片布局和后台基础布局均能正常适配。",
+                                                 "用户访问后台受保护页面但未登录，预期页面跳转到 /admin/login。"
+                                             ],
+                      "technicalChecks":  [
+                                              "npm run typecheck、npm run test、npm run build 通过。",
+                                              "Mock 数据集中位于 frontend/src/mocks/，格式与 docs/api-contracts.md 一致。",
+                                              "Mock 阶段不调用真实后端 API。",
+                                              "响应式布局覆盖移动端与 1280px、1440px、1920px 桌面宽度。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  false,
+                                                  "pages":  [
+                                                                "/h5/*",
+                                                                "/admin/*"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/http.ts"
+                                                               ],
+                                                  "realApiEndpoints":  [
+
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+
+                                           ],
+                      "dependencies":  [
+
+                                       ],
+                      "priority":  1,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md"
+                                      ],
+                      "status":  "passed",
+                      "developer_id":  "019e86ef-650b-7ad0-8479-d375356e64ee",
+                      "tester_id":  "019e8614-4f24-7eb0-97ad-adb5e3a1a238",
+                      "retry_count":  3,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-002",
+                      "title":  "H5 首页栏目与 SAFE 浮动入口 Mock",
+                      "type":  "frontend",
+                      "description":  "使用契约一致的 Mock 数据实现 H01-A 至 H01-E 首页栏目、Tab、列表、加载更多、空状态、重试、固定县域服务队，以及 SAFE 浮动入口展开、收起、固定地址跳转和详情页隐藏规则。",
+                      "source_feature":  "F01、F04；P01 至 P05、P08",
+                      "acceptanceCriteria":  [
+                                                 "用户打开 H5 首页，预期顶部直接显示乡村振兴和金融服务一级 Tab，默认高亮乡村振兴，不显示独立平台头部。",
+                                                 "用户在 H5 首页切换县域、三级文字 Tab 和金融服务栏目，预期本页面展示对应 Mock 列表、固定服务队信息、空状态或重试入口。",
+                                                 "用户点击右下角 SAFE Logo，预期入口向左展开；点击关闭按钮后向右收起；点击展开区域后跳转到固定 SAFE 地址。"
+                                             ],
+                      "technicalChecks":  [
+                                              "npm run typecheck、npm run test、npm run build 通过。",
+                                              "H5 首页数据来自 frontend/src/mocks/ 或前端固定配置，不调用真实后端 API。",
+                                              "SAFE 地址固定为 http://zwfw.safe.gov.cn/asone/，无密钥；无网络时仅校验链接地址。",
+                                              "SAFE 外部地址无密钥且未硬编码为可变 secret；Tester 有网络时验证跳转，无网络时在报告标记 fallback 链接地址校验；访问失败时页面反馈清晰，不静默吞错。",
+                                              "详情页不渲染 SAFE 浮动入口。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  false,
+                                                  "pages":  [
+                                                                "/h5/",
+                                                                "/h5/financial/*",
+                                                                "/h5/rural/*"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/publicContentService.ts",
+                                                                   "frontend/src/services/publicProductService.ts"
+                                                               ],
+                                                  "realApiEndpoints":  [
+
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "SAFE 外部地址"
+                                           ],
+                      "dependencies":  [
+                                           "T-001"
+                                       ],
+                      "priority":  2,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md"
+                                      ],
+                      "status":  "passed",
+                      "developer_id":  "019e870a-101e-7843-89a3-92b55f754dd6",
+                      "tester_id":  "019e871a-a27b-7663-96c0-2e3907177769",
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-003",
+                      "title":  "H5 文章详情 Mock",
+                      "type":  "frontend",
+                      "description":  "使用 Mock 数据实现 H02 文章详情，展示标题、办公室、时间、富文本正文、内嵌图片查看原图和最多 3 个附件下载入口。",
+                      "source_feature":  "F02；P06",
+                      "acceptanceCriteria":  [
+                                                 "用户从 H5 文章卡片进入详情页，预期看到完整标题、发布办公室、发布时间、富文本正文和附件列表。",
+                                                 "用户点击正文中的长图片，预期可以查看原图。",
+                                                 "用户查看文章详情，预期页面最多展示 3 个附件下载入口，且不强制在 H5 内预览 PDF、Word 或 Excel。"
+                                             ],
+                      "technicalChecks":  [
+                                              "npm run typecheck、npm run test、npm run build 通过。",
+                                              "文章详情 Mock 响应与 GET /api/public/contents/{id} 契约一致。",
+                                              "Mock 阶段只验证下载入口呈现，不要求真实文件流。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  false,
+                                                  "pages":  [
+                                                                "/h5/contents/:id"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/publicContentService.ts"
+                                                               ],
+                                                  "realApiEndpoints":  [
+
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+
+                                           ],
+                      "dependencies":  [
+                                           "T-002"
+                                       ],
+                      "priority":  3,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md"
+                                      ],
+                      "status":  "passed",
+                      "developer_id":  "019e8795-947f-7bb2-b402-91b6ec5d56fe",
+                      "tester_id":  "019e879d-9b67-7983-9ba1-cce48769b739",
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-004",
+                      "title":  "H5 产品详情 Mock",
+                      "type":  "frontend",
+                      "description":  "使用 Mock 数据实现 H03 产品详情的身份卡和业务详情卡，严格展示 7 个确认字段，不添加参考利率等额外字段。",
+                      "source_feature":  "F03；P07",
+                      "acceptanceCriteria":  [
+                                                 "用户从助企通道产品卡片进入详情页，预期顶部身份卡显示产品名称、银行机构和类型。",
+                                                 "用户查看产品详情卡，预期仅看到准入条件、产品介绍、业务经办人和联系方式，不出现参考利率或其他额外业务字段。"
+                                             ],
+                      "technicalChecks":  [
+                                              "npm run typecheck、npm run test、npm run build 通过。",
+                                              "产品详情 Mock 响应与 GET /api/public/products/{id} 契约一致。",
+                                              "页面严格限制为 7 个业务字段。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  false,
+                                                  "pages":  [
+                                                                "/h5/products/:id"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/publicProductService.ts"
+                                                               ],
+                                                  "realApiEndpoints":  [
+
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+
+                                           ],
+                      "dependencies":  [
+                                           "T-003"
+                                       ],
+                      "priority":  4,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md"
+                                      ],
+                      "status":  "passed",
+                      "developer_id":  "019e87a5-5c88-76f1-ba0e-e67875cbbc67",
+                      "tester_id":  "019e87ad-8ca3-7321-983b-0170a05865c5",
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-005",
+                      "title":  "后台登录与工作概览 Mock",
+                      "type":  "frontend",
+                      "description":  "使用 Mock 数据实现 A01 登录和 A02 工作概览，包括账号密码、记住登录状态、错误提示、指标卡、最近发布和快捷入口。",
+                      "source_feature":  "F05；P09、P10",
+                      "acceptanceCriteria":  [
+                                                 "用户在后台登录页输入 Mock 账号密码并点击登录，预期页面跳转到工作概览。",
+                                                 "用户在后台登录页输入错误信息，预期页面显示明确错误提示。",
+                                                 "用户打开工作概览，预期看到内容数、产品数、账号数、当日操作数、最近发布和快捷入口的 Mock 展示。"
+                                             ],
+                      "technicalChecks":  [
+                                              "npm run typecheck、npm run test、npm run build 通过。",
+                                              "Mock Token 存储在 localStorage；刷新后仅验证前端读取 Mock Token。",
+                                              "登录和概览 Mock 响应与 api-contracts.md 一致。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  false,
+                                                  "pages":  [
+                                                                "/admin/login",
+                                                                "/admin/dashboard"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/authService.ts",
+                                                                   "frontend/src/services/dashboardService.ts"
+                                                               ],
+                                                  "realApiEndpoints":  [
+
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+
+                                           ],
+                      "dependencies":  [
+                                           "T-004"
+                                       ],
+                      "priority":  5,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md"
+                                      ],
+                      "status":  "passed",
+                      "developer_id":  "019e880c-d62d-7f03-b6b6-9b7957ef5746",
+                      "tester_id":  "d9822398-57db-442f-aa60-a0fa68892717",
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-006",
+                      "title":  "后台内容管理 Mock",
+                      "type":  "frontend",
+                      "description":  "使用 Mock 数据实现 A03、A04、A12 内容查询、新增、编辑、预览、删除、富文本和最多 3 个附件交互。列表不展示附件个数。",
+                      "source_feature":  "F06；P11、P12、P20",
+                      "acceptanceCriteria":  [
+                                                 "用户在内容管理页按标题、分类、办公室和时间范围查询，预期本页面展示匹配的 Mock 分页列表，且列表不出现附件个数列。",
+                                                 "用户在发布内容页填写标题、分类、办公室和富文本正文并选择附件，预期本页面显示最多 3 个附件和清晰的超限提示。",
+                                                 "用户在内容管理页点击预览、编辑或删除，预期本页面完成对应 Mock 状态更新并显示结果提示。"
+                                             ],
+                      "technicalChecks":  [
+                                              "npm run typecheck、npm run test、npm run build 通过。",
+                                              "内容管理 Mock 响应与 api-contracts.md 一致。",
+                                              "Mock 阶段不要求真实文件落盘、数据库持久化或跨页面同步。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  false,
+                                                  "pages":  [
+                                                                "/admin/contents",
+                                                                "/admin/contents/new",
+                                                                "/admin/contents/:id/edit",
+                                                                "/admin/contents/:id"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/adminContentService.ts",
+                                                                   "frontend/src/services/attachmentService.ts"
+                                                               ],
+                                                  "realApiEndpoints":  [
+
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+
+                                           ],
+                      "dependencies":  [
+                                           "T-005"
+                                       ],
+                      "priority":  6,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md"
+                                      ],
+                      "status":  "passed",
+                      "developer_id":  "019e88b1-8cd1-7a51-b208-b71686f4cf64",
+                      "tester_id":  "0b6f064e-4c0b-49e0-86e2-f334c7231796",
+                      "retry_count":  1,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-007",
+                      "title":  "若依全栈基座接入",
+                      "type":  "backend",
+                      "description":  "从 templates/fullstack-ruoyi-vue/ 安全裁剪若依 Spring Boot 3 后端模块与 ruoyi-ui 到当前项目，保留现有 frontend/ H5，不覆盖已完成 H5 和 Mock 参考代码；建立 backend/ 与 ruoyi-ui/ 的启动、构建和健康检查基线。",
+                      "source_feature":  "B00；若依基座",
+                      "acceptanceCriteria":  [
+                                                 "项目中存在 backend/pom.xml、backend/mvnw.cmd、backend/ruoyi-admin、backend/ruoyi-system、backend/ruoyi-framework 等若依后端模块。",
+                                                 "项目中存在 ruoyi-ui/package.json 和若依后台前端源码；现有 frontend/ H5 未被覆盖。",
+                                                 "GET /health 或若依等价健康检查返回 docs/api-contracts.md 约定的统一成功格式。"
+                                             ],
+                      "technicalChecks":  [
+                                              "在 backend/ 执行 .\\mvnw.cmd test 通过，或若模板测试需数据库则报告清晰 fallback 边界。",
+                                              "短时启动后端到 8099 并验证健康检查返回 200。",
+                                              "在 ruoyi-ui/ 执行依赖安装后的静态检查或构建命令通过；如依赖缺失由 Agent 在项目内安装。",
+                                              "确认业务代码未写入 templates/ 或 vendor/ruoyi。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  false,
+                                                  "pages":  [
+
+                                                            ],
+                                                  "services":  [
+
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "GET /health"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+
+                                           ],
+                      "dependencies":  [
+                                           "T-006"
+                                       ],
+                      "priority":  7,
+                      "rules_files":  [
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "passed",
+                      "developer_id":  "019e891f-54b6-7c51-b006-09fcf3e6854b",
+                      "tester_id":  "f5b4b155-838d-4749-8aa3-aa1b0e7e85fb",
+                      "retry_count":  1,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-008",
+                      "title":  "若依业务数据层、固定选项与初始化",
+                      "type":  "backend",
+                      "description":  "在若依工程中新增 central-bank-business 业务模块或等价业务包，建立内容、附件、金融产品、账号扩展所需表结构、Mapper、Domain、固定办公室/银行/县域/产品类型选项和基础 seed。",
+                      "source_feature":  "B01；B12",
+                      "acceptanceCriteria":  [
+                                                 "固定选项覆盖 docs/api-contracts.md 中办公室、银行、县域、内容分类和产品类型枚举。",
+                                                 "业务表可在隔离测试库或 H2 fallback 中初始化。",
+                                                 "数据库配置只读取 DB_URL、DB_USERNAME、DB_PASSWORD 等字段，不硬编码真实值。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "Mapper 或 SQL 初始化测试通过。",
+                                              "测试报告明确 MySQL 8 真实联调未提供时的 fallback 边界。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  false,
+                                                  "pages":  [
+
+                                                            ],
+                                                  "services":  [
+
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "GET /api/admin/options"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8"
+                                           ],
+                      "dependencies":  [
+                                           "T-007"
+                                       ],
+                      "priority":  8,
+                      "rules_files":  [
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "真实 MySQL 8 未提供时使用隔离测试库或 H2 fallback。",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-009",
+                      "title":  "若依安全、契约响应与 H5 公开路由适配",
+                      "type":  "backend",
+                      "description":  "复用若依 Security、JWT、权限注解和 CORS 能力，适配 /health、/api/public/** 公开访问和 /api/admin/** 后台鉴权；将若依响应、异常、401/403 适配为 docs/api-contracts.md 统一格式。",
+                      "source_feature":  "B02；B05",
+                      "acceptanceCriteria":  [
+                                                 "H5 公开接口无需登录，后台接口必须鉴权。",
+                                                 "无凭证访问后台接口返回 401 统一错误格式，权限不足返回 403。",
+                                                 "APP_JWT_SECRET 与 APP_STORAGE_ROOT 通过本地配置读取，不进入文档和任务 JSON。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "短时启动后验证公开接口、受保护接口、CORS 和附件目录配置。",
+                                              "密钥扫描确认没有真实 secret 写入代码、docs/** 或 .sdd/**。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  false,
+                                                  "pages":  [
+
+                                                            ],
+                                                  "services":  [
+
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "/api/auth/*",
+                                                                           "/api/admin/*",
+                                                                           "/api/public/*"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "JWT 签名密钥",
+                                               "本地附件目录"
+                                           ],
+                      "dependencies":  [
+                                           "T-008"
+                                       ],
+                      "priority":  9,
+                      "rules_files":  [
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-010",
+                      "title":  "H5 公开内容查询真实联调闭环",
+                      "type":  "integration",
+                      "description":  "在若依业务模块中实现 GET /api/public/contents 与 GET /api/public/contents/{id}，让现有 H5 文章列表和详情在 VITE_USE_MOCK=false 下命中真实接口。",
+                      "source_feature":  "B03；P01/P02/P04/P06",
+                      "acceptanceCriteria":  [
+                                                 "H5 服务指引、政策宣传和县域服务指引列表可从真实接口分页加载。",
+                                                 "H5 文章详情可展示标题、办公室、发布时间、富文本正文和最多 3 个附件入口。",
+                                                 "页面不显示 [Mock] 或 Mock-only 文案。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "frontend npm run typecheck、test、build 通过。",
+                                              "VITE_USE_MOCK=false 时浏览器或等价测试命中真实 /api/public/contents*。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/h5/*",
+                                                                "/h5/contents/:id"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/publicContentService.ts"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "GET /api/public/contents",
+                                                                           "GET /api/public/contents/{id}"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8"
+                                           ],
+                      "dependencies":  [
+                                           "T-009"
+                                       ],
+                      "priority":  10,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-011",
+                      "title":  "H5 公开金融产品查询真实联调闭环",
+                      "type":  "integration",
+                      "description":  "实现 GET /api/public/products 与 GET /api/public/products/{id}，让 H5 助企通道和产品详情在真实接口下展示 112 项助企金融产品。",
+                      "source_feature":  "B04；P03/P07",
+                      "acceptanceCriteria":  [
+                                                 "H5 产品列表真实分页加载，列表只显示银行、产品名称、类型。",
+                                                 "H5 产品详情严格展示 7 个产品字段，不出现参考利率等额外字段。",
+                                                 "页面不显示 [Mock] 或 Mock-only 文案。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "frontend npm run typecheck、test、build 通过。",
+                                              "VITE_USE_MOCK=false 时命中真实 /api/public/products*。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/h5/financial/products",
+                                                                "/h5/products/:id"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/publicProductService.ts"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "GET /api/public/products",
+                                                                           "GET /api/public/products/{id}"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8"
+                                           ],
+                      "dependencies":  [
+                                           "T-010"
+                                       ],
+                      "priority":  11,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-012",
+                      "title":  "附件上传、删除与公开下载真实联调闭环",
+                      "type":  "integration",
+                      "description":  "在若依后端实现后台附件上传、删除和公开下载，支撑内容管理最多 3 个附件和 H5 附件下载。",
+                      "source_feature":  "B05",
+                      "acceptanceCriteria":  [
+                                                 "后台上传 PDF、Word、Excel 附件可返回契约字段。",
+                                                 "超过大小、格式不支持和超过 3 个附件返回清晰错误。",
+                                                 "H5 附件下载接口返回真实文件流。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "使用项目内临时附件目录完成读写测试。",
+                                              "配置 APP_STORAGE_ROOT，不硬编码真实路径。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/admin/contents/*",
+                                                                "/h5/contents/:id"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/attachmentService.ts"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "POST /api/admin/attachments",
+                                                                           "DELETE /api/admin/attachments/{id}",
+                                                                           "GET /api/public/attachments/{id}/download"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "本地附件目录"
+                                           ],
+                      "dependencies":  [
+                                           "T-011"
+                                       ],
+                      "priority":  12,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-013",
+                      "title":  "若依后台内容管理真实闭环",
+                      "type":  "integration",
+                      "description":  "在若依 ruoyi-ui 和后端中实现内容管理菜单、权限、列表、发布、编辑、预览、删除和富文本保存，替代现有自研 Mock 参考页面。",
+                      "source_feature":  "B06；P11/P12/P20",
+                      "acceptanceCriteria":  [
+                                                 "若依后台内容列表支持查询、分页、查看、编辑、删除，不展示附件个数列。",
+                                                 "发布和编辑内容支持分类、办公室、富文本和最多 3 个附件。",
+                                                 "办公室隔离和县域权限在服务端校验。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "ruoyi-ui 构建或 lint 通过。",
+                                              "管理员和普通办公室账号的权限测试通过。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/admin/contents",
+                                                                "/admin/contents/new",
+                                                                "/admin/contents/:id"
+                                                            ],
+                                                  "services":  [
+                                                                   "ruoyi-ui/src/**"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "/api/admin/contents*"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8",
+                                               "本地附件目录",
+                                               "JWT 签名密钥"
+                                           ],
+                      "dependencies":  [
+                                           "T-012"
+                                       ],
+                      "priority":  13,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-014",
+                      "title":  "若依后台金融产品管理与模板下载真实闭环",
+                      "type":  "integration",
+                      "description":  "在若依中实现金融产品列表、7 字段维护、删除、下载 Excel 模板和权限控制。",
+                      "source_feature":  "B07；P13/P14",
+                      "acceptanceCriteria":  [
+                                                 "产品列表支持名称、银行、类型查询和分页，不展示参考利率。",
+                                                 "新增/编辑产品只维护 7 个业务字段。",
+                                                 "下载模板返回契约定义的 xlsx 文件。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "ruoyi-ui 构建或 lint 通过。",
+                                              "VITE/若依后台页面命中真实 /api/admin/products*。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/admin/products",
+                                                                "/admin/products/new",
+                                                                "/admin/products/:id/edit"
+                                                            ],
+                                                  "services":  [
+                                                                   "ruoyi-ui/src/**"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "/api/admin/products*",
+                                                                           "GET /api/admin/products/import-template/download"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8",
+                                               "JWT 签名密钥"
+                                           ],
+                      "dependencies":  [
+                                           "T-013"
+                                       ],
+                      "priority":  14,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-015",
+                      "title":  "若依 Excel 导入金融产品真实闭环",
+                      "type":  "integration",
+                      "description":  "实现金融产品 Excel 上传校验、错误行反馈、import_token 暂存和确认提交导入。",
+                      "source_feature":  "B08；P15",
+                      "acceptanceCriteria":  [
+                                                 "上传 xlsx 后返回总数、有效数、无效数和错误行。",
+                                                 "确认导入后写入通过校验的产品数据。",
+                                                 "阳光惠农贷特殊行和固定银行列表校验通过。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "导入校验和提交接口测试通过。",
+                                              "ruoyi-ui 导入页面可展示错误行和提交结果。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/admin/products/import"
+                                                            ],
+                                                  "services":  [
+                                                                   "ruoyi-ui/src/**"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "POST /api/admin/products/import/validate",
+                                                                           "POST /api/admin/products/import/commit"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8",
+                                               "JWT 签名密钥"
+                                           ],
+                      "dependencies":  [
+                                           "T-014"
+                                       ],
+                      "priority":  15,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-016",
+                      "title":  "若依后台账号管理真实闭环",
+                      "type":  "integration",
+                      "description":  "复用若依用户体系实现本项目账号管理、办公室绑定、启停、删除和重置密码能力。",
+                      "source_feature":  "B09；P16/P17",
+                      "acceptanceCriteria":  [
+                                                 "管理员可查询、新增、编辑、启停、删除账号和重置密码。",
+                                                 "普通账号必须绑定办公室，管理员账号不强制绑定办公室。",
+                                                 "不能删除当前登录账号，权限不足返回 403。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "ruoyi-ui 用户相关页面或业务页面验证通过。",
+                                              "权限和密码重置测试通过。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/admin/accounts",
+                                                                "/admin/accounts/new",
+                                                                "/admin/accounts/:id/edit"
+                                                            ],
+                                                  "services":  [
+                                                                   "ruoyi-ui/src/**"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "/api/admin/accounts*"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8",
+                                               "JWT 签名密钥"
+                                           ],
+                      "dependencies":  [
+                                           "T-015"
+                                       ],
+                      "priority":  16,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-017",
+                      "title":  "若依操作日志真实闭环",
+                      "type":  "integration",
+                      "description":  "基于若依操作日志能力记录内容、产品、导入、账号和密码修改等关键操作，并实现 A10 查询。",
+                      "source_feature":  "B10；P18",
+                      "acceptanceCriteria":  [
+                                                 "管理员可按操作人、类型和时间范围查询操作日志。",
+                                                 "普通账号访问日志页返回无权限。",
+                                                 "日志不记录真实密码、JWT Secret 或敏感配置值。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "关键动作日志记录和查询测试通过。",
+                                              "敏感信息脱敏检查通过。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/admin/audit-logs"
+                                                            ],
+                                                  "services":  [
+                                                                   "ruoyi-ui/src/**"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "GET /api/admin/audit-logs"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8"
+                                           ],
+                      "dependencies":  [
+                                           "T-016"
+                                       ],
+                      "priority":  17,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-018",
+                      "title":  "若依工作概览真实闭环",
+                      "type":  "integration",
+                      "description":  "实现后台工作概览统计内容数、产品数、账号数、当日操作数和最近发布内容。",
+                      "source_feature":  "B11；P10",
+                      "acceptanceCriteria":  [
+                                                 "已登录用户打开工作概览可看到真实统计指标。",
+                                                 "最近发布内容来自真实内容表。",
+                                                 "页面不显示 Mock-only 文案。"
+                                             ],
+                      "technicalChecks":  [
+                                              "backend Maven 测试通过。",
+                                              "ruoyi-ui 概览页面验证通过。",
+                                              "GET /api/admin/dashboard/summary 契约测试通过。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/admin/dashboard"
+                                                            ],
+                                                  "services":  [
+                                                                   "ruoyi-ui/src/**"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "GET /api/admin/dashboard/summary"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8"
+                                           ],
+                      "dependencies":  [
+                                           "T-017"
+                                       ],
+                      "priority":  18,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-019",
+                      "title":  "初始账号与 112 条产品数据真实闭环",
+                      "type":  "integration",
+                      "description":  "建立可重复执行的初始化策略，创建管理员和演示账号，导入 112 条金融产品数据并校验涉农/小微分类数量。",
+                      "source_feature":  "B12",
+                      "acceptanceCriteria":  [
+                                                 "初始化后产品总数为 112，涉农 52 条，小微 60 条。",
+                                                 "固定银行和阳光惠农贷特殊行校验通过。",
+                                                 "本地测试密码和 JWT 值不写入代码、docs/** 或 .sdd/**。"
+                                             ],
+                      "technicalChecks":  [
+                                              "初始化脚本或 SQL 可重复执行。",
+                                              "backend Maven 测试通过。",
+                                              "H5 与后台产品页面显示真实 seed 数据。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/h5/financial/products",
+                                                                "/admin/products"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/publicProductService.ts",
+                                                                   "ruoyi-ui/src/**"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "GET /api/public/products",
+                                                                           "GET /api/admin/products"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8",
+                                               "JWT 签名密钥"
+                                           ],
+                      "dependencies":  [
+                                           "T-018"
+                                       ],
+                      "priority":  19,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-020",
+                      "title":  "全部页面退出 Mock 联调审计",
+                      "type":  "integration",
+                      "description":  "审计 H5 与若依后台所有业务页面，确认首次真实联调已在各任务中完成，页面不再依赖 Mock-only 文案或数据。",
+                      "source_feature":  "B13",
+                      "acceptanceCriteria":  [
+                                                 "VITE_USE_MOCK=false 时 H5 页面命中真实 Spring Boot API。",
+                                                 "若依后台业务页面命中真实后端接口。",
+                                                 "所有业务页面无 [Mock] 或等价 Mock-only 文案。"
+                                             ],
+                      "technicalChecks":  [
+                                              "frontend npm run typecheck、test、build 通过。",
+                                              "backend Maven 测试和短时启动通过。",
+                                              "ruoyi-ui 构建或 lint 通过。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/h5/*",
+                                                                "/admin/*"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/src/services/*",
+                                                                   "ruoyi-ui/src/**"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "/api/public/*",
+                                                                           "/api/admin/*",
+                                                                           "/api/auth/*"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8",
+                                               "JWT 签名密钥",
+                                               "本地附件目录"
+                                           ],
+                      "dependencies":  [
+                                           "T-019"
+                                       ],
+                      "priority":  20,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  },
+                  {
+                      "id":  "T-021",
+                      "title":  "E2E 回归、启动文档与交付检查",
+                      "type":  "integration",
+                      "description":  "执行 H5 与若依后台全链路回归，生成 docs/startup.md，记录 H5、backend、ruoyi-ui 的启动命令、端口、配置字段和 fallback 边界。",
+                      "source_feature":  "B14",
+                      "acceptanceCriteria":  [
+                                                 "按启动文档可启动 H5、若依后端和若依后台。",
+                                                 "H5 和后台核心链路均可完成业务验收。",
+                                                 "docs/startup.md 不包含真实密码、JWT Secret 或可还原片段。"
+                                             ],
+                      "technicalChecks":  [
+                                              "frontend npm run typecheck、test、build 通过。",
+                                              "backend .\\mvnw.cmd test 与健康检查通过。",
+                                              "ruoyi-ui 构建或 lint 通过。",
+                                              "docs/startup.md 已生成并通过敏感信息检查。"
+                                          ],
+                      "frontendIntegration":  {
+                                                  "required":  true,
+                                                  "pages":  [
+                                                                "/h5/*",
+                                                                "/admin/*"
+                                                            ],
+                                                  "services":  [
+                                                                   "frontend/**",
+                                                                   "backend/**",
+                                                                   "ruoyi-ui/**"
+                                                               ],
+                                                  "realApiEndpoints":  [
+                                                                           "GET /health",
+                                                                           "/api/public/*",
+                                                                           "/api/admin/*",
+                                                                           "/api/auth/*"
+                                                                       ],
+                                                  "mockExitCriteria":  [
+
+                                                                       ]
+                                              },
+                      "externalServices":  [
+                                               "MySQL 8",
+                                               "JWT 签名密钥",
+                                               "本地附件目录",
+                                               "SAFE 外部地址"
+                                           ],
+                      "dependencies":  [
+                                           "T-020"
+                                       ],
+                      "priority":  21,
+                      "rules_files":  [
+                                          "dev-standards/frontend.md",
+                                          "dev-standards/backend-dev.md",
+                                          "dev-standards/backend-layers.md"
+                                      ],
+                      "status":  "pending",
+                      "developer_id":  null,
+                      "tester_id":  null,
+                      "retry_count":  0,
+                      "blocked":  false,
+                      "notes":  "",
+                      "user_gate":  true
+                  }
+              ]
+}

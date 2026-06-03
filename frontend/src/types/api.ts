@@ -102,3 +102,77 @@ export interface DashboardSummaryData {
   today_operation_count: number
   recent_contents: DashboardRecentContent[]
 }
+
+export interface AdminAttachmentUploadData {
+  id: number
+  file_name: string
+  file_type: AttachmentFileType
+  file_size: number
+  download_url: string
+}
+
+export interface AdminAttachmentDeleteData {
+  deleted: true
+}
+
+export interface AdminContentListItem {
+  id: number
+  title: string
+  category: ContentCategory
+  office_code: string
+  office_name: string
+  published_at: string
+}
+
+export type AdminContentListData = PaginatedData<AdminContentListItem>
+
+export interface AdminContentListParams {
+  keyword?: string
+  category?: ContentCategory | ''
+  office_code?: string
+  published_from?: string
+  published_to?: string
+  page: number
+  page_size: number
+}
+
+export interface AdminContentSaveRequest {
+  title: string
+  category: ContentCategory
+  office_code: string
+  rich_text_html: string
+  attachment_ids: number[]
+}
+
+export interface AdminContentCreateData {
+  id: number
+  published_at: string
+}
+
+export interface AdminContentAttachment {
+  id: number
+  file_name: string
+  file_type: AttachmentFileType
+  file_size: number
+  download_url: string
+}
+
+export interface AdminContentDetailData {
+  id: number
+  title: string
+  category: ContentCategory
+  office_code: string
+  office_name: string
+  rich_text_html: string
+  published_at: string
+  attachments: AdminContentAttachment[]
+}
+
+export interface AdminContentUpdateData {
+  id: number
+  updated: true
+}
+
+export interface AdminContentDeleteData {
+  deleted: true
+}
