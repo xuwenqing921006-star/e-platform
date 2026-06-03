@@ -581,12 +581,12 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
-                      "developer_id":  null,
-                      "tester_id":  null,
+                      "status":  "passed",
+                      "developer_id":  "xuwenqing",
+                      "tester_id":  "codex-main",
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "Implemented GET /api/public/contents and /api/public/contents/{id} with mapper pagination, DTO mapping, 400/404 contract responses, H2/MySQL seed coverage, MockMvc endpoint tests, and frontend real-mode mock notice guard.",
                       "user_gate":  true
                   },
                   {

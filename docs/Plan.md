@@ -310,11 +310,17 @@ frontend/
 
 ### B03 公开 H5 内容查询
 
-- [ ] 补充分层实现思路。
-- [ ] 实现市级与县域服务指引自动分流。
-- [ ] 实现文章列表、详情和分页。
-- [ ] 前端 H5 内容页面切到真实接口验证。
-- [ ] 自动验证通过。
+- [x] 补充分层实现思路。
+- 分层实现思路：
+  - Mapper：在 `CbContentMapper` 中补充公开列表 count/list 查询，按 `category`、`scope`、`county_code` 过滤并按发布时间倒序分页。
+  - Service：`PublicContentService` 负责参数校验、DTO 映射、`published_at` +08:00 字符串格式化和附件最多 3 个截断。
+  - Controller：`PublicContentController` 提供 `GET /api/public/contents` 与 `GET /api/public/contents/{id}`，400/404 返回统一 `{ code, message, data }`。
+  - 前端：现有 `publicContentService` 在 `VITE_USE_MOCK=false` 下通过 Axios 命中 `/api/public/contents*`，H5 Mock 提示仅 Mock 模式显示。
+  - 测试：用 H2 seed、service 单测、MockMvc 路径测试和前端源码/构建验证真实接口切换边界。
+- [x] 实现市级与县域服务指引自动分流。
+- [x] 实现文章列表、详情和分页。
+- [x] 前端 H5 内容页面切到真实接口验证。
+- [x] 自动验证通过：`frontend npm run typecheck/test/build`、`backend .\mvnw.cmd -q -pl central-bank-business -am test`、`backend .\mvnw.cmd -q test`。
 
 ### B04 公开 H5 产品查询
 

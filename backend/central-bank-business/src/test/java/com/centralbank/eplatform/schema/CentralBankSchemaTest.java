@@ -20,8 +20,8 @@ class CentralBankSchemaTest
             runSql(connection, "sql/central_bank_schema_h2.sql");
             runSql(connection, "sql/central_bank_seed_h2.sql");
 
-            assertThat(count(connection, "cb_content")).isEqualTo(1);
-            assertThat(count(connection, "cb_attachment")).isEqualTo(1);
+            assertThat(count(connection, "cb_content")).isEqualTo(4);
+            assertThat(count(connection, "cb_attachment")).isEqualTo(4);
             assertThat(count(connection, "cb_financial_product")).isEqualTo(1);
             assertThat(count(connection, "cb_account_extension")).isEqualTo(1);
         }

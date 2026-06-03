@@ -21,8 +21,30 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         select count(1) from cb_content
     </select>
 
+    <select id="countPublicContents" resultType="int">
+        select count(1)
+        from cb_content
+        where category = #{category}
+          and scope = #{scope}
+        <if test="countyCode != null and countyCode != ''">
+          and county_code = #{countyCode}
+        </if>
+    </select>
+
     <select id="selectContentById" parameterType="long" resultMap="CbContentResult">
         select * from cb_content where id = #{id}
+    </select>
+
+    <select id="selectPublicContents" resultMap="CbContentResult">
+        select *
+        from cb_content
+        where category = #{category}
+          and scope = #{scope}
+        <if test="countyCode != null and countyCode != ''">
+          and county_code = #{countyCode}
+        </if>
+        order by published_at desc, id desc
+        limit #{pageSize} offset #{offset}
     </select>
 
     <select id="selectRecentContents" parameterType="int" resultMap="CbContentResult">

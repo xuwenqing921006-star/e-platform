@@ -91,3 +91,9 @@
 - **经验**：安全过滤器中使用 `JSONWriter.Feature.WriteMapNullValue` 输出 401/403，保证 `{ code, message, data }` 结构稳定。
 - **避坑**：`spring-boot:run` 带 `-am` 时可能在父工程执行并找不到 main class；短启动验证优先用 `-pl ruoyi-admin -am -DskipTests package` 打 jar，再 `java -jar` 指定 profile 和端口。
 - **后续边界**：T-009 只完成安全链、契约响应和配置入口适配；完整 `/api/auth/*` 登录、当前用户、本人改密和具体业务 API 联调留给后续闭环任务。
+### T-010: H5 公开内容查询真实联调闭环
+- **陷阱**：Java `LocalDateTime` 直接交给 Jackson 可能与前端契约中的 `published_at` 字符串不一致；公开 H5 DTO 应在 service 层明确格式化为 `+08:00` ISO 字符串。
+- **经验**：公开接口 DTO 独立于数据库 domain，列表只暴露摘要字段，详情才暴露富文本和附件；附件在 service 层截断到最多 3 个，避免 mapper 或页面重复实现限制。
+- **陷阱**：前端切到 `VITE_USE_MOCK=false` 后，如果页面仍无条件渲染 Mock 提示，即使数据来自真实接口也会失败。
+- **避坑**：Mock 提示、Mock banner 和 Mock-only 文案必须绑定 mock mode；真实接口联调任务除了 service 路径，还要检查页面可见文案。
+- **后续边界**：真实 MySQL 未提供时，只能用 H2 seed 与 MockMvc 验证契约路径；不要宣称真实数据库已联调。附件下载文件流仍归 T-012。
