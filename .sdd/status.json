@@ -5,9 +5,9 @@
     "development_ready":  true,
     "current_task":  "T-021",
     "blocked":  false,
-    "external_services_mode":  "local_fallback",
+    "external_services_mode":  "local_docker_verified",
     "external_services":  {
-                              "mysql":  "fallback_h2_until_integration",
+                              "mysql":  "docker_mysql8_verified",
                               "attachment_storage":  "project_local_temp_directory",
                               "jwt_secret":  "local_uncommitted_test_value",
                               "safe_url":  "confirmed_no_secret",
@@ -18,5 +18,5 @@
                  "version":  "21.0.11",
                  "home":  "local JAVA_HOME / PATH"
              },
-    "notes":  "T-020 已通过 Tester 验证；T-021 E2E 回归、启动文档与交付检查待用户确认后开始。"
+    "notes":  "T-021 Tester PASS：已独立验证 Docker MySQL 8 与 Redis 7 容器 healthy、Redis PONG、MySQL central_bank_e_platform/sys_user/cb_financial_product 初始化、sys_user=2、cb_financial_product=10、central_bank 业务用户可查询核心表；JSON 校验、audit-mock-exit、frontend typecheck/test/build、backend central-bank-business -am test、ruoyi-admin package、ruoyi-ui build:prod 和真实 profile 短启动 /health + 公开产品接口均通过。"
 }

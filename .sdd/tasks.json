@@ -1189,12 +1189,12 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
+                      "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已独立验证 docs/startup.md 覆盖 H5、若依后端、ruoyi-ui、Docker MySQL/Redis 启动命令、端口、配置字段和用户验收步骤；未发现真实密码、JWT Secret、Token 或可还原片段；Docker MySQL 8 与 Redis 7 healthy，Redis PONG，MySQL central_bank_e_platform/sys_user/cb_financial_product 初始化，sys_user=2、cb_financial_product=10，central_bank 业务用户可查询核心表；JSON 校验、audit-mock-exit、frontend typecheck/test/build、backend central-bank-business -am test、ruoyi-admin package、ruoyi-ui build:prod 和真实 profile 短启动 /health + 公开产品接口均通过。",
                       "user_gate":  true
                   }
               ]

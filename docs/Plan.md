@@ -30,7 +30,7 @@
 | F09 | 操作日志 | 查询关键后台操作 | A10 | MVP | 待开发 |
 | F10 | 修改本人密码 | 已登录用户修改自己的密码 | A11 | MVP | 待开发 |
 | F11 | 真实接口联调 | 前端退出默认 Mock，逐模块接入 Spring Boot | 全部页面 | MVP | 待开发 |
-| F12 | E2E 与交付 | 全链路回归并输出启动文档 | 全部页面 | MVP | 待开发 |
+| F12 | E2E 与交付 | 全链路回归并输出启动文档 | 全部页面 | MVP | 已完成 |
 
 ## 二、数据契约摘要
 
@@ -100,7 +100,7 @@
 
 | 服务 | 用途 | 配置字段 | MVP 必需 | Tester 完整联调权限 | 缺失时策略 | 状态 |
 | --- | --- | --- | --- | --- | --- | --- |
-| MySQL 8 | 业务数据持久化 | `DB_URL`、`DB_USERNAME`、`DB_PASSWORD` | 是 | 本地或测试环境数据库 | Agent 开发阶段可使用隔离 H2，真实 MySQL 联调前需补充 | 待确认 |
+| MySQL 8 | 业务数据持久化 | `DB_URL`、`DB_USERNAME`、`DB_PASSWORD` | 是 | 本地或测试环境数据库 | 项目 Docker Compose 可启动本地 MySQL 8 并执行初始化；无 Docker/端口占用时回退 H2 自动化边界 | Docker 本地已验证 |
 | 本地附件目录 | 存储上传附件 | `APP_STORAGE_ROOT` | 是 | 可读写测试目录 | 使用项目内临时测试目录验证 | 待确认 |
 | JWT 签名密钥 | 后台登录 Token | `APP_JWT_SECRET` | 是 | 本地测试 Secret | 本地开发使用不提交的测试值 | 待确认 |
 | SAFE 外部地址 | H5 外链跳转 | 固定地址，无密钥 | 是 | 可访问互联网 | 无网络时只验证链接地址 | 已确认 |
@@ -218,7 +218,7 @@ frontend/
 | B11 | 工作概览 | B06、B07、B09、B10 | `GET /api/admin/dashboard/summary` | 已完成 |
 | B12 | 初始数据 | B01、B07、B09 | 管理员、10 条真实样本产品、演示内容 | 已完成 |
 | B13 | 真实前后端联调 | B02 至 B12 | 所有接口 | 已完成 |
-| B14 | E2E 与交付文档 | B13 | `docs/startup.md` | 待开发 |
+| B14 | E2E 与交付文档 | B13 | `docs/startup.md` | 已完成 |
 
 ### 4.3 后端文件结构
 
@@ -458,11 +458,18 @@ frontend/
 
 ### B14 E2E 与交付文档
 
-- [ ] 执行 H5 和后台全链路回归。
-- [ ] 执行前端 typecheck、test、build。
-- [ ] 执行后端 Maven 测试和短时启动检查。
-- [ ] 输出 `docs/startup.md`。
-- [ ] 自动验证通过。
+- 分层实现思路（T-021）：
+  - 交付审计：扩展 `scripts/audit-mock-exit.mjs`，在退出 Mock 审计之外增加 `docs/startup.md` 存在性、关键启动字段、Docker/MySQL/Redis/fallback 边界和敏感片段扫描。
+  - 启动文档：新增 `docs/startup.md`，分别记录 H5、若依后端和 `ruoyi-ui` 的 Agent 验证端口、用户验收端口、启动命令、构建命令、配置字段和真实联调边界。
+  - 验证边界：health profile 只验证 Spring Boot 进程和 `/health`；完整后台登录与业务链路需要真实 MySQL 8、Redis、附件目录和本地 JWT Secret，自动化测试不得宣称真实 MySQL 已联调。
+  - 回归命令：执行 JSON 校验、Mock 退出/交付审计、H5 typecheck/lint/test/build、后端业务模块测试、`ruoyi-admin` 打包、`ruoyi-ui` 生产构建、后端 health 短启动和可行的轻量页面路径检查。
+- [x] 执行 H5 和后台全链路回归（自动化 fallback：H5 `/h5` 入口、`ruoyi-ui` `/` 入口、后端 `health` profile；真实 MySQL/Redis 业务链路留待 Tester 或用户环境）。
+- [x] 执行前端 typecheck、test、build。
+- [x] 执行后端 Maven 测试和短时启动检查。
+- [x] 输出 `docs/startup.md`。
+- [x] Tester 复核通过：JSON 校验、Mock 退出/交付审计、H5 typecheck/test/build、后端 business test、`ruoyi-admin` package、`ruoyi-ui build:prod` 均通过；本轮已验证 Docker MySQL/Redis healthy、核心表和 seed 数量、业务用户查询，以及后端真实 profile `/health` 与公开产品接口 HTTP 200。
+- [x] 自动验证通过：JSON 校验、`node scripts/audit-mock-exit.mjs`、H5 typecheck/lint/test/build、`central-bank-business -am test`、`ruoyi-admin -am -DskipTests package`、`ruoyi-ui build:prod`、health profile `/health`、H5/ruoyi-ui 轻量 dev 入口检查。
+- [x] Docker/MySQL/Redis 交付补强复核：项目根 `docker-compose.yml` 使用 MySQL 8 和 Redis 7；MySQL 初始化顺序固定为若依基础 SQL、Quartz、央行业务 schema、seed、内容/产品/账号/日志菜单 SQL；后端默认 JDBC URL 包含 `allowPublicKeyRetrieval=true` 与 `useSSL=false`；Tester 已复核 Docker 容器健康、Redis ping、MySQL 核心表、seed 数量和真实 profile 短启动。
 - [ ] 用户最终验收通过。
 
 ## 六、开发顺序
@@ -548,7 +555,7 @@ VITE_BACKEND_PROXY_TARGET=http://localhost:8099
 ### 8.2 后端
 
 ```env
-DB_URL=jdbc:mysql://localhost:3306/central_bank_e_platform
+DB_URL=jdbc:mysql://localhost:3306/central_bank_e_platform?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT%2B8
 DB_USERNAME=
 DB_PASSWORD=
 APP_STORAGE_ROOT=

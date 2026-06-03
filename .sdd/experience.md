@@ -139,3 +139,10 @@
 - **陷阱**：退出 Mock 不能只把页面提示绑定到 `VITE_USE_MOCK=false`；如果 axios adapter 使用“非 false 即 Mock”，缺省环境仍会走 Mock，若依后台也可能留下源码/文档入口、默认标题、默认账号密码等非业务可见内容。
 - **经验**：默认真实验收路径应反向定义：只有显式 `VITE_USE_MOCK=true` 才启用集中 Mock；单测需要 Mock 时用 `.env.test` 单独声明。审计脚本应同时扫 H5 页面/config/service、若依业务 API、后台首页/登录/布局。
 - **避坑**：保留集中 Mock fixture 可以接受，但页面层不要保留 `[Mock]` 横幅或 Mock-only 样式；若依模板组件即使已从导航摘除，也要删除未用源码/文档入口组件，避免后续静态扫描误报或被重新挂回。
+
+### T-021: E2E 回归、启动文档与交付检查
+- **陷阱**：`health` profile 可以证明 Spring Boot 进程和 `/health`，但它刻意隔离 MySQL/Redis/MyBatis；若把它写成完整业务 profile 联调通过，会误导最终验收。
+- **经验**：交付文档也需要自动审计。`scripts/audit-mock-exit.mjs` 同时检查 `docs/startup.md` 是否存在、是否覆盖 H5/backend/ruoyi-ui 启动字段、Docker/MySQL/Redis/fallback 边界，并扫描常见密钥、JWT 和 Bearer Token 片段。
+- **避坑**：启动文档只写配置字段名和占位符；真实 MySQL 8、Redis、附件目录和 JWT Secret 必须由 Tester/用户本地环境提供后再做完整业务链路，不得用 H2 fallback 或 health profile 冒充。
+- **本轮 Docker 补强经验**：本地 Docker 交付优先用 compose 挂载现有 SQL，并用 `/docker-entrypoint-initdb.d/NN-*.sql` 文件名确定首次初始化顺序；不要复制聚合 SQL，避免 seed 和菜单脚本后续漂移。
+- **本轮 Docker 避坑**：MySQL 8 的 JDBC URL 必须显式包含 `allowPublicKeyRetrieval=true` 与 `useSSL=false`；compose 可使用 local-only placeholder 或环境变量插值，但文档、Plan、审计报告中只能写字段名和占位符。
