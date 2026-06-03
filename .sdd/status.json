@@ -18,5 +18,5 @@
                  "version":  "21.0.11",
                  "home":  "local JAVA_HOME / PATH"
              },
-    "notes":  "T-010 已完成 H5 公开内容查询真实接口闭环；下一步进入 T-011 H5 公开金融产品查询真实联调。真实 MySQL 8 仍使用 H2/local fallback 边界，不宣称已联调。"
+    "notes":  "用户要求暂停开发。当前已提交至 T-010，暂停点为 T-011 H5 公开金融产品查询真实联调开始前；真实 MySQL 8 仍使用 H2/local fallback 边界，不宣称已联调。"
 }

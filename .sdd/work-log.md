@@ -17,3 +17,9 @@
 - 验证 `frontend npm run typecheck/test/build`、`backend/.mvnw.cmd -q -pl central-bank-business -am test`、`backend/.mvnw.cmd -q test`。
 - 下一步进入 T-011：H5 公开金融产品查询真实联调闭环。
 
+## 2026-06-03 暂停开发
+
+- 用户要求提交并保存后暂停开发。
+- 当前暂停点：T-011 开始前。
+- 已提交至 T-010；根目录未跟踪 `package-lock.json` 未纳入提交。
+
