@@ -212,9 +212,9 @@ frontend/
 | B05 | 本地附件存储 | B00、B02 | `/api/admin/attachments*`、公开下载 | 待开发 |
 | B06 | 后台内容管理 | B01、B02、B05 | `/api/admin/contents*` | 待开发 |
 | B07 | 后台产品管理 | B01、B02、B04 | `/api/admin/products*`、模板下载 | 待开发 |
-| B08 | Excel 导入产品 | B07 | `/api/admin/products/import/*` | 待开发 |
-| B09 | 后台账号管理 | B01、B02 | `/api/admin/accounts*` | 待开发 |
-| B10 | 操作日志 | B02 | `GET /api/admin/audit-logs` | 待开发 |
+| B08 | Excel 导入产品 | B07 | `/api/admin/products/import/*` | 已完成 |
+| B09 | 后台账号管理 | B01、B02 | `/api/admin/accounts*` | 已完成 |
+| B10 | 操作日志 | B02 | `GET /api/admin/audit-logs` | 已完成 |
 | B11 | 工作概览 | B06、B07、B09、B10 | `GET /api/admin/dashboard/summary` | 待开发 |
 | B12 | 初始数据 | B01、B07、B09 | 管理员、112 条产品、演示内容 | 待开发 |
 | B13 | 真实前后端联调 | B02 至 B12 | 所有接口 | 待开发 |
@@ -365,33 +365,57 @@ frontend/
 
 ### B07 后台产品管理
 
-- [ ] 补充分层实现思路。
-- [ ] 实现产品 CRUD、固定银行校验和模板下载。
-- [ ] 产品模型严格限制为 7 个业务字段。
-- [ ] 前端产品管理切到真实接口验证。
-- [ ] 自动验证通过。
+- 分层实现思路（T-014）：
+  - Domain/Mapper：复用 `CbFinancialProduct`，在 `CbFinancialProductMapper` 增加后台分页查询、按名称/银行/类型筛选、插入、更新和删除。
+  - Service：新增 `AdminProductService`，统一校验分页、固定银行、产品类型和 7 个业务字段；产品管理权限限定管理员或货币信贷政策管理科账号。
+  - Controller：新增 `/api/admin/products*` CRUD，并按契约提供 `GET /api/admin/products/import-template/download` xlsx 模板流。
+  - ruoyi-ui：新增 `centralbank/product` API 与页面，列表不展示参考利率，表单只维护银行机构、产品名称、类型、准入条件、产品介绍、业务经办人、联系方式。
+  - 测试：用 service/controller 单测覆盖权限、契约字段、模板表头和无参考利率字段；执行后端 Maven 测试、ruoyi-ui 构建和 ruoyi-admin 打包。
+- [x] 补充分层实现思路。
+- [x] 实现产品 CRUD、固定银行校验和模板下载。
+- [x] 产品模型严格限制为 7 个业务字段。
+- [x] 前端产品管理切到真实接口验证。
+- [x] 自动验证通过：backend Maven test/package、ruoyi-ui build。
 
 ### B08 Excel 导入产品
 
-- [ ] 补充分层实现思路。
-- [ ] 实现 xlsx 校验、错误行反馈、一次性导入 Token 和确认提交。
-- [ ] 验证 `阳光惠农贷` 特殊行。
-- [ ] 前端导入页切到真实接口验证。
-- [ ] 自动验证通过。
+- 分层实现思路（T-015）：
+  - Service：新增金融产品导入服务，只解析 xlsx 首个工作表的 7 个确认业务字段，校验必填、固定银行和产品类型；`阳光惠农贷` 按固定银行特殊项通过，不新增参考利率等字段。
+  - Token：校验通过的数据以一次性 `import_token` 暂存，确认提交后写入通过校验的产品并立即失效，重复提交返回 409。
+  - Controller：提供 `POST /api/admin/products/import/validate` 和 `POST /api/admin/products/import/commit`，响应字段严格对齐 `docs/api-contracts.md`。
+  - ruoyi-ui：新增 Excel 导入页，按 A07 原型展示上传、校验汇总、错误行表格、返回产品列表和确认导入；产品列表只增加原型已有的 Excel 导入入口。
+  - 测试：先覆盖 xlsx 校验统计、错误行、固定银行、`阳光惠农贷` 特殊行、一次性提交和接口响应，再执行 backend Maven 与 ruoyi-ui 构建验证。
+- [x] 补充分层实现思路。
+- [x] 实现 xlsx 校验、错误行反馈、一次性导入 Token 和确认提交。
+- [x] 验证 `阳光惠农贷` 特殊行。
+- [x] 前端导入页切到真实接口验证。
+- [x] 自动验证通过：`backend .\mvnw.cmd -q -pl central-bank-business -am test`、`backend .\mvnw.cmd -q -pl ruoyi-admin -am -DskipTests package`、`ruoyi-ui npm run build:prod`。
 
 ### B09 后台账号管理
 
-- [ ] 补充分层实现思路。
-- [ ] 实现账号 CRUD、状态、办公室绑定和密码重置。
-- [ ] 前端账号页切到真实接口验证。
-- [ ] 自动验证通过。
+- 分层实现思路（T-016）：
+  - Mapper：复用若依 `sys_user` 作为登录账号主体，扩展 `cb_account_extension` 的分页查询、创建、更新、删除和启停字段维护，不复制若依系统用户管理页面的无关字段。
+  - Service：新增后台账号服务，只允许管理员管理账号；普通账号必须绑定固定办公室，管理员账号不强制绑定办公室；禁止删除当前登录账号。
+  - Controller：提供 `/api/admin/accounts*` CRUD 与 `/reset-password`，响应字段严格对齐 `docs/api-contracts.md`。
+  - ruoyi-ui：新增账号管理列表与新增/编辑页面，按 A08/A09 只展示原型字段；不加入部门、岗位、邮箱、手机号等若依默认字段。
+  - 测试：覆盖管理员权限、普通账号办公室绑定、重复账号、当前账号不可删除、重置密码、接口契约和前端构建。
+- [x] 补充分层实现思路。
+- [x] 实现账号 CRUD、状态、办公室绑定和密码重置。
+- [x] 前端账号页切到真实接口验证。
+- [x] 自动验证通过：`backend .\mvnw.cmd -q -pl central-bank-business -am test`、`backend .\mvnw.cmd -q -pl ruoyi-admin -am -DskipTests package`、`ruoyi-ui npm.cmd run build:prod`。
 
 ### B10 操作日志
 
-- [ ] 补充分层实现思路。
-- [ ] 实现关键动作记录和管理员分页查询。
-- [ ] 前端日志页切到真实接口验证。
-- [ ] 自动验证通过。
+- 分层实现思路（T-017）：
+  - Mapper：复用若依 `sys_oper_log` 作为日志落点，新增本项目查询 mapper，将若依字段映射为 `operator_name/operation_type/object_type/object_name/description/operated_at`。
+  - Service：只允许管理员查询；按操作人、类型、时间范围分页；记录关键动作时统一脱敏密码、JWT Secret、token 等敏感字段。
+  - Controller：提供 `GET /api/admin/audit-logs`，响应严格对齐 `docs/api-contracts.md`。
+  - ruoyi-ui：新增 A10 操作日志页，只保留原型中的查询、重置和列表，不加入若依默认导出、清空、删除等额外功能。
+  - 测试：覆盖查询过滤、权限 403、契约响应、记录动作和敏感信息脱敏。
+- [x] 补充分层实现思路。
+- [x] 实现操作日志查询与记录服务。
+- [x] 前端日志页切到真实接口验证。
+- [x] 自动验证通过：`backend mvn -q -pl central-bank-business -am test`、`backend mvn -q -pl ruoyi-admin -am -DskipTests package`、`ruoyi-ui npm.cmd run build:prod`。
 
 ### B11 工作概览
 

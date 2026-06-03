@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.centralbank.eplatform.domain.CbAccountExtension;
 import com.centralbank.eplatform.domain.CbAttachment;
@@ -48,10 +49,21 @@ public class AdminContentService
     private final AttachmentStorageService attachmentStorageService;
     private final FixedOptionsService fixedOptionsService;
     private final AdminOperatorContext operatorContext;
+    private final AuditLogRecorder auditLogRecorder;
 
     public AdminContentService(CbContentMapper contentMapper, CbAttachmentMapper attachmentMapper,
             CbAccountExtensionMapper accountExtensionMapper, AttachmentStorageService attachmentStorageService,
             FixedOptionsService fixedOptionsService, AdminOperatorContext operatorContext)
+    {
+        this(contentMapper, attachmentMapper, accountExtensionMapper, attachmentStorageService, fixedOptionsService,
+                operatorContext, AuditLogRecorder.noop());
+    }
+
+    @Autowired
+    public AdminContentService(CbContentMapper contentMapper, CbAttachmentMapper attachmentMapper,
+            CbAccountExtensionMapper accountExtensionMapper, AttachmentStorageService attachmentStorageService,
+            FixedOptionsService fixedOptionsService, AdminOperatorContext operatorContext,
+            AuditLogRecorder auditLogRecorder)
     {
         this.contentMapper = contentMapper;
         this.attachmentMapper = attachmentMapper;
@@ -59,6 +71,7 @@ public class AdminContentService
         this.attachmentStorageService = attachmentStorageService;
         this.fixedOptionsService = fixedOptionsService;
         this.operatorContext = operatorContext;
+        this.auditLogRecorder = auditLogRecorder;
     }
 
     public PaginatedData<AdminContentListItem> list(String keyword, String category, String officeCode,
@@ -104,6 +117,7 @@ public class AdminContentService
         content.setUpdatedAt(now);
         contentMapper.insertContent(content);
         bindAttachments(content.getId(), request.attachmentIds());
+        auditLogRecorder.record("CREATE", "CONTENT", content.getTitle(), "新增政策宣传内容");
         return new AdminContentCreateData(content.getId(), format(content.getPublishedAt()));
     }
 
@@ -143,6 +157,7 @@ public class AdminContentService
         contentMapper.updateContent(existing);
         attachmentMapper.clearAttachmentsByContentId(existing.getId());
         bindAttachments(existing.getId(), request.attachmentIds());
+        auditLogRecorder.record("UPDATE", "CONTENT", existing.getTitle(), "更新附件与正文说明");
         return new AdminContentUpdateData(existing.getId(), true);
     }
 
@@ -159,6 +174,7 @@ public class AdminContentService
             attachmentStorageService.delete(attachment.getId());
         }
         contentMapper.deleteContentById(existing.getId());
+        auditLogRecorder.record("DELETE", "CONTENT", existing.getTitle(), "删除已失效展示内容");
         return new AdminContentDeleteData(true);
     }
 

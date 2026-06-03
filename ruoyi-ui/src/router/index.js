@@ -99,6 +99,48 @@ export const constantRoutes = [
 // 动态路由，基于用户权限动态去加载
 export const dynamicRoutes = [
   {
+    path: '/centralbank/product/import',
+    component: Layout,
+    hidden: true,
+    permissions: ['centralbank:product:import'],
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/centralbank/product/import'),
+        name: 'CentralBankProductImport',
+        meta: { title: 'Excel 导入', activeMenu: '/centralbank/product' }
+      }
+    ]
+  },
+  {
+    path: '/centralbank/account/new',
+    component: Layout,
+    hidden: true,
+    permissions: ['centralbank:account:add'],
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/centralbank/account/form'),
+        name: 'CentralBankAccountCreate',
+        meta: { title: '新增账号', activeMenu: '/centralbank/account' }
+      }
+    ]
+  },
+  {
+    path: '/centralbank/account/edit/:id(\\d+)',
+    component: Layout,
+    hidden: true,
+    permissions: ['centralbank:account:edit'],
+    children: [
+      {
+        path: '',
+        component: () => import('@/views/centralbank/account/form'),
+        name: 'CentralBankAccountEdit',
+        meta: { title: '编辑账号', activeMenu: '/centralbank/account' }
+      }
+    ]
+  },
+  {
     path: '/system/user-auth',
     component: Layout,
     hidden: true,

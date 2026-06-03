@@ -31,4 +31,66 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="selectProductById" parameterType="long" resultMap="CbFinancialProductResult">
         select * from cb_financial_product where id = #{id}
     </select>
+
+    <select id="countAdminProducts" resultType="int">
+        select count(1)
+        from cb_financial_product
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and product_name like concat('%', #{keyword}, '%')
+            </if>
+            <if test="bankCode != null and bankCode != ''">
+                and bank_code = #{bankCode}
+            </if>
+            <if test="productType != null and productType != ''">
+                and product_type = #{productType}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAdminProducts" resultMap="CbFinancialProductResult">
+        select id, bank_code, bank_name, product_name, product_type, updated_at
+        from cb_financial_product
+        <where>
+            <if test="keyword != null and keyword != ''">
+                and product_name like concat('%', #{keyword}, '%')
+            </if>
+            <if test="bankCode != null and bankCode != ''">
+                and bank_code = #{bankCode}
+            </if>
+            <if test="productType != null and productType != ''">
+                and product_type = #{productType}
+            </if>
+        </where>
+        order by updated_at desc, id desc
+        limit #{pageSize} offset #{offset}
+    </select>
+
+    <insert id="insertProduct" parameterType="com.centralbank.eplatform.domain.CbFinancialProduct">
+        insert into cb_financial_product (
+            id, bank_code, bank_name, product_name, product_type, admission_conditions,
+            product_intro, business_manager, contact_info, created_at, updated_at
+        ) values (
+            #{id}, #{bankCode}, #{bankName}, #{productName}, #{productType}, #{admissionConditions},
+            #{productIntro}, #{businessManager}, #{contactInfo}, #{createdAt}, #{updatedAt}
+        )
+    </insert>
+
+    <update id="updateProduct" parameterType="com.centralbank.eplatform.domain.CbFinancialProduct">
+        update cb_financial_product
+        set bank_code = #{bankCode},
+            bank_name = #{bankName},
+            product_name = #{productName},
+            product_type = #{productType},
+            admission_conditions = #{admissionConditions},
+            product_intro = #{productIntro},
+            business_manager = #{businessManager},
+            contact_info = #{contactInfo},
+            updated_at = #{updatedAt}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductById" parameterType="long">
+        delete from cb_financial_product where id = #{id}
+    </delete>
 </mapper>

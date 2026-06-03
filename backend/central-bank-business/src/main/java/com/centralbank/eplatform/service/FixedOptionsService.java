@@ -64,10 +64,57 @@ public class FixedOptionsService
                 .findFirst();
     }
 
+    public Optional<OptionItem> findBank(String bankCode)
+    {
+        return BANKS.stream()
+                .filter(bank -> bank.value().equals(bankCode))
+                .findFirst();
+    }
+
+    public Optional<OptionItem> findBankByValueOrLabel(String bankValueOrLabel)
+    {
+        String normalized = normalize(bankValueOrLabel);
+        return BANKS.stream()
+                .filter(bank -> normalize(bank.value()).equals(normalized)
+                        || normalize(bank.label()).equals(normalized)
+                        || (normalized.startsWith("中国")
+                                && normalize(bank.label()).equals(normalized.substring("中国".length()))))
+                .findFirst();
+    }
+
+    public Optional<OptionItem> findProductType(String productType)
+    {
+        return PRODUCT_TYPES.stream()
+                .filter(type -> type.value().equals(productType))
+                .findFirst();
+    }
+
+    public Optional<OptionItem> findProductTypeByValueOrLabel(String productTypeValueOrLabel)
+    {
+        String normalized = normalize(productTypeValueOrLabel);
+        if ("涉农信贷".equals(normalized))
+        {
+            normalized = "涉农产品";
+        }
+        if ("小微信贷".equals(normalized))
+        {
+            normalized = "小微产品";
+        }
+        final String target = normalized;
+        return PRODUCT_TYPES.stream()
+                .filter(type -> normalize(type.value()).equals(target) || normalize(type.label()).equals(target))
+                .findFirst();
+    }
+
     public boolean isCountyOffice(String officeCode)
     {
         return findOffice(officeCode)
                 .map(office -> office.countyCode() != null && !office.countyCode().isBlank())
                 .orElse(false);
+    }
+
+    private String normalize(String value)
+    {
+        return value == null ? "" : value.trim();
     }
 }

@@ -807,12 +807,12 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
+                      "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已实现若依后台金融产品列表/查询/分页、7 字段新增编辑详情删除，以及 GET /api/admin/products/import-template/download xlsx 模板下载；产品管理权限在服务端限定管理员或货币信贷政策管理科账号。真实 MySQL 8 等待本地安装后联调，本轮自动验证使用 H2/local fallback。",
                       "user_gate":  true
                   },
                   {
@@ -860,12 +860,12 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
+                      "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已实现 POST /api/admin/products/import/validate xlsx 校验、错误行反馈、import_token 暂存和 POST /api/admin/products/import/commit 一次性确认提交；阳光惠农贷和固定银行/产品类型校验通过；ruoyi-ui 新增 A07 Excel 导入页与产品列表入口，不新增参考利率等原型外字段。",
                       "user_gate":  true
                   },
                   {
@@ -914,12 +914,12 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
+                      "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已实现 /api/admin/accounts* 账号列表、新增、详情、编辑、删除、启停和重置密码；普通账号必须绑定办公室、管理员账号可不绑定、当前登录账号不可删除；ruoyi-ui A08/A09 只展示原型字段，不引入若依默认部门/岗位/邮箱/手机号。",
                       "user_gate":  true
                   },
                   {
@@ -965,12 +965,12 @@
                                           "dev-standards/backend-dev.md",
                                           "dev-standards/backend-layers.md"
                                       ],
-                      "status":  "pending",
+                      "status":  "passed",
                       "developer_id":  null,
                       "tester_id":  null,
                       "retry_count":  0,
                       "blocked":  false,
-                      "notes":  "",
+                      "notes":  "PASS: 已实现 GET /api/admin/audit-logs 管理员分页查询、操作人/类型/时间过滤、普通账号 403、关键动作记录与敏感字段脱敏；ruoyi-ui 新增 A10 操作日志页，只包含原型中的查询、重置和列表，不加入若依默认导出、清空、删除。",
                       "user_gate":  true
                   },
                   {

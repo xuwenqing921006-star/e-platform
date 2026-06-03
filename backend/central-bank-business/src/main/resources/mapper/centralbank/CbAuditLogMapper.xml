@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.centralbank.eplatform.mapper.CbAuditLogMapper">
+
+    <resultMap type="com.centralbank.eplatform.domain.CbAuditLog" id="CbAuditLogResult">
+        <id property="id" column="oper_id" />
+        <result property="operatorName" column="oper_name" />
+        <result property="operationType" column="operation_type" />
+        <result property="businessType" column="business_type" />
+        <result property="objectType" column="title" />
+        <result property="objectName" column="method" />
+        <result property="description" column="oper_param" />
+        <result property="operatedAt" column="oper_time" />
+    </resultMap>
+
+    <sql id="selectAuditLogVo">
+        select oper_id,
+               oper_name,
+               case business_type
+                   when 1 then 'CREATE'
+                   when 2 then 'UPDATE'
+                   when 3 then 'DELETE'
+                   when 6 then 'IMPORT'
+                   when 10 then 'ACCOUNT'
+                   when 11 then 'PASSWORD'
+                   else 'UPDATE'
+               end as operation_type,
+               business_type,
+               title,
+               method,
+               oper_param,
+               oper_time
+        from sys_oper_log
+    </sql>
+
+    <select id="countAuditLogs" resultType="int">
+        select count(1)
+        from sys_oper_log
+        <where>
+            <if test="operatorKeyword != null and operatorKeyword != ''">
+                and oper_name like concat('%', #{operatorKeyword}, '%')
+            </if>
+            <if test="businessType != null">
+                and business_type = #{businessType}
+            </if>
+            <if test="operatedFrom != null">
+                and oper_time &gt;= #{operatedFrom}
+            </if>
+            <if test="operatedTo != null">
+                and oper_time &lt;= #{operatedTo}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAuditLogs" resultMap="CbAuditLogResult">
+        <include refid="selectAuditLogVo" />
+        <where>
+            <if test="operatorKeyword != null and operatorKeyword != ''">
+                and oper_name like concat('%', #{operatorKeyword}, '%')
+            </if>
+            <if test="businessType != null">
+                and business_type = #{businessType}
+            </if>
+            <if test="operatedFrom != null">
+                and oper_time &gt;= #{operatedFrom}
+            </if>
+            <if test="operatedTo != null">
+                and oper_time &lt;= #{operatedTo}
+            </if>
+        </where>
+        order by oper_time desc, oper_id desc
+        limit #{pageSize} offset #{offset}
+    </select>
+
+    <insert id="insertAuditLog">
+        insert into sys_oper_log (
+            title, business_type, method, request_method, operator_type,
+            oper_name, oper_param, status, cost_time, oper_time
+        ) values (
+            #{objectType}, #{businessType}, #{objectName}, 'BUSINESS', 1,
+            #{operatorName}, #{description}, 0, 0, #{operatedAt}
+        )
+    </insert>
+</mapper>

@@ -11,6 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import org.apache.commons.io.FilenameUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import com.centralbank.eplatform.domain.CbAttachment;
@@ -41,6 +42,7 @@ public class AttachmentStorageService
     private final CbAttachmentMapper attachmentMapper;
     private final Path configuredStorageRoot;
 
+    @Autowired
     public AttachmentStorageService(CbAttachmentMapper attachmentMapper)
     {
         this(attachmentMapper, null);

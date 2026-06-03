@@ -118,5 +118,36 @@ class PublicProductServiceTest
         {
             return products.stream().filter(product -> Objects.equals(product.getId(), id)).findFirst().orElse(null);
         }
+
+        @Override
+        public int countAdminProducts(String keyword, String bankCode, String productType)
+        {
+            throw new UnsupportedOperationException("not needed");
+        }
+
+        @Override
+        public List<CbFinancialProduct> selectAdminProducts(String keyword, String bankCode, String productType,
+                int offset, int pageSize)
+        {
+            throw new UnsupportedOperationException("not needed");
+        }
+
+        @Override
+        public int insertProduct(CbFinancialProduct product)
+        {
+            throw new UnsupportedOperationException("not needed");
+        }
+
+        @Override
+        public int updateProduct(CbFinancialProduct product)
+        {
+            throw new UnsupportedOperationException("not needed");
+        }
+
+        @Override
+        public int deleteProductById(Long id)
+        {
+            throw new UnsupportedOperationException("not needed");
+        }
     }
 }

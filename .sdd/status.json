@@ -3,7 +3,7 @@
     "mode":  "new",
     "design_ready":  true,
     "development_ready":  true,
-    "current_task":  "T-013",
+    "current_task":  "T-018",
     "blocked":  false,
     "external_services_mode":  "local_fallback",
     "external_services":  {
@@ -18,5 +18,5 @@
                  "version":  "21.0.11",
                  "home":  "local JAVA_HOME / PATH"
              },
-    "notes":  "T-013 若依后台内容管理真实闭环已通过自动验证，等待用户门禁决定是否提交并进入 T-014；真实 MySQL 8 仍使用 H2/local fallback 边界，不宣称已联调。"
+    "notes":  "T-017 若依操作日志真实闭环已通过；准备进入 T-018 若依工作概览真实闭环。"
 }
