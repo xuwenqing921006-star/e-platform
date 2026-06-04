@@ -1,0 +1,56 @@
+# Production-only overrides. Start with:
+# --spring.profiles.active=prod,druid
+
+ruoyi:
+  name: central-bank-e-platform
+  profile: ${APP_STORAGE_ROOT:/app/uploads}
+  addressEnabled: false
+
+server:
+  port: ${SERVER_PORT:8003}
+  forward-headers-strategy: native
+  servlet:
+    context-path: /
+  tomcat:
+    uri-encoding: UTF-8
+
+logging:
+  level:
+    com.ruoyi: warn
+    com.centralbank: info
+    org.springframework: warn
+
+spring:
+  devtools:
+    restart:
+      enabled: false
+  datasource:
+    druid:
+      webStatFilter:
+        enabled: ${DRUID_WEB_STAT_ENABLED:false}
+      statViewServlet:
+        enabled: ${DRUID_STAT_ENABLED:false}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:0}
+      password: ${REDIS_PASSWORD:}
+      timeout: 10s
+
+token:
+  secret: ${APP_JWT_SECRET}
+  expireTime: ${APP_JWT_EXPIRE_MINUTES:30}
+
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_ENABLED:false}
+  swagger-ui:
+    enabled: ${SPRINGDOC_ENABLED:false}
+
+referer:
+  enabled: ${REFERER_ENABLED:true}
+  allowed-domains: ${REFERER_ALLOWED_DOMAINS:}
+
+xss:
+  enabled: true

@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
   const wsTarget = backendTarget.replace(/^http/, 'ws')
 
   return {
+    base: mode === 'production' ? env.VITE_PUBLIC_BASE || '/h5/' : '/',
     plugins: [vue()],
     server: {
       port: 5199,
