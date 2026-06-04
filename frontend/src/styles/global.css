@@ -139,7 +139,9 @@ select {
 
 .h5-content-card {
   display: grid;
+  min-width: 0;
   min-height: 96px;
+  overflow: hidden;
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
@@ -150,16 +152,21 @@ select {
 
 .h5-content-card h1,
 .h5-product-card h1 {
+  min-width: 0;
   min-height: 42px;
   margin: 0;
   font-size: 16px;
   line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .h5-content-card div {
   display: flex;
+  min-width: 0;
   align-self: end;
   justify-content: space-between;
+  gap: 8px;
   color: #7d91ae;
   font-size: 12px;
 }
@@ -167,8 +174,11 @@ select {
 .h5-content-card span,
 .h5-content-card time {
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 5px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .h5-content-card svg {
@@ -189,7 +199,9 @@ select {
 }
 
 .h5-product-card {
+  min-width: 0;
   min-height: 86px;
+  overflow: hidden;
   padding: 14px;
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
@@ -200,15 +212,24 @@ select {
 
 .h5-product-card div {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: space-between;
+  gap: 8px;
   margin-bottom: 16px;
   color: #647895;
   font-size: 13px;
   font-weight: 700;
 }
 
+.h5-product-card div span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .h5-product-card strong {
+  flex: 0 0 auto;
   padding: 4px 8px;
   border-radius: 5px;
   font-size: 12px;
@@ -541,6 +562,56 @@ select {
   font-size: 16px;
   font-weight: 600;
   line-height: 1.68;
+  white-space: pre-line;
+}
+
+.product-contact-list {
+  display: grid;
+  gap: 8px;
+}
+
+.product-contact-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(104px, auto);
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 9px 10px;
+  border: 1px solid #e4ebf6;
+  border-radius: 8px;
+  background: #f8fbff;
+}
+
+.product-contact-item span,
+.product-contact-item strong {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.product-contact-item span {
+  color: #172033;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.product-contact-item strong {
+  color: var(--primary);
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: right;
+}
+
+@media (max-width: 360px) {
+  .product-contact-item {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .product-contact-item strong {
+    text-align: left;
+  }
 }
 
 .safe-entry {

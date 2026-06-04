@@ -5,6 +5,7 @@ import { useRoute, useRouter } from 'vue-router'
 import AppIcon from '../../components/common/AppIcon.vue'
 import { getPublicContentDetail } from '../../services/publicContentService'
 import type { PublicContentDetailData } from '../../types/api'
+import { resolveH5BackTarget } from '../../utils/h5BackTarget'
 
 const route = useRoute()
 const router = useRouter()
@@ -47,12 +48,7 @@ async function loadArticle() {
 }
 
 function goBack() {
-  if (window.history.length > 1) {
-    router.back()
-    return
-  }
-
-  router.push('/h5/')
+  router.push(resolveH5BackTarget(route.query))
 }
 
 function openRichTextImage(event: MouseEvent) {

@@ -55,6 +55,8 @@ public class ResourcesConfig implements WebMvcConfigurer
     public CorsFilter corsFilter()
     {
         CorsConfiguration config = new CorsConfiguration();
+        config.addAllowedOrigin("http://localhost:5180");
+        config.addAllowedOrigin("http://127.0.0.1:5180");
         config.addAllowedOrigin("http://localhost:5199");
         config.addAllowedOrigin("http://127.0.0.1:5199");
         config.addAllowedOrigin("http://localhost:5175");

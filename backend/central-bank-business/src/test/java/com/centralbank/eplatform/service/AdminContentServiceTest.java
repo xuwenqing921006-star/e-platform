@@ -75,7 +75,7 @@ class AdminContentServiceTest
     }
 
     @Test
-    void countyOfficeCanOnlyPublishServiceGuide()
+    void countyOfficePolicySelectionIsSavedAsServiceGuide()
     {
         Fixture fixture = fixture(20L);
         AdminContentRequest request = new AdminContentRequest(
@@ -85,11 +85,13 @@ class AdminContentServiceTest
                 "<p>正文</p>",
                 List.of());
 
-        assertThatThrownBy(() -> fixture.service.create(request))
-                .isInstanceOf(AdminContentException.class)
-                .hasMessage("县域账号只能发布服务指引")
-                .extracting("statusCode")
-                .isEqualTo(403);
+        var created = fixture.service.create(request);
+        CbContent content = fixture.contentMapper.selectContentById(created.id());
+
+        assertThat(content.getOfficeCode()).isEqualTo("ZHAOZHOU");
+        assertThat(content.getCategory()).isEqualTo("SERVICE_GUIDE");
+        assertThat(content.getScope()).isEqualTo("RURAL");
+        assertThat(content.getCountyCode()).isEqualTo("ZHAOZHOU");
     }
 
     @Test

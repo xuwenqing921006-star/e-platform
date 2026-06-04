@@ -26,6 +26,7 @@ services:
       - ./backend/central-bank-business/src/main/resources/sql/central_bank_product_menu.sql:/docker-entrypoint-initdb.d/60-central-bank-product-menu.sql:ro
       - ./backend/central-bank-business/src/main/resources/sql/central_bank_account_menu.sql:/docker-entrypoint-initdb.d/70-central-bank-account-menu.sql:ro
       - ./backend/central-bank-business/src/main/resources/sql/central_bank_audit_log_menu.sql:/docker-entrypoint-initdb.d/80-central-bank-audit-log-menu.sql:ro
+      - ./backend/central-bank-business/src/main/resources/sql/central_bank_admin_menu_cleanup.sql:/docker-entrypoint-initdb.d/90-central-bank-admin-menu-cleanup.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
       interval: 5s

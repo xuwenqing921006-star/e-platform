@@ -33,8 +33,8 @@ create table if not exists cb_financial_product (
     product_type varchar(32) not null,
     admission_conditions text not null,
     product_intro text not null,
-    business_manager varchar(80) not null,
-    contact_info varchar(80) not null,
+    business_manager varchar(500) not null,
+    contact_info varchar(500) not null,
     created_at datetime not null,
     updated_at datetime not null,
     key idx_cb_product_bank_type (bank_code, product_type)

@@ -19,11 +19,15 @@ public interface CbAdminAccountMapper
 
     int insertSysUser(CbAdminAccount account);
 
+    int insertUserRole(@Param("userId") Long userId, @Param("roleId") Long roleId);
+
     int updateSysUser(CbAdminAccount account);
 
     int resetPassword(@Param("userId") Long userId, @Param("password") String password);
 
     int deleteSysUserById(@Param("userId") Long userId);
+
+    int deleteUserRolesByUserId(@Param("userId") Long userId);
 
     int insertAccountExtension(CbAccountExtension extension);
 

@@ -15,6 +15,7 @@ const getters = {
   introduction: state => state.user.introduction,
   roles: state => state.user.roles,
   permissions: state => state.user.permissions,
+  accountExtension: state => state.user.accountExtension,
   permission_routes: state => state.permission.routes,
   topbarRouters: state => state.permission.topbarRouters,
   defaultRoutes: state => state.permission.defaultRoutes,

@@ -16,6 +16,7 @@ import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.common.core.text.Convert;
 import com.ruoyi.common.exception.DemoModeException;
 import com.ruoyi.common.exception.ServiceException;
+import com.ruoyi.common.exception.user.UserException;
 import com.ruoyi.common.utils.StringUtils;
 import com.ruoyi.common.utils.html.EscapeUtil;
 
@@ -38,6 +39,17 @@ public class GlobalExceptionHandler
         String requestURI = request.getRequestURI();
         log.error("请求地址'{}',权限校验失败'{}'", requestURI, e.getMessage());
         return AjaxResult.error(HttpStatus.FORBIDDEN, "无权限访问该资源");
+    }
+
+    /**
+     * 登录用户异常
+     */
+    @org.springframework.web.bind.annotation.ResponseStatus(org.springframework.http.HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UserException.class)
+    public AjaxResult handleUserException(UserException e, HttpServletRequest request)
+    {
+        log.warn("登录请求'{}'失败'{}'", request.getRequestURI(), e.getMessage());
+        return AjaxResult.error(HttpStatus.UNAUTHORIZED, e.getMessage());
     }
 
     /**

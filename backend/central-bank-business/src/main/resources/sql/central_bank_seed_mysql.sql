@@ -1,3 +1,5 @@
+SET NAMES utf8mb4;
+
 insert into cb_content (
     id, title, category, scope, county_code, office_code, office_name, rich_text_html,
     published_at, created_at, updated_at

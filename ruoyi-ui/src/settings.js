@@ -12,7 +12,7 @@ module.exports = {
   /**
    * 系统布局配置
    */
-  showSettings: true,
+  showSettings: false,
 
   /**
    * 菜单导航模式 1、纯左侧 2、混合（左侧+顶部） 3、纯顶部
@@ -22,7 +22,7 @@ module.exports = {
   /**
    * 是否显示 tagsView
    */
-  tagsView: true,
+  tagsView: false,
 
   /**
    * 持久化标签页

@@ -130,8 +130,8 @@
 | P03 | H01-C 助企通道列表 | 产品统计、银行机构、产品名称、类型；不展示加载更多按钮，滚动接近底部或首屏未撑满视口时自动加载下一页 | `GET /api/public/products` | 点击卡片到 H03 | 待开发 |
 | P04 | H01-D 县域服务指引 | 四县二级 Tab、三级文字 Tab、县域文章列表 | `GET /api/public/contents` | 点击卡片到 H02 | 待开发 |
 | P05 | H01-E 县域服务队 | 固定服务队介绍、成员、职务、电话 | 前端固定配置 | 返回或切换 Tab | 待开发 |
-| P06 | H02 文章详情 | 正文、图片、附件下载、返回上下文 | `GET /api/public/contents/{id}` | 返回 H01 | 待开发 |
-| P07 | H03 产品详情 | 身份卡、详情卡、7 个产品字段 | `GET /api/public/products/{id}` | 返回 H01-C | 待开发 |
+| P06 | H02 文章详情 | 正文、图片、附件下载、返回上下文 | `GET /api/public/contents/{id}` | 返回进入详情前的 H01 栏目上下文 | 待开发 |
+| P07 | H03 产品详情 | 身份卡、详情卡、7 个产品字段 | `GET /api/public/products/{id}` | 返回进入详情前的 H01-C 栏目上下文 | 待开发 |
 | P08 | SAFE 浮动入口 | Logo、展开、关闭、固定地址跳转、详情页隐藏 | 前端固定配置 | 外部地址 | 待开发 |
 
 ### 3.3 WEB 管理后台页面
@@ -297,7 +297,7 @@ frontend/
 
 - [x] 补充分层实现思路。
 - 分层实现思路：
-  - Security：复用若依 JWT 过滤器与 Spring Security 链，显式放行 `/health`、`/api/public/**` 和登录验证码等公开路径，`/api/admin/**` 默认要求认证。
+  - Security：复用若依 JWT 过滤器与 Spring Security 链，显式放行 `/health`、`/api/public/**` 和后台登录路径，`/api/admin/**` 默认要求认证；后台登录不使用验证码。
   - 响应契约：调整若依 `AjaxResult`，把 `msg` 统一为 `message`，错误响应也返回 `data: null`。
   - 401/403：认证失败由 `AuthenticationEntryPointImpl` 返回 `{ code: 401, message, data: null }`；权限不足由专用 `AccessDeniedHandler` 返回 `{ code: 403, message, data: null }`。
   - 配置：`token.secret` 读取 `APP_JWT_SECRET`，上传目录读取 `APP_STORAGE_ROOT`，数据库连接读取 `DB_URL`、`DB_USERNAME`、`DB_PASSWORD`。
@@ -355,7 +355,7 @@ frontend/
 - 分层实现思路：
   - 后端：沿用 `central-bank-business` 业务模块，新增 `AdminContentController` 与 `AdminContentService`，不改若依登录、JWT、菜单加载或安全核心。
   - Mapper：扩展 `CbContentMapper` 的后台列表、创建、编辑、删除能力，并扩展 `CbAttachmentMapper` 的内容附件绑定/解绑能力。
-  - 权限：Service 层基于若依登录 userId 查询 `cb_account_extension`，管理员可管理全部内容；普通办公室账号只能管理本办公室内容；县域办公室只能发布服务指引。
+  - 权限：Service 层基于若依登录 userId 查询 `cb_account_extension`，管理员可管理全部内容；普通办公室账号只能管理本办公室内容；县域办公室只能发布服务指引，前端按“先办公室、再分类”联动收敛，非管理员发布内容时办公室默认本人办公室且不可修改。
   - 前端：`ruoyi-ui/src/views/centralbank/content/index.vue` 使用若依 Vue2 + Element UI 页面模式，真实调用 `/api/admin/contents*`、`/api/admin/attachments*` 与 `/api/admin/options`。
   - 菜单：提供 `central_bank_content_menu.sql` 用于挂载若依菜单与按钮权限；真实菜单 SQL 执行归部署/初始化流程。
   - 边界：操作日志查询闭环归 T-017，本轮不提前实现审计日志页面。
@@ -376,6 +376,7 @@ frontend/
 - [x] 产品模型严格限制为 7 个业务字段。
 - [x] 前端产品管理切到真实接口验证。
 - [x] 自动验证通过：backend Maven test/package、ruoyi-ui build。
+- [x] 本轮 bugfix 补强：金融产品手工新增/编辑支持最多 5 组业务经办人与联系方式，第一组不可删除；接口仍保持 7 个业务字段展示，多组按行分隔。
 
 ### B08 Excel 导入产品
 
@@ -422,7 +423,7 @@ frontend/
 - 分层实现思路（T-018）：
   - Service：组合内容、产品、账号和操作日志 mapper，计算已发布内容数、金融产品数、后台账号数、当日操作数和最近 3 条内容。
   - Controller：提供 `GET /api/admin/dashboard/summary`，响应字段严格对齐 `docs/api-contracts.md`。
-  - ruoyi-ui：替换若依默认首页为 A02 工作概览，删除框架介绍、技术选型、联系方式、捐赠等无关内容，只展示统计、最近发布内容和快捷入口。
+  - ruoyi-ui：替换若依默认首页为 A02 工作概览，删除框架介绍、技术选型、联系方式、捐赠等无关内容，只展示统计、最近发布内容和快捷入口；快捷入口按按钮权限禁用，避免无权限用户点击后进入 404。
   - 测试：覆盖契约响应、真实 mapper 计数、最近内容时间格式和前端构建。
 - [x] 补充分层实现思路。
 - [x] 实现统计指标和最近发布内容。

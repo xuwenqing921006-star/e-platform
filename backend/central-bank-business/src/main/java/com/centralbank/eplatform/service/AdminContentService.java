@@ -106,7 +106,7 @@ public class AdminContentService
         CbContent content = new CbContent();
         content.setId(nextContentId());
         content.setTitle(request.title().trim());
-        content.setCategory(request.category());
+        content.setCategory(categoryForOffice(office, request.category()));
         content.setScope(office.scope());
         content.setCountyCode(office.countyCode());
         content.setOfficeCode(office.officeCode());
@@ -147,7 +147,7 @@ public class AdminContentService
         validateAttachmentIds(request.attachmentIds());
 
         existing.setTitle(request.title().trim());
-        existing.setCategory(request.category());
+        existing.setCategory(categoryForOffice(office, request.category()));
         existing.setScope(office.scope());
         existing.setCountyCode(office.countyCode());
         existing.setOfficeCode(office.officeCode());
@@ -266,10 +266,11 @@ public class AdminContentService
         {
             throw new AdminContentException(400, "正文不能为空");
         }
-        if (fixedOptionsService.isCountyOffice(request.officeCode()) && !"SERVICE_GUIDE".equals(request.category()))
-        {
-            throw new AdminContentException(403, "县域账号只能发布服务指引");
-        }
+    }
+
+    private String categoryForOffice(OfficeMeta office, String category)
+    {
+        return office.countyCode() == null ? category : "SERVICE_GUIDE";
     }
 
     private void validateCategoryIfPresent(String category)

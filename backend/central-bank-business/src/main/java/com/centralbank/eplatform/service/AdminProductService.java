@@ -48,6 +48,7 @@ public class AdminProductService
     private static final ZoneOffset CHINA_OFFSET = ZoneOffset.ofHours(8);
     private static final DateTimeFormatter IMPORT_TOKEN_TIME = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
     private static final String PRODUCT_MANAGER_OFFICE = "MONETARY_CREDIT";
+    private static final int MAX_CONTACTS = 5;
     private static final List<String> TEMPLATE_HEADERS = List.of(
             "银行机构", "产品名称", "类型", "准入条件", "产品介绍", "业务经办人", "联系方式");
 
@@ -274,6 +275,7 @@ public class AdminProductService
                 .orElseThrow(() -> new AdminProductException(400, "银行机构不在固定列表中"));
         OptionItem productType = fixedOptionsService.findProductType(request.productType())
                 .orElseThrow(() -> new AdminProductException(400, "产品类型不合法"));
+        List<AdminProductRequest.ProductContact> contacts = normalizedContacts(request);
         CbFinancialProduct product = new CbFinancialProduct();
         product.setBankCode(bank.value());
         product.setBankName(bank.label());
@@ -281,8 +283,10 @@ public class AdminProductService
         product.setProductType(productType.value());
         product.setAdmissionConditions(request.admissionConditions().trim());
         product.setProductIntro(request.productIntro().trim());
-        product.setBusinessManager(request.businessManager().trim());
-        product.setContactInfo(request.contactInfo().trim());
+        product.setBusinessManager(contacts.stream().map(AdminProductRequest.ProductContact::businessManager).toList()
+                .stream().reduce((left, right) -> left + "\n" + right).orElse(""));
+        product.setContactInfo(contacts.stream().map(AdminProductRequest.ProductContact::contactInfo).toList()
+                .stream().reduce((left, right) -> left + "\n" + right).orElse(""));
         return product;
     }
 
@@ -373,8 +377,30 @@ public class AdminProductService
         requireText(request.productType(), "类型不能为空");
         requireText(request.admissionConditions(), "准入条件不能为空");
         requireText(request.productIntro(), "产品介绍不能为空");
-        requireText(request.businessManager(), "业务经办人不能为空");
-        requireText(request.contactInfo(), "联系方式不能为空");
+        normalizedContacts(request);
+    }
+
+    private List<AdminProductRequest.ProductContact> normalizedContacts(AdminProductRequest request)
+    {
+        List<AdminProductRequest.ProductContact> contacts = request.contacts();
+        if (contacts == null || contacts.isEmpty())
+        {
+            contacts = List.of(new AdminProductRequest.ProductContact(request.businessManager(), request.contactInfo()));
+        }
+        if (contacts.size() > MAX_CONTACTS)
+        {
+            throw new AdminProductException(400, "业务经办人与联系方式最多添加 5 组");
+        }
+        List<AdminProductRequest.ProductContact> normalized = new ArrayList<>();
+        for (AdminProductRequest.ProductContact contact : contacts)
+        {
+            String businessManager = contact == null ? null : contact.businessManager();
+            String contactInfo = contact == null ? null : contact.contactInfo();
+            requireText(businessManager, "业务经办人不能为空");
+            requireText(contactInfo, "联系方式不能为空");
+            normalized.add(new AdminProductRequest.ProductContact(businessManager.trim(), contactInfo.trim()));
+        }
+        return normalized;
     }
 
     private void validateBankFilter(String bankCode)

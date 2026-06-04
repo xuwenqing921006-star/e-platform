@@ -39,8 +39,8 @@ create table if not exists cb_financial_product (
     product_type varchar(32) not null,
     admission_conditions clob not null,
     product_intro clob not null,
-    business_manager varchar(80) not null,
-    contact_info varchar(80) not null,
+    business_manager varchar(500) not null,
+    contact_info varchar(500) not null,
     created_at timestamp not null,
     updated_at timestamp not null
 );

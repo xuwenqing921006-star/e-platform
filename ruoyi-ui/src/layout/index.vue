@@ -4,17 +4,16 @@
     <sidebar v-if="!sidebar.hide" class="sidebar-container"/>
     <div :class="{hasTagsView:needTagsView,sidebarHide:sidebar.hide}" class="main-container">
       <div :class="{'fixed-header':fixedHeader}">
-        <navbar @setLayout="setLayout"/>
+        <navbar/>
         <tags-view v-if="needTagsView"/>
       </div>
       <app-main/>
-      <settings ref="settingRef"/>
     </div>
   </div>
 </template>
 
 <script>
-import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
+import { AppMain, Navbar, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
 import variables from '@/assets/styles/variables.scss'
@@ -24,7 +23,6 @@ export default {
   components: {
     AppMain,
     Navbar,
-    Settings,
     Sidebar,
     TagsView
   },
@@ -53,9 +51,6 @@ export default {
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
-    },
-    setLayout() {
-      this.$refs.settingRef.openSetting()
     }
   }
 }

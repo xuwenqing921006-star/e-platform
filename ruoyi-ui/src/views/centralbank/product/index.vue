@@ -167,15 +167,51 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="业务经办人" prop="business_manager">
-              <el-input v-model="form.business_manager" placeholder="请输入业务经办人" maxlength="80" :disabled="viewMode" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="联系方式" prop="contact_info">
-              <el-input v-model="form.contact_info" placeholder="请输入联系方式" maxlength="80" :disabled="viewMode" />
-            </el-form-item>
+          <el-col :span="24">
+            <div
+              v-for="(contact, index) in form.contacts"
+              :key="index"
+              class="product-contact-row"
+            >
+              <el-form-item
+                label="业务经办人"
+                :prop="`contacts.${index}.business_manager`"
+                :rules="[{ required: true, message: '业务经办人不能为空', trigger: 'blur' }]"
+              >
+                <el-input v-model="contact.business_manager" placeholder="请输入业务经办人" maxlength="80" :disabled="viewMode" />
+              </el-form-item>
+              <el-form-item
+                label="联系方式"
+                :prop="`contacts.${index}.contact_info`"
+                :rules="[{ required: true, message: '联系方式不能为空', trigger: 'blur' }]"
+              >
+                <el-input v-model="contact.contact_info" placeholder="请输入联系方式" maxlength="80" :disabled="viewMode" />
+              </el-form-item>
+              <div v-if="!viewMode" class="product-contact-actions">
+                <el-button
+                  v-if="index === form.contacts.length - 1 && form.contacts.length < 5"
+                  class="product-contact-action"
+                  type="primary"
+                  plain
+                  icon="el-icon-plus"
+                  circle
+                  size="mini"
+                  @click="addContact"
+                />
+                <span v-else class="product-contact-action-placeholder" />
+                <el-button
+                  v-if="index > 0"
+                  class="product-contact-action"
+                  type="danger"
+                  plain
+                  icon="el-icon-minus"
+                  circle
+                  size="mini"
+                  @click="removeContact(index)"
+                />
+                <span v-else class="product-contact-action-placeholder" />
+              </div>
+            </div>
           </el-col>
         </el-row>
       </el-form>
@@ -225,9 +261,7 @@ export default {
         product_name: [{ required: true, message: '产品名称不能为空', trigger: 'blur' }],
         product_type: [{ required: true, message: '产品类型不能为空', trigger: 'change' }],
         admission_conditions: [{ required: true, message: '准入条件不能为空', trigger: 'blur' }],
-        product_intro: [{ required: true, message: '产品介绍不能为空', trigger: 'blur' }],
-        business_manager: [{ required: true, message: '业务经办人不能为空', trigger: 'blur' }],
-        contact_info: [{ required: true, message: '联系方式不能为空', trigger: 'blur' }]
+        product_intro: [{ required: true, message: '产品介绍不能为空', trigger: 'blur' }]
       }
     }
   },
@@ -245,6 +279,13 @@ export default {
         product_type: undefined,
         admission_conditions: '',
         product_intro: '',
+        business_manager: '',
+        contact_info: '',
+        contacts: [this.emptyContact()]
+      }
+    },
+    emptyContact() {
+      return {
         business_manager: '',
         contact_info: ''
       }
@@ -289,26 +330,54 @@ export default {
       getProduct(id).then(response => {
         this.form = {
           ...this.emptyForm(),
-          ...response.data
+          ...response.data,
+          contacts: this.contactsFromDetail(response.data)
         }
         this.viewMode = viewMode
         this.open = true
         this.title = title
       })
     },
+    contactsFromDetail(data) {
+      const managers = String(data.business_manager || '').split('\n')
+      const contactInfos = String(data.contact_info || '').split('\n')
+      const max = Math.max(managers.length, contactInfos.length, 1)
+      return Array.from({ length: max }, (_, index) => ({
+        business_manager: managers[index] || '',
+        contact_info: contactInfos[index] || ''
+      }))
+    },
+    addContact() {
+      if (this.form.contacts.length >= 5) {
+        this.$message.warning('业务经办人与联系方式最多添加 5 组')
+        return
+      }
+      this.form.contacts.push(this.emptyContact())
+    },
+    removeContact(index) {
+      if (index === 0) {
+        return
+      }
+      this.form.contacts.splice(index, 1)
+    },
     submitForm() {
       this.$refs.form.validate(valid => {
         if (!valid) {
           return
         }
+        const contacts = this.form.contacts.map(item => ({
+          business_manager: item.business_manager.trim(),
+          contact_info: item.contact_info.trim()
+        }))
         const payload = {
           bank_code: this.form.bank_code,
           product_name: this.form.product_name,
           product_type: this.form.product_type,
           admission_conditions: this.form.admission_conditions,
           product_intro: this.form.product_intro,
-          business_manager: this.form.business_manager,
-          contact_info: this.form.contact_info
+          business_manager: contacts.map(item => item.business_manager).join('\n'),
+          contact_info: contacts.map(item => item.contact_info).join('\n'),
+          contacts
         }
         const request = this.form.id ? updateProduct(this.form.id, payload) : addProduct(payload)
         request.then(() => {
@@ -365,5 +434,46 @@ export default {
 
 .product-admin .el-textarea {
   max-width: 100%;
+}
+
+.product-contact-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 76px;
+  column-gap: 12px;
+  align-items: start;
+}
+
+.product-contact-actions {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 76px;
+  padding-top: 1px;
+}
+
+.product-contact-actions .product-contact-action.el-button {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  margin-left: 0;
+  padding: 0;
+}
+
+.product-contact-action-placeholder {
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+}
+
+@media (max-width: 768px) {
+  .product-contact-row {
+    grid-template-columns: 1fr;
+  }
+
+  .product-contact-actions {
+    justify-content: flex-end;
+    min-width: 0;
+    padding-bottom: 18px;
+  }
 }
 </style>

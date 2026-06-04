@@ -15,7 +15,8 @@ const user = {
     nickName: '',
     avatar: '',
     roles: [],
-    permissions: []
+    permissions: [],
+    accountExtension: {}
   },
 
   mutations: {
@@ -39,6 +40,9 @@ const user = {
     },
     SET_PERMISSIONS: (state, permissions) => {
       state.permissions = permissions
+    },
+    SET_ACCOUNT_EXTENSION: (state, accountExtension) => {
+      state.accountExtension = accountExtension || {}
     }
   },
 
@@ -47,10 +51,8 @@ const user = {
     Login({ commit }, userInfo) {
       const username = userInfo.username.trim()
       const password = userInfo.password
-      const code = userInfo.code
-      const uuid = userInfo.uuid
       return new Promise((resolve, reject) => {
-        login(username, password, code, uuid).then(res => {
+        login(username, password).then(res => {
           setToken(res.token)
           commit('SET_TOKEN', res.token)
           store.dispatch('lock/unlockScreen')
@@ -76,6 +78,7 @@ const user = {
           } else {
             commit('SET_ROLES', ['ROLE_DEFAULT'])
           }
+          commit('SET_ACCOUNT_EXTENSION', res.account_extension || {})
           commit('SET_ID', user.userId)
           commit('SET_NAME', user.userName)
           commit('SET_NICK_NAME', user.nickName)
@@ -107,6 +110,7 @@ const user = {
           commit('SET_TOKEN', '')
           commit('SET_ROLES', [])
           commit('SET_PERMISSIONS', [])
+          commit('SET_ACCOUNT_EXTENSION', {})
           removeToken()
           resolve()
         }).catch(error => {
@@ -119,6 +123,7 @@ const user = {
     FedLogOut({ commit }) {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
+        commit('SET_ACCOUNT_EXTENSION', {})
         removeToken()
         resolve()
       })

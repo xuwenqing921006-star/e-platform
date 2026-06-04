@@ -245,6 +245,12 @@ class AuditLogServiceTest
         }
 
         @Override
+        public int insertUserRole(Long userId, Long roleId)
+        {
+            return 0;
+        }
+
+        @Override
         public int updateSysUser(CbAdminAccount account)
         {
             return 0;
@@ -258,6 +264,12 @@ class AuditLogServiceTest
 
         @Override
         public int deleteSysUserById(Long userId)
+        {
+            return 0;
+        }
+
+        @Override
+        public int deleteUserRolesByUserId(Long userId)
         {
             return 0;
         }

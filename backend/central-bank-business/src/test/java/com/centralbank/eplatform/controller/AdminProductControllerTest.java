@@ -15,6 +15,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.util.List;
 import java.util.Optional;
+import org.mockito.ArgumentCaptor;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
@@ -28,6 +29,7 @@ import com.centralbank.eplatform.dto.AdminProductImportCommitData;
 import com.centralbank.eplatform.dto.AdminProductImportError;
 import com.centralbank.eplatform.dto.AdminProductImportValidateData;
 import com.centralbank.eplatform.dto.AdminProductListItem;
+import com.centralbank.eplatform.dto.AdminProductRequest;
 import com.centralbank.eplatform.dto.PaginatedData;
 import com.centralbank.eplatform.service.AdminProductException;
 import com.centralbank.eplatform.service.AdminProductService;
@@ -85,6 +87,41 @@ class AdminProductControllerTest
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.data.id").value(2009));
+    }
+
+    @Test
+    void createEndpointAcceptsMultipleProductContacts() throws Exception
+    {
+        AdminProductService service = mock(AdminProductService.class);
+        ArgumentCaptor<AdminProductRequest> requestCaptor = ArgumentCaptor.forClass(AdminProductRequest.class);
+        when(service.create(org.mockito.ArgumentMatchers.any())).thenReturn(new AdminProductCreateData(2010L));
+        MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new AdminProductController(service)).build();
+
+        mockMvc.perform(post("/api/admin/products")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "bank_code":"ABC",
+                                  "product_name":"惠农e贷",
+                                  "product_type":"AGRICULTURAL",
+                                  "admission_conditions":"面向涉农经营主体。",
+                                  "product_intro":"用于农业生产经营。",
+                                  "business_manager":"张经理\\n李经理",
+                                  "contact_info":"0459-0002001\\n0459-0002002",
+                                  "contacts":[
+                                    {"business_manager":"张经理","contact_info":"0459-0002001"},
+                                    {"business_manager":"李经理","contact_info":"0459-0002002"}
+                                  ]
+                                }
+                                """))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.id").value(2010));
+
+        verify(service).create(requestCaptor.capture());
+        AdminProductRequest request = requestCaptor.getValue();
+        org.assertj.core.api.Assertions.assertThat(request.contacts()).hasSize(2);
+        org.assertj.core.api.Assertions.assertThat(request.contacts().get(0).businessManager()).isEqualTo("张经理");
+        org.assertj.core.api.Assertions.assertThat(request.contacts().get(1).contactInfo()).isEqualTo("0459-0002002");
     }
 
     @Test

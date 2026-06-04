@@ -58,6 +58,7 @@ class AdminAccountServiceTest
         assertThat(account.getRole()).isEqualTo("OFFICE_USER");
         assertThat(account.getOfficeName()).isEqualTo("货币信贷政策管理科");
         assertThat(account.getEnabled()).isTrue();
+        assertThat(fixture.accountMapper.userRoleIds(created.id())).containsExactly(2L);
         assertThat(fixture.accountMapper.selectAdminAccountByUserId(created.id()).getPassword())
                 .isNotEqualTo("Initial123!");
     }
@@ -190,6 +191,7 @@ class AdminAccountServiceTest
     {
         private final List<CbAdminAccount> users;
         private final List<CbAccountExtension> extensions;
+        private final List<UserRole> userRoles = new ArrayList<>();
 
         FakeAdminAccountMapper(List<CbAdminAccount> users, List<CbAccountExtension> extensions)
         {
@@ -310,6 +312,21 @@ class AdminAccountServiceTest
         }
 
         @Override
+        public int insertUserRole(Long userId, Long roleId)
+        {
+            userRoles.add(new UserRole(userId, roleId));
+            return 1;
+        }
+
+        List<Long> userRoleIds(Long userId)
+        {
+            return userRoles.stream()
+                    .filter(item -> Objects.equals(item.userId(), userId))
+                    .map(UserRole::roleId)
+                    .toList();
+        }
+
+        @Override
         public int updateSysUser(CbAdminAccount user)
         {
             CbAdminAccount existing = selectUser(user.getId());
@@ -344,6 +361,16 @@ class AdminAccountServiceTest
             }
             existing.setStatus("2");
             return 1;
+        }
+
+        @Override
+        public int deleteUserRolesByUserId(Long userId)
+        {
+            return userRoles.removeIf(item -> Objects.equals(item.userId(), userId)) ? 1 : 0;
+        }
+
+        private record UserRole(Long userId, Long roleId)
+        {
         }
     }
 }

@@ -124,7 +124,8 @@ describe('T-003 H5 article detail wiring', () => {
     const serviceSource = source('src/services/publicContentService.ts')
 
     expect(routerSource).toContain("path: '/h5/contents/:id'")
-    expect(listSource).toContain(':to="`/h5/contents/${item.id}`"')
+    expect(listSource).toContain(':to="contentDetailRoute(item.id)"')
+    expect(listSource).toContain('buildH5DetailBackQuery')
     expect(detailSource).toContain("from '../../services/publicContentService'")
     expect(detailSource).not.toContain("from '../../mocks'")
     expect(serviceSource).toContain('getPublicContentDetail')

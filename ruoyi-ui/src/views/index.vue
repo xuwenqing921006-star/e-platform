@@ -35,17 +35,16 @@
 
       <section class="panel actions-panel">
         <h3>快捷操作</h3>
-        <button class="quick-action" type="button" @click="go('/centralbank/content')">
-          <i class="el-icon-document-add"></i>
-          <span>发布内容</span>
-        </button>
-        <button class="quick-action" type="button" @click="go('/centralbank/product')">
-          <i class="el-icon-circle-plus-outline"></i>
-          <span>新增金融产品</span>
-        </button>
-        <button class="quick-action" type="button" @click="go('/centralbank/product/import')">
-          <i class="el-icon-document"></i>
-          <span>导入产品表格</span>
+        <button
+          v-for="action in quickActions"
+          :key="action.path"
+          :class="['quick-action', { 'is-disabled': !action.enabled }]"
+          type="button"
+          :disabled="!action.enabled"
+          @click="go(action)"
+        >
+          <i :class="action.icon"></i>
+          <span>{{ action.label }}</span>
         </button>
       </section>
     </div>
@@ -54,6 +53,7 @@
 
 <script>
 import { getDashboardSummary } from '@/api/centralbank/dashboard'
+import auth from '@/plugins/auth'
 
 export default {
   name: 'Index',
@@ -105,6 +105,31 @@ export default {
           color: 'orange'
         }
       ]
+    },
+    quickActions() {
+      return [
+        {
+          label: '发布内容',
+          path: '/centralbank/content',
+          icon: 'el-icon-document-add',
+          permission: 'centralbank:content:add'
+        },
+        {
+          label: '新增金融产品',
+          path: '/centralbank/product',
+          icon: 'el-icon-circle-plus-outline',
+          permission: 'centralbank:product:add'
+        },
+        {
+          label: '导入产品表格',
+          path: '/centralbank/product/import',
+          icon: 'el-icon-document',
+          permission: 'centralbank:product:import'
+        }
+      ].map(action => ({
+        ...action,
+        enabled: auth.hasPermi(action.permission)
+      }))
     }
   },
   created() {
@@ -128,8 +153,11 @@ export default {
       }
       return value.slice(0, 10)
     },
-    go(path) {
-      this.$router.push(path)
+    go(action) {
+      if (!action.enabled) {
+        return
+      }
+      this.$router.push(action.path)
     }
   }
 }
@@ -294,6 +322,23 @@ export default {
 
 .quick-action:hover {
   background: #edf3ff;
+}
+
+.quick-action.is-disabled,
+.quick-action:disabled {
+  color: #9aa4b2;
+  cursor: not-allowed;
+  opacity: 0.68;
+}
+
+.quick-action.is-disabled i,
+.quick-action:disabled i {
+  color: #9aa4b2;
+}
+
+.quick-action.is-disabled:hover,
+.quick-action:disabled:hover {
+  background: #f5f7fb;
 }
 
 @media (max-width: 1100px) {

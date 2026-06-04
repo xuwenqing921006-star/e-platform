@@ -5,6 +5,8 @@ import { useRoute, useRouter } from 'vue-router'
 import AppIcon from '../../components/common/AppIcon.vue'
 import { getPublicProductDetail } from '../../services/publicProductService'
 import type { ProductType, PublicProductDetailData } from '../../types/api'
+import { resolveH5BackTarget } from '../../utils/h5BackTarget'
+import { splitProductContacts } from '../../utils/productContacts'
 
 const route = useRoute()
 const router = useRouter()
@@ -13,6 +15,9 @@ const loading = ref(true)
 const errorMessage = ref('')
 
 const productId = computed(() => Number(route.params.id))
+const productContacts = computed(() =>
+  product.value ? splitProductContacts(product.value) : [],
+)
 
 function productTypeLabel(productType: ProductType) {
   return productType === 'AGRICULTURAL' ? '涉农信贷' : '小微信贷'
@@ -33,12 +38,7 @@ async function loadProduct() {
 }
 
 function goBack() {
-  if (window.history.length > 1) {
-    router.back()
-    return
-  }
-
-  router.push('/h5/')
+  router.push(resolveH5BackTarget(route.query))
 }
 
 onMounted(loadProduct)
@@ -78,12 +78,17 @@ onMounted(loadProduct)
           <p>{{ product.product_intro }}</p>
         </article>
         <article class="product-detail-field">
-          <h2>业务经办人</h2>
-          <p>{{ product.business_manager }}</p>
-        </article>
-        <article class="product-detail-field">
-          <h2>联系方式</h2>
-          <p>{{ product.contact_info }}</p>
+          <h2>业务经办人 / 联系方式</h2>
+          <div class="product-contact-list">
+            <div
+              v-for="(contact, index) in productContacts"
+              :key="`${contact.business_manager}-${contact.contact_info}-${index}`"
+              class="product-contact-item"
+            >
+              <span>{{ contact.business_manager }}</span>
+              <strong>{{ contact.contact_info }}</strong>
+            </div>
+          </div>
         </article>
       </section>
     </template>

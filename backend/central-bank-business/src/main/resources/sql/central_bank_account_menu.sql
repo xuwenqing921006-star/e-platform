@@ -1,5 +1,6 @@
 -- 中央银行 E 平台：后台账号管理菜单与按钮权限
 -- 适用于若依 sys_menu，执行前请确认 menu_id 未与现有数据冲突。
+SET NAMES utf8mb4;
 
 insert into sys_menu (
     menu_id, menu_name, parent_id, order_num, path, component, query,

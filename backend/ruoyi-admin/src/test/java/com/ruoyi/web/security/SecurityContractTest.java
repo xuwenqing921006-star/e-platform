@@ -96,6 +96,8 @@ class SecurityContractTest
         assertThat(securityConfig).contains("\"/api/public/**\"");
         assertThat(securityConfig).contains("\"/api/admin/**\"");
         assertThat(securityConfig).contains("accessDeniedHandler(accessDeniedHandler)");
+        assertThat(resourcesConfig).contains("http://localhost:5180");
+        assertThat(resourcesConfig).contains("http://127.0.0.1:5180");
         assertThat(resourcesConfig).contains("http://localhost:5199");
         assertThat(resourcesConfig).contains("http://127.0.0.1:5199");
         assertThat(resourcesConfig).contains("http://localhost:5175");
@@ -121,6 +123,84 @@ class SecurityContractTest
         assertThat(application + druid).doesNotContain("login-password: 123456");
     }
 
+    @Test
+    void backendLoginUsesOnlyUsernameAndPasswordWithoutCaptcha() throws IOException
+    {
+        String loginService = readBackendFile("ruoyi-framework/src/main/java/com/ruoyi/framework/web/service/SysLoginService.java");
+        String loginPage = readProjectFile("ruoyi-ui/src/views/login.vue");
+        String seedSql = readBackendFile("sql/ry_20260417.sql");
+
+        assertThat(loginService).doesNotContain("validateCaptcha(username");
+        assertThat(loginService).doesNotContain("selectCaptchaEnabled");
+        assertThat(loginPage).doesNotContain("getCodeImg");
+        assertThat(loginPage).doesNotContain("captchaEnabled");
+        assertThat(loginPage).doesNotContain("验证码");
+        assertThat(seedSql).contains("'sys.account.captchaEnabled',       'false'");
+    }
+
+    @Test
+    void jacksonRuntimeAndCommonModuleDeclareCoreArtifacts() throws Exception
+    {
+        String commonPom = readBackendFile("ruoyi-common/pom.xml");
+
+        Class.forName("com.fasterxml.jackson.core.util.InternalJacksonUtil");
+        assertThat(commonPom).contains("<artifactId>jackson-databind</artifactId>");
+        assertThat(commonPom).contains("<artifactId>jackson-core</artifactId>");
+        assertThat(commonPom).contains("<artifactId>jackson-annotations</artifactId>");
+    }
+
+    @Test
+    void centralBankAccountsBridgeBusinessRolesToRuoYiRoutes() throws IOException
+    {
+        String accountService = readBackendFile(
+                "central-bank-business/src/main/java/com/centralbank/eplatform/service/AdminAccountService.java");
+        String accountMapper = readBackendFile(
+                "central-bank-business/src/main/resources/mapper/centralbank/CbAdminAccountMapper.xml");
+        String loginController = readBackendFile("ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysLoginController.java");
+
+        assertThat(accountService).contains("CENTRAL_BANK_COMMON_ROLE_ID");
+        assertThat(accountService).contains("insertUserRole(account.getId(), CENTRAL_BANK_COMMON_ROLE_ID)");
+        assertThat(accountMapper).contains("insert into sys_user_role(user_id, role_id)");
+        assertThat(loginController).contains("filterCentralBankMenus");
+        assertThat(loginController).contains("centralBankPermissions");
+        assertThat(loginController).contains("MONETARY_CREDIT");
+    }
+
+    @Test
+    void loginAndRequestErrorsPreferContractMessage() throws IOException
+    {
+        String globalExceptionHandler = readBackendFile(
+                "ruoyi-framework/src/main/java/com/ruoyi/framework/web/exception/GlobalExceptionHandler.java");
+        String request = readProjectFile("ruoyi-ui/src/utils/request.js");
+        String download = readProjectFile("ruoyi-ui/src/plugins/download.js");
+
+        assertThat(globalExceptionHandler).contains("@ExceptionHandler(UserException.class)");
+        assertThat(globalExceptionHandler).contains("HttpStatus.UNAUTHORIZED");
+        assertThat(request).contains("res.data.message || res.data.msg");
+        assertThat(request).contains("error.response && error.response.data");
+        assertThat(download).contains("rspObj.message || rspObj.msg");
+    }
+
+    @Test
+    void officeUserContentFormAndDashboardActionsFollowPermissions() throws IOException
+    {
+        String loginController = readBackendFile("ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysLoginController.java");
+        String userStore = readProjectFile("ruoyi-ui/src/store/modules/user.js");
+        String getters = readProjectFile("ruoyi-ui/src/store/getters.js");
+        String contentPage = readProjectFile("ruoyi-ui/src/views/centralbank/content/index.vue");
+        String dashboardPage = readProjectFile("ruoyi-ui/src/views/index.vue");
+
+        assertThat(loginController).contains("account_extension");
+        assertThat(userStore).contains("SET_ACCOUNT_EXTENSION");
+        assertThat(getters).contains("accountExtension");
+        assertThat(contentPage).contains(":disabled=\"isOfficeLocked\"");
+        assertThat(contentPage).contains("availableFormOffices");
+        assertThat(contentPage).contains("applyLockedOfficeDefaults");
+        assertThat(dashboardPage).contains("quickActions");
+        assertThat(dashboardPage).contains(":disabled=\"!action.enabled\"");
+        assertThat(dashboardPage).contains("auth.hasPermi");
+    }
+
     private static String readBackendFile(String relativePath) throws IOException
     {
         Path cwd = Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
@@ -135,5 +215,26 @@ class SecurityContractTest
             return Files.readString(siblingFromModule, StandardCharsets.UTF_8);
         }
         throw new IOException("Cannot locate backend file: " + relativePath);
+    }
+
+    private static String readProjectFile(String relativePath) throws IOException
+    {
+        Path cwd = Path.of(System.getProperty("user.dir")).toAbsolutePath().normalize();
+        Path direct = cwd.resolve(relativePath).normalize();
+        Path projectFromBackend = cwd.resolve("..").resolve(relativePath).normalize();
+        Path projectFromModule = cwd.resolve("..").resolve("..").resolve(relativePath).normalize();
+        if (Files.exists(direct))
+        {
+            return Files.readString(direct, StandardCharsets.UTF_8);
+        }
+        if (Files.exists(projectFromBackend))
+        {
+            return Files.readString(projectFromBackend, StandardCharsets.UTF_8);
+        }
+        if (Files.exists(projectFromModule))
+        {
+            return Files.readString(projectFromModule, StandardCharsets.UTF_8);
+        }
+        throw new IOException("Cannot locate project file: " + relativePath);
     }
 }

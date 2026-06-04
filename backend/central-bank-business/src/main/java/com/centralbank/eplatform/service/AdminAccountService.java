@@ -26,6 +26,7 @@ public class AdminAccountService
 {
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_OFFICE_USER = "OFFICE_USER";
+    private static final Long CENTRAL_BANK_COMMON_ROLE_ID = 2L;
 
     private final CbAdminAccountMapper accountMapper;
     private final CbAccountExtensionMapper accountExtensionMapper;
@@ -86,6 +87,7 @@ public class AdminAccountService
         boolean enabled = resolveEnabled(request.enabled());
         account.setStatus(enabled ? "0" : "1");
         accountMapper.insertSysUser(account);
+        accountMapper.insertUserRole(account.getId(), CENTRAL_BANK_COMMON_ROLE_ID);
         accountMapper.insertAccountExtension(buildExtension(account.getId(), roleOffice, enabled));
         auditLogRecorder.record("ACCOUNT", "ACCOUNT", account.getUsername(), "创建后台账号");
         return new AdminAccountCreateData(account.getId());
@@ -130,6 +132,7 @@ public class AdminAccountService
             throw new AdminAccountException(404, "账号不存在");
         }
         accountMapper.deleteAccountExtensionByUserId(existing.getId());
+        accountMapper.deleteUserRolesByUserId(existing.getId());
         accountMapper.deleteSysUserById(existing.getId());
         auditLogRecorder.record("ACCOUNT", "ACCOUNT", existing.getUsername(), "删除后台账号");
         return new AdminAccountDeleteData(true);

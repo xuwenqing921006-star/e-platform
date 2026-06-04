@@ -112,10 +112,16 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="分类" prop="category">
-              <el-select v-model="form.category" placeholder="请选择分类">
+            <el-form-item label="办公室" prop="office_code">
+              <el-select
+                v-model="form.office_code"
+                placeholder="请先选择办公室"
+                filterable
+                :disabled="isOfficeLocked"
+                @change="handleOfficeChange"
+              >
                 <el-option
-                  v-for="item in contentCategories"
+                  v-for="item in availableFormOffices"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -124,10 +130,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="办公室" prop="office_code">
-              <el-select v-model="form.office_code" placeholder="请选择办公室" filterable>
+            <el-form-item label="分类" prop="category">
+              <el-select v-model="form.category" placeholder="请先选择办公室">
                 <el-option
-                  v-for="item in offices"
+                  v-for="item in formContentCategories"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
@@ -244,6 +250,30 @@ export default {
       return {
         Authorization: 'Bearer ' + getToken()
       }
+    },
+    formContentCategories() {
+      if (this.isCountyOffice(this.form.office_code)) {
+        return this.contentCategories.filter(item => item.value === 'SERVICE_GUIDE')
+      }
+      return this.contentCategories
+    },
+    currentAccountExtension() {
+      return this.$store.getters.accountExtension || {}
+    },
+    isAdminAccount() {
+      return this.currentAccountExtension.role === 'ADMIN'
+    },
+    currentOfficeCode() {
+      return this.currentAccountExtension.office_code
+    },
+    isOfficeLocked() {
+      return !this.isAdminAccount && Boolean(this.currentOfficeCode)
+    },
+    availableFormOffices() {
+      if (!this.isOfficeLocked) {
+        return this.offices
+      }
+      return this.offices.filter(item => item.value === this.currentOfficeCode)
     }
   },
   created() {
@@ -265,6 +295,9 @@ export default {
       listOptions().then(response => {
         this.contentCategories = response.data.content_categories || []
         this.offices = response.data.offices || []
+        if (this.open && !this.form.id) {
+          this.applyLockedOfficeDefaults()
+        }
       })
     },
     getList() {
@@ -292,6 +325,9 @@ export default {
     },
     handleAdd() {
       this.reset()
+      this.$nextTick(() => {
+        this.applyLockedOfficeDefaults()
+      })
       this.open = true
       this.title = '新增内容'
     },
@@ -307,6 +343,7 @@ export default {
           rich_text_html: data.rich_text_html,
           attachments: data.attachments || []
         }
+        this.handleOfficeChange(this.form.office_code)
         this.open = true
         this.title = '编辑内容'
       })
@@ -381,6 +418,29 @@ export default {
       deleteAttachment(file.id).then(() => {
         this.form.attachments = this.form.attachments.filter(item => item.id !== file.id)
       })
+    },
+    handleOfficeChange(officeCode) {
+      if (this.isCountyOffice(officeCode)) {
+        this.form.category = 'SERVICE_GUIDE'
+      } else if (this.form.category === undefined && this.contentCategories.length) {
+        this.form.category = this.contentCategories[0].value
+      }
+      this.$nextTick(() => {
+        if (this.$refs.form) {
+          this.$refs.form.clearValidate('category')
+        }
+      })
+    },
+    applyLockedOfficeDefaults() {
+      if (!this.isOfficeLocked) {
+        return
+      }
+      this.form.office_code = this.currentOfficeCode
+      this.handleOfficeChange(this.form.office_code)
+    },
+    isCountyOffice(officeCode) {
+      const office = this.offices.find(item => item.value === officeCode)
+      return Boolean(office && office.county_code)
     },
     cancel() {
       this.open = false

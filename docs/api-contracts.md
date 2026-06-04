@@ -26,6 +26,8 @@ Authorization: Bearer <access_token>
 
 公开 H5 接口不需要登录。
 
+后台登录不使用验证码，请求只提交账号和密码。
+
 ### 1.3 统一响应
 
 成功：
@@ -378,6 +380,35 @@ Binary file stream
       "PRODUCT_MANAGE"
     ]
   }
+}
+```
+
+若依后台管理端兼容使用 `GET /getInfo` 获取当前用户、角色、按钮权限和业务账号扩展。`account_extension` 用于前端判断当前用户是否管理员，以及非管理员发布内容时默认并锁定本人办公室。
+
+**若依成功响应（200）：**
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "user": {
+    "userId": 2,
+    "userName": "ry",
+    "nickName": "若依"
+  },
+  "account_extension": {
+    "role": "OFFICE_USER",
+    "office_code": "MONETARY_CREDIT",
+    "office_name": "货币信贷政策管理科",
+    "enabled": true
+  },
+  "roles": [
+    "common"
+  ],
+  "permissions": [
+    "centralbank:content:add",
+    "centralbank:product:add"
+  ]
 }
 ```
 
@@ -782,6 +813,8 @@ file: PDF、Word 或 Excel 文件
 }
 ```
 
+说明：发布办公室为肇州县、肇源县、林甸县或杜蒙县时，分类只能为 `SERVICE_GUIDE`；后端按服务指引保存县域内容。
+
 **成功响应（200）：**
 
 ```json
@@ -966,10 +999,20 @@ file: PDF、Word 或 Excel 文件
   "product_type": "AGRICULTURAL",
   "admission_conditions": "面向农户、家庭农场及农民专业合作社，信用状况良好，经营稳定。",
   "product_intro": "用于满足农业生产经营中的流动资金需求，支持线上申请与线下服务对接。",
-  "business_manager": "张经理",
-  "contact_info": "0459-0002001"
+  "contacts": [
+    {
+      "business_manager": "张经理",
+      "contact_info": "0459-0002001"
+    },
+    {
+      "business_manager": "李经理",
+      "contact_info": "0459-0002002"
+    }
+  ]
 }
 ```
+
+说明：`contacts` 最多 5 组。为兼容旧客户端，仍可提交单组 `business_manager` 与 `contact_info`；服务端保存和详情响应仍使用这两个契约字段，多组时按行分隔。
 
 **成功响应（200）：**
 
@@ -1009,8 +1052,8 @@ file: PDF、Word 或 Excel 文件
     "product_type": "AGRICULTURAL",
     "admission_conditions": "面向农户、家庭农场及农民专业合作社，信用状况良好，经营稳定。",
     "product_intro": "用于满足农业生产经营中的流动资金需求，支持线上申请与线下服务对接。",
-    "business_manager": "张经理",
-    "contact_info": "0459-0002001",
+    "business_manager": "张经理\n李经理",
+    "contact_info": "0459-0002001\n0459-0002002",
     "updated_at": "2026-05-30T15:16:00+08:00"
   }
 }
@@ -1037,8 +1080,12 @@ file: PDF、Word 或 Excel 文件
   "product_type": "AGRICULTURAL",
   "admission_conditions": "面向符合条件的涉农经营主体。",
   "product_intro": "用于农业生产经营中的流动资金需求。",
-  "business_manager": "李经理",
-  "contact_info": "0459-0002002"
+  "contacts": [
+    {
+      "business_manager": "李经理",
+      "contact_info": "0459-0002002"
+    }
+  ]
 }
 ```
 

@@ -67,6 +67,42 @@ class AdminProductServiceTest
     }
 
     @Test
+    void createStoresUpToFiveBusinessContactsInContractFields()
+    {
+        Fixture fixture = fixture(10L);
+        AdminProductRequest request = new AdminProductRequest("ABC", "多联系人产品", "AGRICULTURAL", "面向涉农经营主体。",
+                "用于验证 7 字段产品数据层。", null, null, List.of(
+                        new AdminProductRequest.ProductContact("张经理", "0459-0002001"),
+                        new AdminProductRequest.ProductContact("李经理", "0459-0002002")));
+
+        var created = fixture.service.create(request);
+        CbFinancialProduct product = fixture.productMapper.selectProductById(created.id());
+
+        assertThat(product.getBusinessManager()).isEqualTo("张经理\n李经理");
+        assertThat(product.getContactInfo()).isEqualTo("0459-0002001\n0459-0002002");
+    }
+
+    @Test
+    void createRejectsMoreThanFiveBusinessContacts()
+    {
+        Fixture fixture = fixture(10L);
+        AdminProductRequest request = new AdminProductRequest("ABC", "联系人超限产品", "AGRICULTURAL", "面向涉农经营主体。",
+                "用于验证 7 字段产品数据层。", null, null, List.of(
+                        new AdminProductRequest.ProductContact("张经理", "0459-0002001"),
+                        new AdminProductRequest.ProductContact("李经理", "0459-0002002"),
+                        new AdminProductRequest.ProductContact("王经理", "0459-0002003"),
+                        new AdminProductRequest.ProductContact("赵经理", "0459-0002004"),
+                        new AdminProductRequest.ProductContact("刘经理", "0459-0002005"),
+                        new AdminProductRequest.ProductContact("陈经理", "0459-0002006")));
+
+        assertThatThrownBy(() -> fixture.service.create(request))
+                .isInstanceOf(AdminProductException.class)
+                .hasMessage("业务经办人与联系方式最多添加 5 组")
+                .extracting("statusCode")
+                .isEqualTo(400);
+    }
+
+    @Test
     void createRejectsUnknownBank()
     {
         Fixture fixture = fixture(10L);

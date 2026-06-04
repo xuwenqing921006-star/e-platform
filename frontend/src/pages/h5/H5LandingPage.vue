@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
 
 import AppIcon from '../../components/common/AppIcon.vue'
 import {
@@ -18,6 +19,7 @@ import type {
   PublicProductListItem,
   PublicScope,
 } from '../../types/api'
+import { buildH5DetailBackQuery } from '../../utils/h5BackTarget'
 
 type PrimaryTab = PublicScope
 type RuralSection = (typeof RURAL_SECTION_TABS)[number]['id']
@@ -26,6 +28,7 @@ type FinancialTab = (typeof FINANCIAL_TABS)[number]['id']
 const PAGE_SIZE = 3
 const PRODUCT_PAGE_SIZE = 4
 
+const route = useRoute()
 const primaryTab = ref<PrimaryTab>('RURAL')
 const countyCode = ref<CountyCode>('ZHAOZHOU')
 const ruralSection = ref<RuralSection>('SERVICE_GUIDE')
@@ -61,6 +64,54 @@ function dateOnly(dateTime: string) {
 
 function productTypeLabel(productType: PublicProductListItem['product_type']) {
   return productType === 'AGRICULTURAL' ? '涉农信贷' : '小微信贷'
+}
+
+function detailBackQuery() {
+  return buildH5DetailBackQuery({
+    primaryTab: primaryTab.value,
+    financialTab: financialTab.value,
+    countyCode: countyCode.value,
+    ruralSection: ruralSection.value,
+  })
+}
+
+function contentDetailRoute(id: number) {
+  return {
+    path: `/h5/contents/${id}`,
+    query: detailBackQuery(),
+  }
+}
+
+function productDetailRoute(id: number) {
+  return {
+    path: `/h5/products/${id}`,
+    query: detailBackQuery(),
+  }
+}
+
+function applyRouteState() {
+  const query = route?.query || {}
+  const primary = queryString(query.primary)
+  const financial = queryString(query.financial)
+  const county = queryString(query.county)
+  const ruralSectionValue = queryString(query.rural_section)
+
+  if (primary === 'FINANCIAL' || primary === 'RURAL') {
+    primaryTab.value = primary
+  }
+  if (financial && FINANCIAL_TABS.some(tab => tab.id === financial)) {
+    financialTab.value = financial as FinancialTab
+  }
+  if (county && RURAL_TABS.some(tab => tab.id === county)) {
+    countyCode.value = county as CountyCode
+  }
+  if (ruralSectionValue && RURAL_SECTION_TABS.some(tab => tab.id === ruralSectionValue)) {
+    ruralSection.value = ruralSectionValue as RuralSection
+  }
+}
+
+function queryString(value: unknown) {
+  return Array.isArray(value) ? String(value[0] || '') : String(value || '')
 }
 
 async function loadList(reset = true) {
@@ -157,6 +208,7 @@ function handleWindowScroll() {
 }
 
 onMounted(() => {
+  applyRouteState()
   void loadList()
   window.addEventListener('scroll', handleWindowScroll, { passive: true })
 })
@@ -254,7 +306,7 @@ onBeforeUnmount(() => {
           v-for="item in productItems"
           :key="item.id"
           class="h5-product-card"
-          :to="`/h5/products/${item.id}`"
+          :to="productDetailRoute(item.id)"
         >
           <div>
             <span>{{ item.bank_name }}</span>
@@ -271,7 +323,7 @@ onBeforeUnmount(() => {
           v-for="item in contentItems"
           :key="item.id"
           class="h5-content-card"
-          :to="`/h5/contents/${item.id}`"
+          :to="contentDetailRoute(item.id)"
         >
           <h1>{{ item.title }}</h1>
           <div>

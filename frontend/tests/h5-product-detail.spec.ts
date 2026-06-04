@@ -106,7 +106,8 @@ describe('T-004 H5 product detail wiring', () => {
     const serviceSource = source('src/services/publicProductService.ts')
 
     expect(routerSource).toContain("path: '/h5/products/:id'")
-    expect(listSource).toContain(':to="`/h5/products/${item.id}`"')
+    expect(listSource).toContain(':to="productDetailRoute(item.id)"')
+    expect(listSource).toContain('buildH5DetailBackQuery')
     expect(detailSource).toContain("from '../../services/publicProductService'")
     expect(detailSource).not.toContain("from '../../mocks'")
     expect(serviceSource).toContain('getPublicProductDetail')
@@ -135,13 +136,26 @@ describe('T-004 H5 product detail wiring', () => {
     expect(host.textContent).toContain('[Mock] 0459-0002001')
     expect(host.querySelector('.product-identity-card')).not.toBeNull()
     expect(host.querySelector('.product-detail-card')).not.toBeNull()
-    expect(host.querySelectorAll('.product-detail-field')).toHaveLength(4)
+    expect(host.querySelectorAll('.product-detail-field')).toHaveLength(3)
     expect(host.textContent).not.toContain('参考利率')
     expect(host.textContent).not.toContain('贷款额度')
     expect(host.textContent).not.toContain('期限')
     expect(host.querySelector('.safe-entry')).toBeNull()
 
     unmount()
+  })
+
+  it('renders multiple product contacts as paired rows instead of two unrelated multiline fields', () => {
+    const detailSource = source('src/pages/h5/H5ProductDetailPage.vue')
+    const styles = source('src/styles/global.css')
+
+    expect(detailSource).toContain('productContacts')
+    expect(detailSource).toContain('product-contact-list')
+    expect(detailSource).toContain('product-contact-item')
+    expect(detailSource).not.toContain('<p>{{ product.business_manager }}</p>')
+    expect(detailSource).not.toContain('<p>{{ product.contact_info }}</p>')
+    expect(styles).toContain('.product-contact-list')
+    expect(styles).toContain('.product-contact-item')
   })
 
   it('keeps the mobile product detail typography compact', () => {
