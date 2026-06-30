@@ -308,13 +308,16 @@ onBeforeUnmount(() => {
           class="h5-product-card"
           :to="productDetailRoute(item.id)"
         >
-          <div>
-            <span>{{ item.bank_name }}</span>
+          <h1>{{ item.product_name }}</h1>
+          <div class="h5-product-meta">
+            <span class="h5-product-bank">
+              <AppIcon name="building-2" />
+              {{ item.bank_name }}
+            </span>
             <strong :class="`product-type-${item.product_type.toLowerCase()}`">
               {{ productTypeLabel(item.product_type) }}
             </strong>
           </div>
-          <h1>{{ item.product_name }}</h1>
         </RouterLink>
       </section>
 
