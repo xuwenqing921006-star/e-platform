@@ -264,6 +264,8 @@ describe('T-002 SAFE floating entry', () => {
   it('provides expand, close, link and clear failure feedback in a reusable component', () => {
     const appSource = source('src/App.vue')
     const safeSource = source('src/components/h5/H5SafeEntry.vue')
+    const styles = source('src/styles/global.css')
+    const safeLogoRule = styles.match(/\.safe-entry img\s*\{[^}]*\}/s)?.[0] || ''
 
     expect(appSource).toContain('<H5SafeEntry')
     expect(appSource).toContain('shouldShowSafeEntry(route.path)')
@@ -271,6 +273,7 @@ describe('T-002 SAFE floating entry', () => {
     expect(safeSource).toContain('safe-entry-close')
     expect(safeSource).toContain(':href="SAFE_PORTAL_URL"')
     expect(safeSource).toContain('数字外管平台打开失败，请稍后重试。')
+    expect(safeLogoRule).toContain('height: 33px;')
   })
 
   it('expands left, reports blocked navigation and collapses from the close action', async () => {

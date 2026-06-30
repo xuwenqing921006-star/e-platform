@@ -136,6 +136,9 @@ describe('T-004 H5 product detail wiring', () => {
     expect(host.textContent).toContain('[Mock] 0459-0002001')
     expect(host.querySelector('.product-identity-card')).not.toBeNull()
     expect(host.querySelector('.product-detail-card')).not.toBeNull()
+    expect(
+      host.querySelector<HTMLAnchorElement>('.product-contact-phone')?.getAttribute('href'),
+    ).toBe('tel:0459-0002001')
     expect(host.querySelectorAll('.product-detail-field')).toHaveLength(3)
     expect(host.textContent).not.toContain('参考利率')
     expect(host.textContent).not.toContain('贷款额度')
@@ -152,21 +155,52 @@ describe('T-004 H5 product detail wiring', () => {
     expect(detailSource).toContain('productContacts')
     expect(detailSource).toContain('product-contact-list')
     expect(detailSource).toContain('product-contact-item')
+    expect(detailSource).toContain('phoneHref(contact.contact_info)')
+    expect(detailSource).toContain('class="product-contact-phone"')
     expect(detailSource).not.toContain('<p>{{ product.business_manager }}</p>')
     expect(detailSource).not.toContain('<p>{{ product.contact_info }}</p>')
     expect(styles).toContain('.product-contact-list')
     expect(styles).toContain('.product-contact-item')
+    expect(styles).toContain('.product-contact-phone')
+  })
+
+  it('places the bank name and product type side by side in the identity card', () => {
+    const detailSource = source('src/pages/h5/H5ProductDetailPage.vue')
+    const styles = source('src/styles/global.css')
+    const tagsRule =
+      styles.match(/\.product-identity-tags\s*\{[^}]*\}/s)?.[0] || ''
+
+    expect(detailSource).toContain('class="product-identity-tags"')
+    expect(detailSource).toContain('<span class="product-bank-pill"')
+    expect(detailSource).toContain('<strong :class="`product-type-${product.product_type.toLowerCase()}`"')
+    expect(tagsRule).toContain('display: flex;')
+    expect(tagsRule).toContain('align-items: center;')
+    expect(tagsRule).toContain('flex-wrap: wrap;')
   })
 
   it('keeps the mobile product detail typography compact', () => {
     const styles = source('src/styles/global.css')
+    const productTitleRule =
+      styles.match(/\.product-identity-card h1\s*\{[^}]*\}/s)?.[0] || ''
+    const fieldHeadingRule =
+      styles.match(/\.product-detail-field h2\s*\{[^}]*\}/s)?.[0] || ''
+    const fieldParagraphRule =
+      styles.match(/\.product-detail-field p\s*\{[^}]*\}/s)?.[0] || ''
+    const contactNameRule =
+      styles.match(/\.product-contact-item span\s*\{[^}]*\}/s)?.[0] || ''
+    const contactPhoneRule =
+      styles
+        .match(/\.product-contact-item strong\s*\{[^}]*\}/gs)
+        ?.find((rule) => rule.includes('color: var(--primary);')) || ''
 
-    expect(styles).toContain('.product-identity-card h1')
-    expect(styles).toContain('font-size: 22px;')
-    expect(styles).toContain('.product-detail-field h2')
-    expect(styles).toContain('font-size: 14px;')
-    expect(styles).toContain('.product-detail-field p')
-    expect(styles).toContain('font-size: 16px;')
+    expect(productTitleRule).toContain('font-size: 20px;')
+    expect(fieldHeadingRule).toContain('font-size: 13px;')
+    expect(fieldParagraphRule).toContain('font-size: 15px;')
+    expect(fieldParagraphRule).toContain('font-weight: 400;')
+    expect(contactNameRule).toContain('font-size: 14px;')
+    expect(contactNameRule).toContain('font-weight: 400;')
+    expect(contactPhoneRule).toContain('font-size: 14px;')
+    expect(contactPhoneRule).toContain('font-weight: 600;')
     expect(styles).not.toContain('font-size: 32px;\n  line-height: 1.15;')
     expect(styles).not.toContain('font-size: 20px;\n  font-weight: 800;')
   })

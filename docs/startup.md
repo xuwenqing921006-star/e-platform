@@ -8,7 +8,7 @@
 | --- | --- | --- | --- | --- |
 | H5 公众号端 | `frontend/` | `5199` | `5175` | Vue 3 + Vite，默认真实接口路径，保留显式 Mock 测试模式 |
 | 若依后端 | `backend/ruoyi-admin` | `8099` | `8003` | Spring Boot 3，`health` profile 可不连接数据库短启动 |
-| 若依后台 | `ruoyi-ui/` | `5199` | `5175` | Vue 2 + Element UI，经 `/dev-api` 或 `/prod-api` 代理到后端 |
+| 若依后台 | `ruoyi-ui/` | `5199` | `5176` | Vue 2 + Element UI，经 `/dev-api` 或 `/prod-api` 代理到后端；与 H5 同时本地验收时使用 `5176` |
 | MySQL | 外部服务 | `3306` | 按用户环境 | 真实业务 profile 必需 |
 | Redis | 外部服务 | `6379` | 按用户环境 | 若依登录态、验证码、限流和缓存能力依赖 |
 
@@ -52,6 +52,12 @@ APP_JWT_SECRET=<local-secret-not-committed>
 ```
 
 Redis 使用 `spring.data.redis.host`、`spring.data.redis.port`、`spring.data.redis.database`、`spring.data.redis.password`。当前默认指向 `localhost:6379` 且密码留空；如测试环境 Redis 需要认证，通过本地启动参数或本地配置覆盖，不能提交真实值。
+
+如果通过 cpolar、内网穿透或其他公网域名访问本地后台，需要把公网访问 Origin 加入后端 CORS 白名单。多个 Origin 用英文逗号分隔：
+
+```env
+APP_CORS_ALLOWED_ORIGINS=<public-origin>
+```
 
 ### 3.3 若依后台 `ruoyi-ui`
 
@@ -121,6 +127,7 @@ $env:DB_USERNAME='<mysql-user>'
 $env:DB_PASSWORD='<mysql-password>'
 $env:APP_STORAGE_ROOT='<absolute-upload-directory>'
 $env:APP_JWT_SECRET='<local-secret-not-committed>'
+$env:APP_CORS_ALLOWED_ORIGINS='<public-origin-if-needed>'
 java -jar .\ruoyi-admin\target\ruoyi-admin.jar --server.port=8099
 ```
 
@@ -179,7 +186,7 @@ npm.cmd run dev
 ```powershell
 cd ruoyi-ui
 $env:VUE_APP_BACKEND_PROXY_TARGET='http://localhost:8003'
-$env:port='5175'
+$env:port='5176'
 npm.cmd run dev
 ```
 
@@ -192,8 +199,9 @@ npm.cmd run build:prod
 
 核心路径：
 
-- `http://127.0.0.1:5199/login`
-- `http://127.0.0.1:5199/index`
+- `http://127.0.0.1:5176/`
+- `http://127.0.0.1:5176/login`
+- `http://127.0.0.1:5176/index`
 - 内容管理、金融产品、Excel 导入、账号管理、操作日志、修改密码等菜单需在真实 MySQL 菜单 SQL 初始化后验证。
 
 ## 7. Docker 一键启动 MySQL / Redis
@@ -248,6 +256,32 @@ $env:DB_PASSWORD='<local-only-db-password>'
 - Redis：`health` profile 不依赖 Redis；真实登录、验证码、在线用户、重复提交、限流和缓存相关路径依赖 Redis。若 Redis 未启动，不要宣称后台完整链路可用。
 - 附件目录：自动测试可用临时目录；真实部署必须把 `APP_STORAGE_ROOT` 指向持久化目录并纳入备份。
 - SAFE：固定地址为 `http://zwfw.safe.gov.cn/asone/`；无网络时只验证 H5 链接地址和详情页隐藏规则，不声明外站可达。
+
+## 7.1 cpolar 临时公网访问
+
+cpolar 适合临时演示或验收，不等同于生产部署。当前项目本地并行启动时建议只穿透若依后台 `5176`，后台 dev server 会通过 `/dev-api` 代理到本机后端 `8003`。
+
+启动前提：
+
+1. Docker Desktop 已启动，MySQL 和 Redis 均 healthy。
+2. 后端 `8003` 已启动。
+3. 若依后台 `5176` 已启动。
+4. 后端启动时已设置 `APP_CORS_ALLOWED_ORIGINS` 为当前 cpolar HTTPS Origin，例如 `https://<subdomain>.r20.vip.cpolar.cn`。
+
+启动 cpolar：
+
+```powershell
+& "C:\Program Files\cpolar\cpolar.exe" http 5176
+```
+
+验证：
+
+```powershell
+Invoke-RestMethod http://127.0.0.1:8003/health
+Invoke-RestMethod http://127.0.0.1:5176/dev-api/captchaImage
+```
+
+cpolar 终端输出的 HTTPS 地址即公网后台入口。免费隧道地址可能变化；地址变化后，需要重启后端并同步更新 `APP_CORS_ALLOWED_ORIGINS`。
 
 ## 8. 验证步骤
 

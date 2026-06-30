@@ -23,6 +23,13 @@ function productTypeLabel(productType: ProductType) {
   return productType === 'AGRICULTURAL' ? '涉农信贷' : '小微信贷'
 }
 
+function phoneHref(contactInfo: string) {
+  const phoneMatch = String(contactInfo).match(/\+?\d[\d\s-]{5,}\d/)
+  const dialNumber = (phoneMatch?.[0] || contactInfo).replace(/\s+/g, '')
+
+  return `tel:${dialNumber}`
+}
+
 async function loadProduct() {
   loading.value = true
   errorMessage.value = ''
@@ -62,10 +69,12 @@ onMounted(loadProduct)
     <template v-else-if="product">
       <section class="product-identity-card">
         <h1>{{ product.product_name }}</h1>
-        <span class="product-bank-pill">{{ product.bank_name }}</span>
-        <strong :class="`product-type-${product.product_type.toLowerCase()}`">
-          {{ productTypeLabel(product.product_type) }}
-        </strong>
+        <div class="product-identity-tags">
+          <span class="product-bank-pill">{{ product.bank_name }}</span>
+          <strong :class="`product-type-${product.product_type.toLowerCase()}`">
+            {{ productTypeLabel(product.product_type) }}
+          </strong>
+        </div>
       </section>
 
       <section class="product-detail-card">
@@ -86,7 +95,13 @@ onMounted(loadProduct)
               class="product-contact-item"
             >
               <span>{{ contact.business_manager }}</span>
-              <strong>{{ contact.contact_info }}</strong>
+              <a
+                v-if="contact.contact_info"
+                class="product-contact-phone"
+                :href="phoneHref(contact.contact_info)"
+              >
+                <strong>{{ contact.contact_info }}</strong>
+              </a>
             </div>
           </div>
         </article>

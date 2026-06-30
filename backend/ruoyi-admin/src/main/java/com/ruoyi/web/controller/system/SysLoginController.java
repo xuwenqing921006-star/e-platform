@@ -29,6 +29,7 @@ import com.ruoyi.framework.web.service.SysPermissionService;
 import com.ruoyi.framework.web.service.TokenService;
 import com.ruoyi.system.service.ISysConfigService;
 import com.ruoyi.system.service.ISysMenuService;
+import com.ruoyi.system.service.ISysUserService;
 
 /**
  * 登录验证
@@ -73,6 +74,9 @@ public class SysLoginController
     private ISysConfigService configService;
 
     @Autowired
+    private ISysUserService userService;
+
+    @Autowired
     private CbAccountExtensionMapper accountExtensionMapper;
 
     /**
@@ -100,7 +104,12 @@ public class SysLoginController
     public AjaxResult getInfo()
     {
         LoginUser loginUser = SecurityUtils.getLoginUser();
-        SysUser user = loginUser.getUser();
+        SysUser user = userService.selectUserById(loginUser.getUserId());
+        if (user == null)
+        {
+            user = loginUser.getUser();
+        }
+        loginUser.setUser(user);
         // 角色集合
         Set<String> roles = permissionService.getRolePermission(user);
         // 权限集合
@@ -112,8 +121,8 @@ public class SysLoginController
         if (!loginUser.getPermissions().equals(permissions))
         {
             loginUser.setPermissions(permissions);
-            tokenService.refreshToken(loginUser);
         }
+        tokenService.refreshToken(loginUser);
         AjaxResult ajax = AjaxResult.success();
         ajax.put("user", user);
         ajax.put("account_extension", centralBankAccountExtension(user));

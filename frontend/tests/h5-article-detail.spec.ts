@@ -187,14 +187,89 @@ describe('T-003 H5 article detail wiring', () => {
 
   it('keeps the mobile article detail typography compact', () => {
     const styles = source('src/styles/global.css')
+    const topbarRule = styles.match(/\.article-topbar span\s*\{[^}]*\}/s)?.[0] || ''
+    const titleRule = styles.match(/\.article-detail-card > h1\s*\{[^}]*\}/s)?.[0] || ''
+    const richTextRule = styles.match(/\.article-rich-text\s*\{[^}]*\}/s)?.[0] || ''
+    const richTextHeadingRule =
+      styles.match(/\.article-rich-text h2\s*\{[^}]*\}/s)?.[0] || ''
+    const attachmentHeadingRule =
+      styles.match(/\.article-attachments h2\s*\{[^}]*\}/s)?.[0] || ''
 
-    expect(styles).toContain('.article-detail-card > h1')
-    expect(styles).toContain('font-size: 21px;')
-    expect(styles).toContain('.article-rich-text')
-    expect(styles).toContain('font-size: 16px;')
-    expect(styles).toContain('.article-rich-text h2')
-    expect(styles).toContain('font-size: 18px;')
+    expect(topbarRule).toContain('font-size: 17px;')
+    expect(titleRule).toContain('font-size: 19px;')
+    expect(richTextRule).toContain('font-size: 15px;')
+    expect(richTextHeadingRule).toContain('font-size: 16px;')
+    expect(attachmentHeadingRule).toContain('font-size: 16px;')
     expect(styles).not.toContain('font-size: 28px;\n  line-height: 1.28;')
     expect(styles).not.toContain('font-size: 20px;\n  line-height: 1.58;')
+  })
+
+  it('uses a compact mobile list style for article attachments', () => {
+    const styles = source('src/styles/global.css')
+    const attachmentLinkRule =
+      styles.match(/\.article-attachment-link\s*\{[^}]*\}/s)?.[0] || ''
+    const attachmentNameRule =
+      styles.match(/\.article-attachment-link span\s*\{[^}]*\}/s)?.[0] || ''
+    const attachmentTypeRule =
+      styles.match(/\.article-attachment-link small\s*\{[^}]*\}/s)?.[0] || ''
+    const attachmentIconRule =
+      styles.match(/\.article-attachment-link svg\s*\{[^}]*\}/s)?.[0] || ''
+
+    expect(attachmentLinkRule).toContain('min-height: 48px;')
+    expect(attachmentLinkRule).toContain('grid-template-columns: 18px minmax(0, 1fr) auto;')
+    expect(attachmentLinkRule).toContain('padding: 11px 12px;')
+    expect(attachmentLinkRule).toContain('font-size: 14px;')
+    expect(attachmentLinkRule).toContain('font-weight: 500;')
+    expect(attachmentNameRule).toContain('line-height: 1.42;')
+    expect(attachmentTypeRule).toContain('border-radius: 999px;')
+    expect(attachmentTypeRule).toContain('font-size: 11px;')
+    expect(attachmentIconRule).toContain('width: 18px;')
+    expect(attachmentIconRule).toContain('height: 18px;')
+  })
+
+  it('does not shrink long rich-text images into a fixed-height preview', () => {
+    const styles = source('src/styles/global.css')
+    const richTextImageRule = styles.match(/\.article-rich-text img\s*\{[^}]*\}/s)?.[0] || ''
+    const viewerImageRule = styles.match(/\.article-image-viewer img\s*\{[^}]*\}/s)?.[0] || ''
+
+    expect(richTextImageRule).toContain('width: 100%;')
+    expect(richTextImageRule).toContain('height: auto;')
+    expect(richTextImageRule).not.toContain('max-height:')
+    expect(richTextImageRule).not.toContain('object-fit:')
+    expect(styles).toMatch(/\.article-image-viewer\s*\{[^}]*overflow:\s*auto;/s)
+    expect(viewerImageRule).toContain('height: auto;')
+    expect(viewerImageRule).not.toContain('max-height:')
+  })
+
+  it('keeps the original-image close button visible on light images', () => {
+    const styles = source('src/styles/global.css')
+    const closeButtonRule =
+      styles.match(/\.article-image-viewer-close\s*\{[^}]*\}/s)?.[0] || ''
+    const closeIconRule =
+      styles.match(/\.article-image-viewer-close svg\s*\{[^}]*\}/s)?.[0] || ''
+
+    expect(closeButtonRule).toContain('color: white;')
+    expect(closeButtonRule).toContain('background: rgb(9 19 38 / 88%)')
+    expect(closeButtonRule).toContain('border: 1px solid rgb(255 255 255 / 72%) !important;')
+    expect(closeButtonRule).toContain('box-shadow:')
+    expect(closeIconRule).toContain('width: 24px;')
+    expect(closeIconRule).toContain('height: 24px;')
+  })
+
+  it('keeps pinch zoom scoped to the original-image viewer instead of the page', () => {
+    const detailSource = source('src/pages/h5/H5ArticleDetailPage.vue')
+    const styles = source('src/styles/global.css')
+    const viewerRule = styles.match(/\.article-image-viewer\s*\{[^}]*\}/s)?.[0] || ''
+    const viewerImageRule = styles.match(/\.article-image-viewer img\s*\{[^}]*\}/s)?.[0] || ''
+
+    expect(detailSource).toContain('imageViewerStyle')
+    expect(detailSource).toContain('@touchstart="startImageGesture"')
+    expect(detailSource).toContain('@touchmove="moveImageGesture"')
+    expect(detailSource).toContain('@touchend="endImageGesture"')
+    expect(detailSource).toContain('clampImageScale')
+    expect(viewerRule).toContain('touch-action: none;')
+    expect(viewerImageRule).toContain('transform:')
+    expect(viewerImageRule).toContain('transform-origin: center center;')
+    expect(viewerImageRule).toContain('user-select: none;')
   })
 })

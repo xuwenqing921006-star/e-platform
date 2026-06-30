@@ -516,10 +516,18 @@ export default {
 }
 
 .rich-text {
+  max-width: 100%;
   min-height: 160px;
   padding: 12px 0;
+  overflow-x: auto;
   border-top: 1px solid #ebeef5;
   border-bottom: 1px solid #ebeef5;
+}
+
+.rich-text ::v-deep img {
+  display: block;
+  max-width: 100%;
+  height: auto;
 }
 
 .detail-attachments {

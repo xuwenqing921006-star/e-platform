@@ -172,11 +172,19 @@ export default {
             })
         request.then(() => {
           this.$modal.msgSuccess('保存成功')
+          return this.refreshCurrentUserInfo()
+        }).then(() => {
           this.goBack()
         }).finally(() => {
           this.saving = false
         })
       })
+    },
+    refreshCurrentUserInfo() {
+      if (!this.isEdit || Number(this.$route.params.id) !== Number(this.$store.getters.id)) {
+        return Promise.resolve()
+      }
+      return this.$store.dispatch('GetInfo')
     },
     goBack() {
       this.$router.push('/centralbank/account')

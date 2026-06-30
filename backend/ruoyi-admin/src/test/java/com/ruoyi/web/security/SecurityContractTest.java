@@ -102,6 +102,9 @@ class SecurityContractTest
         assertThat(resourcesConfig).contains("http://127.0.0.1:5199");
         assertThat(resourcesConfig).contains("http://localhost:5175");
         assertThat(resourcesConfig).contains("http://127.0.0.1:5175");
+        assertThat(resourcesConfig).contains("http://localhost:5176");
+        assertThat(resourcesConfig).contains("http://127.0.0.1:5176");
+        assertThat(resourcesConfig).contains("${APP_CORS_ALLOWED_ORIGINS:}");
         assertThat(resourcesConfig).doesNotContain("addAllowedOriginPattern(\"*\")");
     }
 
@@ -167,6 +170,21 @@ class SecurityContractTest
     }
 
     @Test
+    void currentUserNicknameRefreshesAfterAccountManagementEdit() throws IOException
+    {
+        String loginController = readBackendFile("ruoyi-admin/src/main/java/com/ruoyi/web/controller/system/SysLoginController.java");
+        String accountForm = readProjectFile("ruoyi-ui/src/views/centralbank/account/form.vue");
+
+        assertThat(loginController).contains("private ISysUserService userService");
+        assertThat(loginController).contains("userService.selectUserById(loginUser.getUserId())");
+        assertThat(loginController).contains("loginUser.setUser(user)");
+        assertThat(loginController).contains("tokenService.refreshToken(loginUser)");
+        assertThat(accountForm).contains("this.$store.getters.id");
+        assertThat(accountForm).contains("this.$store.dispatch('GetInfo')");
+        assertThat(accountForm).contains("refreshCurrentUserInfo");
+    }
+
+    @Test
     void loginAndRequestErrorsPreferContractMessage() throws IOException
     {
         String globalExceptionHandler = readBackendFile(
@@ -196,6 +214,10 @@ class SecurityContractTest
         assertThat(contentPage).contains(":disabled=\"isOfficeLocked\"");
         assertThat(contentPage).contains("availableFormOffices");
         assertThat(contentPage).contains("applyLockedOfficeDefaults");
+        assertThat(contentPage).contains(".rich-text ::v-deep img");
+        assertThat(contentPage).contains("max-width: 100%");
+        assertThat(contentPage).contains("height: auto");
+        assertThat(contentPage).contains("overflow-x: auto");
         assertThat(dashboardPage).contains("quickActions");
         assertThat(dashboardPage).contains(":disabled=\"!action.enabled\"");
         assertThat(dashboardPage).contains("auth.hasPermi");

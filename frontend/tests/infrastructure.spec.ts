@@ -100,6 +100,37 @@ describe('frontend infrastructure', () => {
     expect(apiSource).not.toContain("baseURL: 'http")
   })
 
+  it('allows external hosts when sharing the H5 dev server', () => {
+    const viteSource = source('vite.config.ts')
+
+    expect(viteSource).toContain('allowedHosts: true')
+  })
+
+  it('disables whole-page mobile pinch zoom at the viewport level', () => {
+    const htmlSource = source('index.html')
+
+    expect(htmlSource).toContain('name="viewport"')
+    expect(htmlSource).toContain('maximum-scale=1.0')
+    expect(htmlSource).toContain('user-scalable=no')
+  })
+
+  it('prevents document-level multi-touch zoom while leaving the image viewer gesture area alone', () => {
+    const mainSource = source('src/main.ts')
+
+    expect(mainSource).toContain('preventDocumentPinchZoom')
+    expect(mainSource).toContain("closest('.article-image-viewer')")
+    expect(mainSource).toContain("document.addEventListener('touchmove'")
+    expect(mainSource).toContain("document.addEventListener('gesturestart'")
+    expect(mainSource).toContain('passive: false')
+  })
+
+  it('proxies admin rich-text upload assets when previewing H5 locally', () => {
+    const viteSource = source('vite.config.ts')
+
+    expect(viteSource).toContain("'/dev-api'")
+    expect(viteSource).toContain("path.replace(/^\\/dev-api/, '')")
+  })
+
   it('defines shared responsive styles for mobile and desktop widths', () => {
     const styleSource = source('src/styles/global.css')
 
