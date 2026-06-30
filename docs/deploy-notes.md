@@ -1,36 +1,59 @@
 # 央行 E 平台部署注意事项
 
-本文档用于上线前检查和部署准备。文档只记录配置字段名、部署步骤和风险边界，不记录真实密码、JWT Secret、Token 或任何可还原片段。
+本文档用于测试环境、预生产环境和正式生产环境部署前检查。文档只记录配置字段名、流程和风险边界，不记录真实密码、JWT Secret、Token 或任何可还原片段。
 
-## 1. 推荐部署形态
+## 1. 当前结论
 
-当前项目由三部分组成：
+项目已经具备容器化部署基础，可以先部署到测试或预生产环境演练；正式生产上线前仍必须完成域名、HTTPS、生产密钥、备份、账号清理和全链路验收。
 
-| 模块 | 路径 | 部署产物 | 说明 |
+不要把 cpolar、Vite dev server、Vue CLI dev server 当作正式部署方案。cpolar 只适合临时演示或验收，正式部署应使用域名、HTTPS、Nginx 和生产构建产物。
+
+## 2. 部署组成
+
+| 组件 | 路径 | 产物 | 说明 |
 | --- | --- | --- | --- |
-| 若依后端 | `backend/` | `ruoyi-admin.jar` 或后端镜像 | 提供后台接口、H5 公共接口、附件访问、登录鉴权 |
-| 若依后台 | `ruoyi-ui/` | `dist/` | 后台管理端静态资源 |
-| H5 公众号端 | `frontend/` | `dist/` | 公众号/H5 静态资源 |
-| 基础服务 | MySQL / Redis | Docker 或服务器服务 | MySQL 保存业务数据，Redis 支撑登录态和缓存 |
+| H5 公众号端 | `frontend/` | `frontend/dist/` | 对外访问路径默认 `/h5/` |
+| 若依后台 | `ruoyi-ui/` | `ruoyi-ui/dist/` | 对外访问路径默认 `/admin/` |
+| 若依后端 | `backend/` | `ruoyi-admin.jar` 或后端镜像 | 提供后台接口、H5 公共接口、登录鉴权、附件访问 |
+| MySQL | Docker 或服务器服务 | 持久化数据卷/实例 | 保存系统用户、菜单、业务数据 |
+| Redis | Docker 或服务器服务 | 持久化数据卷/实例 | 支撑登录态、缓存、重复提交等 |
+| Nginx | `deploy/nginx.conf` | 反向代理配置 | 统一承载静态资源和 API 代理 |
 
-推荐先上线测试环境，再上线生产环境。生产环境建议使用 Nginx 统一接入 HTTPS，并只对外开放 80/443。
+当前生产路由约定：
 
-## 2. 新增部署文件
+| 外部路径 | 目标 |
+| --- | --- |
+| `/h5/` | H5 静态资源 |
+| `/admin/` | 后台静态资源 |
+| `/api/` | H5 API，代理到后端并保留 `/api` 前缀 |
+| `/prod-api/` | 后台 API，代理到后端并去掉 `/prod-api` 前缀 |
+| `/` | 重定向到 `/h5/` |
 
-本项目已补充以下部署文件：
+## 3. 部署文件
 
 | 文件 | 用途 |
 | --- | --- |
-| `backend/ruoyi-admin/src/main/resources/application-prod.yml` | 生产 profile 覆盖开发配置，启动时放在 profile 列表最后 |
-| `backend/Dockerfile` | 后端 jar 运行镜像 |
-| `deploy/nginx.conf` | Nginx 静态资源与接口反向代理示例 |
-| `docker-compose.prod.yml` | 测试/生产参考 compose |
+| `docker-compose.prod.yml` | 生产/预生产参考编排，包含 MySQL、Redis、后端、Nginx |
+| `deploy/nginx.conf` | Nginx 静态资源与 API 反向代理示例 |
+| `backend/Dockerfile` | 后端运行镜像 |
+| `backend/ruoyi-admin/src/main/resources/application-prod.yml` | 生产 profile 覆盖开发配置 |
+| `docs/startup.md` | 本地启动、开发验收和构建命令 |
 
-`docker-compose.yml` 仍作为本地开发 MySQL/Redis 使用，`docker-compose.prod.yml` 面向部署参考。
+`docker-compose.yml` 仅用于本地 MySQL/Redis 开发，不作为生产部署配置。
 
-## 3. 上线前必须配置的环境变量
+## 4. 正式部署前必须确认
 
-生产环境必须由服务器环境变量、部署平台 Secret、或仅服务器可读的 `.env` 文件提供以下字段：
+1. 域名已经确定，H5 和后台访问路径明确。
+2. HTTPS 证书已准备，公网只开放 80/443。
+3. MySQL、Redis、上传目录都有持久化和备份策略。
+4. 生产密钥、数据库密码、Redis 密码、Druid 密码已经通过服务器环境变量或服务器本地 `.env` 提供。
+5. 默认账号、测试账号、弱密码已清理或改强密码。
+6. 真实 MySQL/Redis 环境已经完成后台和 H5 全链路验收。
+7. 有回滚方案，包括旧镜像/旧 jar、旧静态资源、数据库备份和上传目录备份。
+
+## 5. 必填环境变量
+
+生产环境必须配置以下字段。可以放在服务器环境变量、部署平台 Secret、或仅服务器可读的 `.env` 文件中；不要提交到 Git。
 
 ```env
 MYSQL_ROOT_PASSWORD=<required>
@@ -45,7 +68,7 @@ REFERER_ALLOWED_DOMAINS=<your-domain>
 HTTP_PORT=80
 ```
 
-后端容器会使用以下运行字段：
+后端容器运行时会使用：
 
 ```env
 DB_URL=jdbc:mysql://mysql:3306/central_bank_e_platform?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=GMT%2B8
@@ -53,29 +76,27 @@ DB_USERNAME=<mysql-user>
 DB_PASSWORD=<mysql-password>
 REDIS_HOST=redis
 REDIS_PORT=6379
+REDIS_DATABASE=0
 REDIS_PASSWORD=<redis-password>
 APP_STORAGE_ROOT=/app/uploads
 APP_JWT_SECRET=<jwt-secret>
+APP_JWT_EXPIRE_MINUTES=30
 ```
 
-禁止把真实密码、JWT Secret、Token 写入 `docs/**`、`.sdd/**`、README、测试报告或 Git 提交内容。
+如果前后端不在同一个域名下，还需要设置：
 
-## 4. 构建顺序
-
-上线构建建议按以下顺序执行：
-
-默认部署路径为：
-
-```text
-H5: /h5/
-后台: /admin/
+```env
+APP_CORS_ALLOWED_ORIGINS=<https-origin-list>
+REFERER_ALLOWED_DOMAINS=<domain-list>
 ```
 
-已在 `frontend/vite.config.ts` 与 `ruoyi-ui/vue.config.js` 中配置生产资源路径。若改成独立域名根路径部署，需要同步调整 `VITE_PUBLIC_BASE` 与 `VUE_APP_PUBLIC_PATH`。
+同一个域名下使用 `/h5/`、`/admin/`、`/api/`、`/prod-api/` 时，通常不需要额外 CORS。
+
+## 6. 构建顺序
+
+在项目根目录执行。生产默认路径为 H5 `/h5/`、后台 `/admin/`。如改成独立域名根路径，需要同步调整 `VITE_PUBLIC_BASE` 和 `VUE_APP_PUBLIC_PATH`。
 
 ```powershell
-cd C:\Users\31333\Desktop\vibecoding\SDD_V7_1\Projects_Repo\central-bank-e-platform
-
 cd frontend
 npm.cmd run typecheck
 npm.cmd run lint
@@ -89,7 +110,7 @@ cd ..\backend
 .\mvnw.cmd -q -pl ruoyi-admin -am -DskipTests package
 ```
 
-完成后应存在：
+构建完成后确认：
 
 ```text
 frontend/dist/
@@ -97,30 +118,55 @@ ruoyi-ui/dist/
 backend/ruoyi-admin/target/ruoyi-admin.jar
 ```
 
-## 5. Nginx 路由约定
+## 7. Docker Compose 部署流程
 
-当前 `deploy/nginx.conf` 使用以下路由：
+先在服务器上准备只供部署使用的环境变量或 `.env` 文件，再执行：
 
-| 外部路径 | 目标 |
-| --- | --- |
-| `/h5/` | H5 公众号端静态资源 |
-| `/admin/` | 若依后台静态资源 |
-| `/api/` | H5 接口反向代理到后端，保留 `/api` 前缀 |
-| `/prod-api/` | 后台接口反向代理到后端，去掉 `/prod-api` 前缀 |
-| `/` | 重定向到 `/h5/` |
+```powershell
+docker compose -f docker-compose.prod.yml config
+docker compose -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml ps
+```
 
-若后续要改成两个独立域名，也可以保留同样的接口代理规则，只把静态资源拆到不同 server block。
+`docker compose -f docker-compose.prod.yml config` 如果提示缺少 `MYSQL_PASSWORD`、`REDIS_PASSWORD`、`APP_JWT_SECRET` 等变量，说明还不能部署。不要用空密码绕过。
 
-## 6. 数据库注意事项
+检查服务：
 
-`docker-compose.prod.yml` 会在 MySQL 首次创建数据卷时执行初始化 SQL。注意：
+```powershell
+docker compose -f docker-compose.prod.yml logs -f backend
+docker compose -f docker-compose.prod.yml exec redis redis-cli -a <redis-password> ping
+docker compose -f docker-compose.prod.yml exec mysql mysql -uroot -p -e "show databases;"
+```
 
-- 初始化 SQL 只在空数据卷首次启动时执行。
-- 生产环境不要删除 `mysql_data` 卷，否则会丢数据。
-- 已上线后新增字段或菜单，应使用迁移 SQL，不要重新初始化数据库。
-- 上线前必须准备数据库备份策略，至少包含每日备份和恢复演练。
+访问入口：
 
-## 7. 附件与上传文件
+```text
+https://<domain>/h5/
+https://<domain>/admin/
+```
+
+## 8. 数据库注意事项
+
+`docker-compose.prod.yml` 会在 MySQL 首次创建空数据卷时自动执行初始化 SQL：
+
+1. `backend/sql/ry_20260417.sql`
+2. `backend/sql/quartz.sql`
+3. `backend/central-bank-business/src/main/resources/sql/central_bank_schema_mysql.sql`
+4. `backend/central-bank-business/src/main/resources/sql/central_bank_seed_mysql.sql`
+5. `central_bank_content_menu.sql`
+6. `central_bank_product_menu.sql`
+7. `central_bank_account_menu.sql`
+8. `central_bank_audit_log_menu.sql`
+9. `central_bank_admin_menu_cleanup.sql`
+
+注意：
+
+- 初始化 SQL 只在空数据卷第一次启动时执行。
+- 已上线后不要删除 `mysql_data` 卷，否则会丢失正式数据。
+- 后续新增字段、菜单或初始化数据，应使用迁移 SQL，不要重新初始化整个库。
+- 正式上线前至少完成一次备份和恢复演练。
+
+## 9. 上传文件与附件
 
 后端上传目录由 `APP_STORAGE_ROOT` 控制。容器部署时对应 `app_uploads` 卷。
 
@@ -130,70 +176,59 @@ backend/ruoyi-admin/target/ruoyi-admin.jar
 - 上传目录不会随容器重建丢失。
 - 上传目录纳入备份。
 - Nginx `client_max_body_size` 与后端上传大小一致或更大。
+- H5 文章图片、后台富文本图片、附件下载在重启后仍可访问。
 
-## 8. 安全收口
+## 10. 安全收口清单
 
-上线前必须完成以下检查：
+上线前必须完成：
 
 - MySQL `3306` 不暴露公网。
-- Redis `6379` 不暴露公网，并设置密码。
-- Druid 管理台设置强账号密码；如不需要，进一步关闭访问。
-- Swagger/OpenAPI 默认关闭。
+- Redis `6379` 不暴露公网，并设置强密码。
+- Druid 管理台设置强账号密码；不需要时关闭。
+- Swagger/OpenAPI 在生产环境关闭。
 - 后端以 `druid,prod` profile 启动，不使用开发 profile。
 - `APP_JWT_SECRET` 使用强随机值。
-- 后台默认账号、测试账号、弱密码全部清理。
+- 默认账号、测试账号、弱密码全部清理。
 - 只保留业务需要的菜单和角色权限。
-- 服务器开启 HTTPS，公众号/H5 域名使用有效证书。
+- HTTPS 证书有效，HTTP 自动跳转 HTTPS。
+- 不把真实密码、JWT、Token、API Key 写入 `docs/**`、`.sdd/**`、README、日志摘要或 Git 提交。
 
-## 9. 部署启动参考
+## 11. 生产验收清单
 
-在已完成构建且已配置生产环境变量后，可参考：
+上线后至少验证：
 
-```powershell
-cd C:\Users\31333\Desktop\vibecoding\SDD_V7_1\Projects_Repo\central-bank-e-platform
-docker compose -f docker-compose.prod.yml config
-docker compose -f docker-compose.prod.yml up -d --build
-docker compose -f docker-compose.prod.yml ps
-```
+- H5 首页可打开，县区切换、乡村振兴、金融产品入口正常。
+- H5 内容详情图片可展示，点击图片可放大查看。
+- H5 银行产品详情经办人和手机号显示正常，手机号可点击拨号。
+- 后台登录、退出、修改密码正常。
+- 后台右上角用户昵称能跟随账号姓名修改刷新。
+- 内容新增、编辑、发布、下架、删除正常。
+- 富文本图片不溢出弹窗，H5 可正常展示上传图片。
+- 附件上传、下载、重启后访问正常。
+- 金融产品新增、编辑、多联系人展示正常。
+- 账号管理、权限菜单、操作日志正常。
+- 错误密码、无权限、登录失效等错误提示展示真实后端 message。
 
-检查 Redis：
+## 12. 回滚与应急
 
-```powershell
-docker compose -f docker-compose.prod.yml exec redis redis-cli -a $env:REDIS_PASSWORD ping
-```
+上线前准备：
 
-检查后端日志：
+- 上一个可用后端镜像或 `ruoyi-admin.jar`。
+- 上一个可用 `frontend/dist` 和 `ruoyi-ui/dist`。
+- MySQL 上线前备份。
+- 上传目录上线前备份。
+- 当前生产环境变量备份。
 
-```powershell
-docker compose -f docker-compose.prod.yml logs -f backend
-```
+出现问题时优先回滚应用产物；涉及数据库结构变更时，先评估是否需要恢复数据库备份，不要直接删除生产卷。
 
-访问路径：
+## 13. 当前仍需人工确认
 
-```text
-http://<domain-or-ip>/h5/
-http://<domain-or-ip>/admin/
-```
+正式生产前还需要确认：
 
-## 10. 生产验收清单
+- 生产域名。
+- HTTPS 证书来源和续期方式。
+- 服务器规格、磁盘容量和备份目录。
+- MySQL/Redis 是使用容器还是云服务。
+- 公众号/H5 最终访问域名是否需要备案、白名单或微信侧配置。
+- 默认账号和初始化数据是否符合最终运营要求。
 
-上线后至少验证以下链路：
-
-- 后台登录、退出、记住密码文案展示。
-- 非管理员账号菜单、路由、快捷入口权限正确。
-- 内容新增、编辑、发布、下架、删除。
-- 四县办公室只能发布服务指引的前后端规则。
-- 金融产品新增、编辑、多联系人展示。
-- H5 首页、乡村振兴、金融产品、详情页返回逻辑。
-- 上传附件可访问，重启后文件仍存在。
-- 错误密码提示展示真实后端 message。
-- 操作日志和账号管理符合预期。
-
-## 11. 暂不建议直接生产上线的原因
-
-当前项目已具备部署基础，但上线生产前仍建议先走测试环境，因为：
-
-- 业务功能仍在持续开发，菜单和权限刚完成多轮修正。
-- H5 与后台都需要真实 MySQL/Redis 下的完整人工验收。
-- 生产域名、HTTPS、公众号配置、服务器备份策略尚未在仓库内确认。
-- 默认账号、测试数据、初始化菜单需要按最终运营角色再清理一次。
