@@ -61,7 +61,7 @@ APP_STORAGE_ROOT=<absolute-upload-directory>
 APP_JWT_SECRET=<local-secret-not-committed>
 ```
 
-Redis 使用 `spring.data.redis.host`、`spring.data.redis.port`、`spring.data.redis.database`、`spring.data.redis.password`。当前默认指向 `localhost:6379` 且密码留空；如测试环境 Redis 需要认证，通过本地启动参数或本地配置覆盖，不能提交真实值。
+Redis 使用 `REDIS_HOST`、`REDIS_PORT`、`REDIS_DATABASE`、`REDIS_PASSWORD` 覆盖生产 profile。当前开发默认指向 `localhost:6379` 且密码留空；如测试环境 Redis 需要认证，通过本地启动参数或本地配置覆盖，不能提交真实值。
 
 如果通过 cpolar、内网穿透或其他公网域名访问本地后台，需要把公网访问 Origin 加入后端 CORS 白名单。多个 Origin 用英文逗号分隔：
 
@@ -138,6 +138,10 @@ $env:DB_USERNAME='<mysql-user>'
 $env:DB_PASSWORD='<mysql-password>'
 $env:APP_STORAGE_ROOT='<absolute-upload-directory>'
 $env:APP_JWT_SECRET='<local-secret-not-committed>'
+$env:REDIS_HOST='localhost'
+$env:REDIS_PORT='6379'
+$env:REDIS_DATABASE='0'
+$env:REDIS_PASSWORD='<redis-password-if-any>'
 $env:APP_CORS_ALLOWED_ORIGINS='<public-origin-if-needed>'
 java -jar .\ruoyi-admin\target\ruoyi-admin.jar --server.port=8099
 ```
@@ -220,7 +224,7 @@ npm.cmd run build:prod
 项目根目录提供 `docker-compose.yml`，用于本地启动 MySQL 8 和 Redis 7：
 
 ```powershell
-cd C:\Users\31333\Desktop\vibecoding\SDD_V7_1\Projects_Repo\central-bank-e-platform
+cd C:\Users\13210\Desktop\SDD_V8\Projects_Repo\central-bank-e-platform
 
 # 可选：如需替换 compose 内 local-only placeholder，只在当前终端或本地 .env 中设置。
 $env:MYSQL_ROOT_PASSWORD='<local-only-root-password>'
@@ -268,7 +272,25 @@ $env:DB_PASSWORD='<local-only-db-password>'
 - 附件目录：自动测试可用临时目录；真实部署必须把 `APP_STORAGE_ROOT` 指向持久化目录并纳入备份。
 - SAFE：固定地址为 `http://zwfw.safe.gov.cn/asone/`；无网络时只验证 H5 链接地址和详情页隐藏规则，不声明外站可达。
 
-## 7.1 cpolar 临时公网访问
+## 7.1 Docker Compose 正式部署预检
+
+正式部署使用 `docker-compose.prod.yml` 和服务器本地 `.env`。先从模板生成服务器本地配置，再替换真实值：
+
+```powershell
+Copy-Item .env.example .env
+docker compose --env-file .env -f docker-compose.prod.yml config
+```
+
+确认配置通过后再启动：
+
+```powershell
+docker compose --env-file .env -f docker-compose.prod.yml up -d --build
+docker compose -f docker-compose.prod.yml ps
+```
+
+真实 `.env` 只保留在服务器，不提交 GitHub。
+
+## 7.2 cpolar 临时公网访问
 
 cpolar 适合临时演示或验收，不等同于生产部署。当前项目本地并行启动时建议只穿透若依后台 `5176`，后台 dev server 会通过 `/dev-api` 代理到本机后端 `8003`。
 

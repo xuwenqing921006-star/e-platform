@@ -74,6 +74,25 @@ HTTP_PORT=80
 
 仓库已提供 `.env.example`、`backend/.env.example`、`frontend/.env.example` 和 `ruoyi-ui/.env.example`。正式部署时只提交模板文件；真实 `.env`、`.env.production`、`.env.development` 等文件必须留在服务器或本机，并继续由 `.gitignore` 排除。
 
+推荐在服务器项目根目录执行：
+
+```powershell
+Copy-Item .env.example .env
+```
+
+然后只在服务器 `.env` 中替换真实密码、域名和密钥。
+
+生产环境还可以按需配置以下开关：
+
+```env
+APP_JWT_EXPIRE_MINUTES=30
+DRUID_STAT_ENABLED=false
+DRUID_WEB_STAT_ENABLED=false
+REFERER_ENABLED=true
+APP_CORS_ALLOWED_ORIGINS=
+SPRINGDOC_ENABLED=false
+```
+
 后端容器运行时会使用：
 
 ```env
@@ -132,15 +151,15 @@ backend/ruoyi-admin/target/ruoyi-admin.jar
 
 ## 7. Docker Compose 部署流程
 
-先在服务器上准备只供部署使用的环境变量或 `.env` 文件，再执行：
+先在服务器上准备只供部署使用的 `.env` 文件，再执行：
 
 ```powershell
-docker compose -f docker-compose.prod.yml config
-docker compose -f docker-compose.prod.yml up -d --build
+docker compose --env-file .env -f docker-compose.prod.yml config
+docker compose --env-file .env -f docker-compose.prod.yml up -d --build
 docker compose -f docker-compose.prod.yml ps
 ```
 
-`docker compose -f docker-compose.prod.yml config` 如果提示缺少 `MYSQL_PASSWORD`、`REDIS_PASSWORD`、`APP_JWT_SECRET` 等变量，说明还不能部署。不要用空密码绕过。
+`docker compose --env-file .env -f docker-compose.prod.yml config` 如果提示缺少 `MYSQL_PASSWORD`、`REDIS_PASSWORD`、`APP_JWT_SECRET` 等变量，说明还不能部署。不要用空密码绕过。
 
 检查服务：
 
