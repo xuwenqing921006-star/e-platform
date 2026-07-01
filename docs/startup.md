@@ -23,6 +23,15 @@
 
 ## 3. 配置字段
 
+仓库只提交 `.env.example` 模板，真实 `.env`、`.env.development`、`.env.production`、`.env.test` 继续由 `.gitignore` 排除。正式部署前需要根据以下模板在本机或服务器准备真实配置：
+
+| 模板 | 对应场景 |
+| --- | --- |
+| `.env.example` | `docker-compose.prod.yml` 生产/预生产容器编排 |
+| `backend/.env.example` | 后端 jar 直启或非 Compose 部署 |
+| `frontend/.env.example` | H5 本地联调与生产构建 |
+| `ruoyi-ui/.env.example` | 若依后台本地联调与生产构建 |
+
 ### 3.1 H5 `frontend`
 
 `frontend/.env` 和 `frontend/.env.example` 应保持：
@@ -30,6 +39,7 @@
 ```env
 VITE_API_BASE_URL=/api
 VITE_USE_MOCK=false
+VITE_PUBLIC_BASE=/h5/
 VITE_BACKEND_PROXY_TARGET=http://localhost:8099
 ```
 
@@ -72,6 +82,7 @@ VUE_APP_BACKEND_PROXY_TARGET=http://localhost:8099
 
 ```env
 VUE_APP_BASE_API=/prod-api
+VUE_APP_PUBLIC_PATH=/admin/
 ```
 
 说明：

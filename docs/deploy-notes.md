@@ -33,6 +33,10 @@
 
 | 文件 | 用途 |
 | --- | --- |
+| `.env.example` | 生产 Docker Compose 环境变量模板，只放占位符 |
+| `backend/.env.example` | 后端 jar 直启环境变量模板，只放占位符 |
+| `frontend/.env.example` | H5 构建和本地联调环境变量模板 |
+| `ruoyi-ui/.env.example` | 若依后台构建和本地联调环境变量模板 |
 | `docker-compose.prod.yml` | 生产/预生产参考编排，包含 MySQL、Redis、后端、Nginx |
 | `deploy/nginx.conf` | Nginx 静态资源与 API 反向代理示例 |
 | `backend/Dockerfile` | 后端运行镜像 |
@@ -67,6 +71,8 @@ DRUID_LOGIN_PASSWORD=<required>
 REFERER_ALLOWED_DOMAINS=<your-domain>
 HTTP_PORT=80
 ```
+
+仓库已提供 `.env.example`、`backend/.env.example`、`frontend/.env.example` 和 `ruoyi-ui/.env.example`。正式部署时只提交模板文件；真实 `.env`、`.env.production`、`.env.development` 等文件必须留在服务器或本机，并继续由 `.gitignore` 排除。
 
 后端容器运行时会使用：
 
@@ -109,6 +115,12 @@ npm.cmd run build:prod
 cd ..\backend
 .\mvnw.cmd -q -pl ruoyi-admin -am -DskipTests package
 ```
+
+构建前确认：
+
+- `frontend/.env` 中 `VITE_PUBLIC_BASE=/h5/`、`VITE_API_BASE_URL=/api`。
+- `ruoyi-ui/.env.production` 中 `VUE_APP_PUBLIC_PATH=/admin/`、`VUE_APP_BASE_API=/prod-api`。
+- 后端生产环境变量来自服务器 `.env` 或部署平台 Secret，不写入 Git。
 
 构建完成后确认：
 
@@ -231,4 +243,3 @@ https://<domain>/admin/
 - MySQL/Redis 是使用容器还是云服务。
 - 公众号/H5 最终访问域名是否需要备案、白名单或微信侧配置。
 - 默认账号和初始化数据是否符合最终运营要求。
-
