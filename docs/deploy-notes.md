@@ -27,6 +27,7 @@
 | `/admin/` | 后台静态资源 |
 | `/api/` | H5 API，代理到后端并保留 `/api` 前缀 |
 | `/prod-api/` | 后台 API，代理到后端并去掉 `/prod-api` 前缀 |
+| `/admin/prod-api/` | 后台 API 兼容路径，代理到后端并去掉 `/admin/prod-api` 前缀 |
 | `/` | 重定向到 `/h5/` |
 
 ## 3. 部署文件
@@ -138,7 +139,7 @@ cd ..\backend
 构建前确认：
 
 - `frontend/.env` 中 `VITE_PUBLIC_BASE=/h5/`、`VITE_API_BASE_URL=/api`。
-- `ruoyi-ui/.env.production` 中 `VUE_APP_PUBLIC_PATH=/admin/`、`VUE_APP_BASE_API=/prod-api`。
+- `ruoyi-ui/.env.production` 中 `VUE_APP_PUBLIC_PATH=/admin/`、`VUE_APP_BASE_API=/prod-api`。如构建产物已使用 `/admin/prod-api`，Nginx 也提供兼容代理。
 - 后端生产环境变量来自服务器 `.env` 或部署平台 Secret，不写入 Git。
 
 构建完成后确认：
