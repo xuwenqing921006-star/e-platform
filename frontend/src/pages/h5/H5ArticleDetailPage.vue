@@ -46,6 +46,15 @@ function fileTypeLabel(fileType: PublicContentDetailData['attachments'][number][
   return labels[fileType]
 }
 
+function resolveAttachmentDownloadUrl(downloadUrl: string) {
+  if (downloadUrl.startsWith('/api/')) {
+    const h5Prefix = window.location.pathname.startsWith('/h5') ? '/h5' : ''
+    return `${h5Prefix}${downloadUrl}`
+  }
+
+  return downloadUrl
+}
+
 async function loadArticle() {
   loading.value = true
   errorMessage.value = ''
@@ -193,7 +202,7 @@ onMounted(loadArticle)
           :key="attachment.id"
           class="article-attachment-link"
           :download="attachment.file_name"
-          :href="attachment.download_url"
+          :href="resolveAttachmentDownloadUrl(attachment.download_url)"
         >
           <AppIcon name="paperclip" />
           <span>{{ attachment.file_name }}</span>

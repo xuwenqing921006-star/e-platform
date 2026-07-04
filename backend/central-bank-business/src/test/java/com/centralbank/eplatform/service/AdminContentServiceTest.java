@@ -95,6 +95,24 @@ class AdminContentServiceTest
     }
 
     @Test
+    void createRejectsMoreThanThreeAttachmentsAsContentBusinessError()
+    {
+        Fixture fixture = fixture(1L);
+        AdminContentRequest request = new AdminContentRequest(
+                "附件超限",
+                "SERVICE_GUIDE",
+                "CREDIT_REPORT",
+                "<p>正文</p>",
+                List.of(9001L, 9002L, 9003L, 9004L));
+
+        assertThatThrownBy(() -> fixture.service.create(request))
+                .isInstanceOf(AdminContentException.class)
+                .hasMessage("每篇内容最多上传 3 个附件")
+                .extracting("statusCode")
+                .isEqualTo(400);
+    }
+
+    @Test
     void updateRejectsCrossOfficeModification()
     {
         Fixture fixture = fixture(10L);

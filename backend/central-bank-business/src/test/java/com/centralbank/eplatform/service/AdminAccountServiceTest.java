@@ -77,6 +77,34 @@ class AdminAccountServiceTest
     }
 
     @Test
+    void createRejectsUsernameLongerThanSysUserLimit()
+    {
+        Fixture fixture = fixture(1L);
+        String username = "a".repeat(31);
+
+        assertThatThrownBy(() -> fixture.service.create(new AdminAccountRequest(
+                username, "超长账号", "OFFICE_USER", "CREDIT_REPORT", "Initial123!", true)))
+                .isInstanceOf(AdminAccountException.class)
+                .hasMessage("登录账号不能超过30个字符")
+                .extracting("statusCode")
+                .isEqualTo(400);
+    }
+
+    @Test
+    void updateRejectsDisplayNameLongerThanSysUserLimit()
+    {
+        Fixture fixture = fixture(1L);
+        String displayName = "张".repeat(31);
+
+        assertThatThrownBy(() -> fixture.service.update(10L, new AdminAccountRequest(
+                null, displayName, "OFFICE_USER", "CREDIT_REPORT", null, true)))
+                .isInstanceOf(AdminAccountException.class)
+                .hasMessage("姓名不能超过30个字符")
+                .extracting("statusCode")
+                .isEqualTo(400);
+    }
+
+    @Test
     void officeUserMustBindOffice()
     {
         Fixture fixture = fixture(1L);

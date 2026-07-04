@@ -39,6 +39,7 @@ public class AdminContentService
     }
 
     private static final ZoneOffset CHINA_OFFSET = ZoneOffset.ofHours(8);
+    private static final int MAX_CONTENT_ATTACHMENTS = 3;
     private static final Pattern SCRIPT_TAG = Pattern.compile("(?is)<script[^>]*>.*?</script>");
     private static final Pattern EVENT_HANDLER = Pattern.compile("(?i)\\s+on[a-z]+\\s*=\\s*(\"[^\"]*\"|'[^']*'|[^\\s>]+)");
     private static final Pattern JAVASCRIPT_URL = Pattern.compile("(?i)javascript\\s*:");
@@ -99,7 +100,7 @@ public class AdminContentService
         validateRequest(request);
         Operator operator = currentOperator();
         OfficeMeta office = validateWritableOffice(operator, request.officeCode(), "无权创建该办公室内容");
-        attachmentStorageService.validateContentAttachmentLimit(request.attachmentIds());
+        validateContentAttachmentLimit(request.attachmentIds());
         validateAttachmentIds(request.attachmentIds());
 
         LocalDateTime now = LocalDateTime.now();
@@ -143,7 +144,7 @@ public class AdminContentService
         Operator operator = currentOperator();
         assertCanEdit(operator, existing);
         OfficeMeta office = validateWritableOffice(operator, request.officeCode(), "无权修改该内容");
-        attachmentStorageService.validateContentAttachmentLimit(request.attachmentIds());
+        validateContentAttachmentLimit(request.attachmentIds());
         validateAttachmentIds(request.attachmentIds());
 
         existing.setTitle(request.title().trim());
@@ -309,6 +310,14 @@ public class AdminContentService
             {
                 throw new AdminContentException(400, "附件不存在");
             }
+        }
+    }
+
+    private void validateContentAttachmentLimit(List<Long> attachmentIds)
+    {
+        if (attachmentIds != null && attachmentIds.size() > MAX_CONTENT_ATTACHMENTS)
+        {
+            throw new AdminContentException(400, "每篇内容最多上传 3 个附件");
         }
     }
 

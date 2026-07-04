@@ -23,10 +23,10 @@
       <el-form ref="form" :model="form" :rules="rules" label-width="96px">
         <div class="form-grid">
           <el-form-item label="登录账号" prop="username">
-            <el-input v-model="form.username" :disabled="isEdit" maxlength="40" placeholder="请输入登录账号" />
+            <el-input v-model="form.username" :disabled="isEdit" maxlength="30" placeholder="请输入登录账号" />
           </el-form-item>
           <el-form-item label="姓名" prop="display_name">
-            <el-input v-model="form.display_name" maxlength="40" placeholder="请输入姓名" />
+            <el-input v-model="form.display_name" maxlength="30" placeholder="请输入姓名" />
           </el-form-item>
           <el-form-item label="账号角色" prop="role">
             <el-select v-model="form.role" placeholder="请选择账号角色" @change="handleRoleChange">

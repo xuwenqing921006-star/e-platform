@@ -261,7 +261,7 @@ describe('T-002 SAFE floating entry', () => {
     expect(shouldShowSafeEntry('/admin')).toBe(false)
   })
 
-  it('provides expand, close, link and clear failure feedback in a reusable component', () => {
+  it('provides expand, close and a native current-page link in a reusable component', () => {
     const appSource = source('src/App.vue')
     const safeSource = source('src/components/h5/H5SafeEntry.vue')
     const styles = source('src/styles/global.css')
@@ -272,11 +272,13 @@ describe('T-002 SAFE floating entry', () => {
     expect(safeSource).toContain('safe-entry-expanded')
     expect(safeSource).toContain('safe-entry-close')
     expect(safeSource).toContain(':href="SAFE_PORTAL_URL"')
-    expect(safeSource).toContain('数字外管平台打开失败，请稍后重试。')
+    expect(safeSource).not.toContain('window.open')
+    expect(safeSource).not.toContain('@click="openPortal"')
+    expect(safeSource).not.toContain('数字外管平台打开失败，请稍后重试。')
     expect(safeLogoRule).toContain('height: 33px;')
   })
 
-  it('expands left, reports blocked navigation and collapses from the close action', async () => {
+  it('expands left, exposes the SAFE URL and collapses from the close action', async () => {
     const openWindow = vi.spyOn(window, 'open').mockReturnValue(null)
     const { host, unmount } = mount(H5SafeEntry)
 
@@ -284,15 +286,10 @@ describe('T-002 SAFE floating entry', () => {
     await nextTick()
 
     expect(host.querySelector('.safe-entry-expanded')).not.toBeNull()
-
-    host.querySelector<HTMLAnchorElement>('.safe-entry-link')?.click()
-    await nextTick()
-
-    expect(openWindow).toHaveBeenCalledWith(
-      'http://zwfw.safe.gov.cn/asone/',
-      '_blank',
-    )
-    expect(host.textContent).toContain('数字外管平台打开失败，请稍后重试。')
+    const safeLink = host.querySelector<HTMLAnchorElement>('.safe-entry-link')
+    expect(safeLink?.href).toBe('http://zwfw.safe.gov.cn/asone/')
+    expect(safeLink?.getAttribute('target')).toBeNull()
+    expect(openWindow).not.toHaveBeenCalled()
 
     host.querySelector<HTMLButtonElement>('.safe-entry-close')?.click()
     await nextTick()

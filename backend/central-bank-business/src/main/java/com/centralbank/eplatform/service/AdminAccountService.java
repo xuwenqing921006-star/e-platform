@@ -27,6 +27,8 @@ public class AdminAccountService
     private static final String ROLE_ADMIN = "ADMIN";
     private static final String ROLE_OFFICE_USER = "OFFICE_USER";
     private static final Long CENTRAL_BANK_COMMON_ROLE_ID = 2L;
+    private static final int SYS_USER_NAME_MAX_LENGTH = 30;
+    private static final int SYS_NICK_NAME_MAX_LENGTH = 30;
 
     private final CbAdminAccountMapper accountMapper;
     private final CbAccountExtensionMapper accountExtensionMapper;
@@ -175,6 +177,8 @@ public class AdminAccountService
         }
         requireText(request.username(), "登录账号不能为空");
         requireText(request.displayName(), "姓名不能为空");
+        requireLength(request.username(), SYS_USER_NAME_MAX_LENGTH, "登录账号不能超过30个字符");
+        requireLength(request.displayName(), SYS_NICK_NAME_MAX_LENGTH, "姓名不能超过30个字符");
         requireText(request.initialPassword(), "初始密码不能为空");
         validateRole(request.role());
     }
@@ -186,6 +190,7 @@ public class AdminAccountService
             throw new AdminAccountException(400, "请求体不能为空");
         }
         requireText(request.displayName(), "姓名不能为空");
+        requireLength(request.displayName(), SYS_NICK_NAME_MAX_LENGTH, "姓名不能超过30个字符");
         validateRole(request.role());
     }
 
@@ -264,6 +269,14 @@ public class AdminAccountService
     private void requireText(String value, String message)
     {
         if (isBlank(value))
+        {
+            throw new AdminAccountException(400, message);
+        }
+    }
+
+    private void requireLength(String value, int maxLength, String message)
+    {
+        if (value != null && value.trim().length() > maxLength)
         {
             throw new AdminAccountException(400, message);
         }

@@ -29,6 +29,7 @@ async function mountAppAt(path: string) {
   const router = createAppRouter(createMemoryHistory())
   const app = createApp(App)
   app.use(router)
+  window.history.replaceState({}, '', path)
   router.push(path)
   await router.isReady()
   app.mount(host)
@@ -151,7 +152,7 @@ describe('T-003 H5 article detail wiring', () => {
     expect(host.textContent).toContain('办理说明')
     expect(host.querySelectorAll('.article-attachment-link')).toHaveLength(3)
     expect(host.querySelectorAll('.article-attachment-link')[0]?.getAttribute('href')).toBe(
-      '/api/public/attachments/9001/download',
+      '/h5/api/public/attachments/9001/download',
     )
     expect(host.textContent).not.toContain('H5 内预览')
     expect(host.querySelector('.safe-entry')).toBeNull()
@@ -251,6 +252,7 @@ describe('T-003 H5 article detail wiring', () => {
     expect(closeButtonRule).toContain('color: white;')
     expect(closeButtonRule).toContain('background: rgb(9 19 38 / 88%)')
     expect(closeButtonRule).toContain('border: 1px solid rgb(255 255 255 / 72%) !important;')
+    expect(closeButtonRule).toContain('z-index: 2;')
     expect(closeButtonRule).toContain('box-shadow:')
     expect(closeIconRule).toContain('width: 24px;')
     expect(closeIconRule).toContain('height: 24px;')

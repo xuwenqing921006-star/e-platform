@@ -395,7 +395,7 @@ select {
 }
 
 .article-topbar span {
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 700;
 }
 
@@ -409,7 +409,7 @@ select {
 .article-detail-card > h1 {
   margin: 0;
   color: #172033;
-  font-size: 18px;
+  font-size: 19px;
   font-weight: 700;
   line-height: 1.42;
 }
@@ -505,7 +505,7 @@ select {
 .article-rich-text img {
   display: block;
   max-width: 100%;
-  width: auto;
+  width: 100%;
   height: auto;
   margin-right: auto;
   margin-left: auto;
@@ -523,22 +523,22 @@ select {
 .article-attachments h2 {
   margin: 0 0 4px;
   color: #172033;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
 }
 
 .article-attachment-link {
   display: grid;
-  min-height: 44px;
-  grid-template-columns: 17px minmax(0, 1fr) auto;
+  min-height: 48px;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
-  padding: 9px 10px;
+  padding: 11px 12px;
   border: 1px solid var(--h5-border-soft);
   border-radius: 8px;
   color: var(--primary);
   background: #fafcff;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   text-decoration: none;
 }
@@ -546,7 +546,7 @@ select {
 .article-attachment-link span {
   min-width: 0;
   color: #33425c;
-  line-height: 1.45;
+  line-height: 1.42;
   overflow-wrap: anywhere;
 }
 
@@ -555,13 +555,13 @@ select {
   border-radius: 999px;
   color: var(--h5-muted);
   background: white;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
 }
 
 .article-attachment-link svg {
-  width: 17px;
-  height: 17px;
+  width: 18px;
+  height: 18px;
 }
 
 .article-image-viewer {
@@ -577,6 +577,8 @@ select {
 }
 
 .article-image-viewer img {
+  position: relative;
+  z-index: 1;
   width: min(100%, 720px);
   height: auto;
   border-radius: 8px;
@@ -589,6 +591,7 @@ select {
 
 .article-image-viewer-close {
   position: fixed;
+  z-index: 2;
   top: 18px;
   right: 18px;
   display: grid;

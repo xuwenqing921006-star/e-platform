@@ -188,7 +188,7 @@
         <div class="attachment-list detail-attachments">
           <div v-for="file in detail.attachments" :key="file.id" class="attachment-row">
             <span class="attachment-name">{{ file.file_name }}</span>
-            <a :href="file.download_url" target="_blank" rel="noopener">下载</a>
+            <a :href="resolveAttachmentDownloadUrl(file.download_url)" target="_blank" rel="noopener">下载</a>
           </div>
         </div>
       </div>
@@ -466,6 +466,18 @@ export default {
         return Math.ceil(size / 1024) + ' KB'
       }
       return (size / 1024 / 1024).toFixed(1) + ' MB'
+    },
+    resolveAttachmentDownloadUrl(downloadUrl) {
+      if (!downloadUrl) {
+        return '#'
+      }
+      if (/^https?:\/\//i.test(downloadUrl)) {
+        return downloadUrl
+      }
+      if (downloadUrl.startsWith('/api/')) {
+        return process.env.VUE_APP_BASE_API + downloadUrl
+      }
+      return downloadUrl
     }
   }
 }
