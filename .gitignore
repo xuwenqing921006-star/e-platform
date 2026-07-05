@@ -28,6 +28,10 @@ build/
 logs/
 uploads/
 
+# Local test/runtime artifacts
+.sdd/test-reports/runtime/
+.superpowers/
+
 # Frontend build
 dist/
 
