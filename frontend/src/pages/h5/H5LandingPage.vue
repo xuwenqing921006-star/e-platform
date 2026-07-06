@@ -272,7 +272,7 @@ onBeforeUnmount(() => {
 
     <section v-if="showingServiceTeam" class="h5-team-card">
       <h1>{{ selectedTeam.title }}</h1>
-      <p>{{ selectedTeam.description }}</p>
+      <p v-if="selectedTeam.description">{{ selectedTeam.description }}</p>
       <article v-for="member in selectedTeam.members" :key="member.phone">
         <div>
           <strong>{{ member.name }}</strong>
@@ -282,6 +282,9 @@ onBeforeUnmount(() => {
           <AppIcon name="phone" />{{ member.phone }}
         </a>
       </article>
+      <p v-if="selectedTeam.members.length === 0" class="h5-team-empty">
+        暂无资料
+      </p>
     </section>
 
     <template v-else>

@@ -159,6 +159,7 @@ describe('T-002 H5 home composition', () => {
     expect(configSource).toContain('肇源县金融业务服务队')
     expect(configSource).toContain('林甸县金融业务服务队')
     expect(configSource).toContain('杜蒙县金融业务服务队')
+    expect(configSource).toContain('members: []')
     expect(configSource).not.toContain('[Mock]')
   })
 
@@ -235,7 +236,8 @@ describe('T-002 H5 home composition', () => {
     await flushUi()
 
     expect(host.textContent).toContain('杜蒙县金融业务服务队')
-    expect(host.textContent).toContain('0459-0004001')
+    expect(host.textContent).toContain('暂无资料')
+    expect(host.textContent).not.toContain('0459-0004001')
 
     unmount()
   })
