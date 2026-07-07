@@ -250,11 +250,12 @@ describe('T-002 SAFE floating entry', () => {
     expect(existsSync(configPath)).toBe(true)
     if (!existsSync(configPath)) return
 
-    const { SAFE_PORTAL_URL, shouldShowSafeEntry } = await import(
+    const { SAFE_LOGO_PATH, SAFE_PORTAL_URL, shouldShowSafeEntry } = await import(
       /* @vite-ignore */ pathToFileURL(configPath).href
     )
 
     expect(SAFE_PORTAL_URL).toBe('http://zwfw.safe.gov.cn/asone/')
+    expect(SAFE_LOGO_PATH).toBe('/h5/safe-logo.png')
     expect(shouldShowSafeEntry('/h5/')).toBe(true)
     expect(shouldShowSafeEntry('/h5/rural/zhaozhou')).toBe(true)
     expect(shouldShowSafeEntry('/h5/financial/service-guide')).toBe(true)

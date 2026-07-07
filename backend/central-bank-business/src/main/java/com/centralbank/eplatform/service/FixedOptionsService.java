@@ -35,22 +35,21 @@ public class FixedOptionsService
 
     private static final List<OptionItem> BANKS = List.of(
             OptionItem.of("ADBC_DAQING", "农发行大庆市分行"),
-            OptionItem.of("ICBC", "中国工商银行"),
-            OptionItem.of("ABC", "农业银行"),
-            OptionItem.of("BOC", "中国银行"),
-            OptionItem.of("CCB", "建设银行"),
+            OptionItem.of("ICBC", "中国工商银行大庆分行"),
+            OptionItem.of("ABC", "农业银行大庆分行"),
+            OptionItem.of("BOC", "中国银行大庆分行"),
+            OptionItem.of("CCB", "建设银行大庆分行"),
             OptionItem.of("BOCOM_DAQING", "交通银行大庆分行"),
-            OptionItem.of("SUNSHINE_AGRICULTURE", "阳光惠农贷"),
-            OptionItem.of("CGB", "广发银行"),
-            OptionItem.of("CIB", "兴业银行"),
-            OptionItem.of("CMB", "招商银行"),
+            OptionItem.of("CGB", "广发银行大庆分行"),
+            OptionItem.of("CIB", "兴业银行大庆分行"),
+            OptionItem.of("CMB", "招商银行大庆分行"),
             OptionItem.of("SPDB_DAQING", "浦发银行大庆分行"),
             OptionItem.of("CMBC_DAQING", "中国民生银行大庆分行"),
-            OptionItem.of("CITIC", "中信银行"),
-            OptionItem.of("HARBIN_BANK", "哈尔滨银行"),
-            OptionItem.of("KUNLUN_BANK", "昆仑银行"),
-            OptionItem.of("LONGJIANG_BANK", "龙江银行"),
-            OptionItem.of("CEB", "光大银行"));
+            OptionItem.of("CITIC", "中信银行大庆分行"),
+            OptionItem.of("HARBIN_BANK", "哈尔滨银行大庆分行"),
+            OptionItem.of("KUNLUN_BANK", "昆仑银行大庆分行"),
+            OptionItem.of("LONGJIANG_BANK", "龙江银行大庆分行"),
+            OptionItem.of("CEB", "光大银行大庆分行"));
 
     public OptionsResponse getOptions()
     {
@@ -77,8 +76,11 @@ public class FixedOptionsService
         return BANKS.stream()
                 .filter(bank -> normalize(bank.value()).equals(normalized)
                         || normalize(bank.label()).equals(normalized)
+                        || normalize(bank.label()).equals(normalized + "大庆分行")
                         || (normalized.startsWith("中国")
-                                && normalize(bank.label()).equals(normalized.substring("中国".length()))))
+                                && (normalize(bank.label()).equals(normalized.substring("中国".length()))
+                                        || normalize(bank.label()).equals(
+                                                normalized.substring("中国".length()) + "大庆分行"))))
                 .findFirst();
     }
 

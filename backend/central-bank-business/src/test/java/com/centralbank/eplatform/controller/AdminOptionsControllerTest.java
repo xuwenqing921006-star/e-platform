@@ -20,6 +20,6 @@ class AdminOptionsControllerTest
         assertThat(response.code()).isEqualTo(200);
         assertThat(response.message()).isEqualTo("success");
         assertThat(response.data().offices()).hasSize(14);
-        assertThat(response.data().banks()).hasSize(17);
+        assertThat(response.data().banks()).hasSize(16);
     }
 }

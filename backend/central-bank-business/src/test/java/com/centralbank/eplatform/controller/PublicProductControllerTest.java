@@ -27,7 +27,7 @@ class PublicProductControllerTest
         PublicProductService service = mock(PublicProductService.class);
         when(service.list(1, 10)).thenReturn(new PaginatedData<>(List.of(new PublicProductListItem(
                 2001L,
-                "农业银行",
+                "农业银行大庆分行",
                 "惠农e贷",
                 "AGRICULTURAL")), 112, 1, 10));
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new PublicProductController(service)).build();
@@ -40,7 +40,7 @@ class PublicProductControllerTest
                 .andExpect(jsonPath("$.message").value("success"))
                 .andExpect(jsonPath("$.data.total").value(112))
                 .andExpect(jsonPath("$.data.page_size").value(10))
-                .andExpect(jsonPath("$.data.items[0].bank_name").value("农业银行"))
+                .andExpect(jsonPath("$.data.items[0].bank_name").value("农业银行大庆分行"))
                 .andExpect(jsonPath("$.data.items[0].product_name").value("惠农e贷"))
                 .andExpect(jsonPath("$.data.items[0].product_type").value("AGRICULTURAL"))
                 .andExpect(jsonPath("$.data.items[0].admission_conditions").doesNotExist());
@@ -72,7 +72,7 @@ class PublicProductControllerTest
         PublicProductService service = mock(PublicProductService.class);
         when(service.detail(2001L)).thenReturn(Optional.of(new PublicProductDetailData(
                 2001L,
-                "农业银行",
+                "农业银行大庆分行",
                 "惠农e贷",
                 "AGRICULTURAL",
                 "面向涉农经营主体。",
@@ -83,7 +83,7 @@ class PublicProductControllerTest
 
         mockMvc.perform(get("/api/public/products/2001"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.bank_name").value("农业银行"))
+                .andExpect(jsonPath("$.data.bank_name").value("农业银行大庆分行"))
                 .andExpect(jsonPath("$.data.product_name").value("惠农e贷"))
                 .andExpect(jsonPath("$.data.product_type").value("AGRICULTURAL"))
                 .andExpect(jsonPath("$.data.admission_conditions").value("面向涉农经营主体。"))

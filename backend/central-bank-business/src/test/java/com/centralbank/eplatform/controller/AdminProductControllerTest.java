@@ -45,7 +45,7 @@ class AdminProductControllerTest
                         2001L,
                         "惠农e贷",
                         "ABC",
-                        "农业银行",
+                        "农业银行大庆分行",
                         "AGRICULTURAL",
                         "2026-05-30T09:30:00+08:00")), 1, 1, 20));
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new AdminProductController(service)).build();
@@ -131,7 +131,7 @@ class AdminProductControllerTest
         when(service.detail(2001L)).thenReturn(Optional.of(new AdminProductDetailData(
                 2001L,
                 "ABC",
-                "农业银行",
+                "农业银行大庆分行",
                 "惠农e贷",
                 "AGRICULTURAL",
                 "面向涉农经营主体。",
@@ -144,7 +144,7 @@ class AdminProductControllerTest
         mockMvc.perform(get("/api/admin/products/2001"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.bank_code").value("ABC"))
-                .andExpect(jsonPath("$.data.bank_name").value("农业银行"))
+                .andExpect(jsonPath("$.data.bank_name").value("农业银行大庆分行"))
                 .andExpect(jsonPath("$.data.product_name").value("惠农e贷"))
                 .andExpect(jsonPath("$.data.product_type").value("AGRICULTURAL"))
                 .andExpect(jsonPath("$.data.admission_conditions").value("面向涉农经营主体。"))
@@ -219,7 +219,7 @@ class AdminProductControllerTest
                 112,
                 110,
                 2,
-                List.of(new AdminProductImportError(38, "银行机构", "阳光惠农贷", "银行机构字段存在特殊来源值"))));
+                List.of(new AdminProductImportError(38, "银行机构", "阳光惠农贷", "银行机构不在固定列表中"))));
         MockMvc mockMvc = MockMvcBuilders.standaloneSetup(new AdminProductController(service)).build();
 
         mockMvc.perform(multipart("/api/admin/products/import/validate").file(file))
@@ -232,7 +232,7 @@ class AdminProductControllerTest
                 .andExpect(jsonPath("$.data.errors[0].row_number").value(38))
                 .andExpect(jsonPath("$.data.errors[0].field").value("银行机构"))
                 .andExpect(jsonPath("$.data.errors[0].raw_value").value("阳光惠农贷"))
-                .andExpect(jsonPath("$.data.errors[0].message").value("银行机构字段存在特殊来源值"));
+                .andExpect(jsonPath("$.data.errors[0].message").value("银行机构不在固定列表中"));
 
         verify(service).validateImport(file);
     }

@@ -22,7 +22,7 @@ class CentralBankSchemaTest
 
             assertThat(count(connection, "cb_content")).isEqualTo(4);
             assertThat(count(connection, "cb_attachment")).isEqualTo(4);
-            assertThat(count(connection, "cb_financial_product")).isEqualTo(10);
+            assertThat(count(connection, "cb_financial_product")).isEqualTo(9);
             assertThat(count(connection, "cb_account_extension")).isEqualTo(2);
         }
     }

@@ -57,7 +57,7 @@ class AdminProductServiceTest
         var created = fixture.service.create(request);
         CbFinancialProduct product = fixture.productMapper.selectProductById(created.id());
 
-        assertThat(product.getBankName()).isEqualTo("农业银行");
+        assertThat(product.getBankName()).isEqualTo("农业银行大庆分行");
         assertThat(product.getProductName()).isEqualTo("惠农e贷二期");
         assertThat(product.getProductType()).isEqualTo("AGRICULTURAL");
         assertThat(product.getAdmissionConditions()).isEqualTo("面向涉农经营主体。");
@@ -153,7 +153,7 @@ class AdminProductServiceTest
     }
 
     @Test
-    void validateImportReturnsCountsErrorsAndKeepsSunshineAgricultureRow() throws IOException
+    void validateImportReturnsCountsErrorsAndRejectsSunshineAgricultureRow() throws IOException
     {
         Fixture fixture = fixture(10L);
 
@@ -165,11 +165,11 @@ class AdminProductServiceTest
 
         assertThat(validated.importToken()).startsWith("import-");
         assertThat(validated.totalCount()).isEqualTo(4);
-        assertThat(validated.validCount()).isEqualTo(2);
-        assertThat(validated.invalidCount()).isEqualTo(2);
-        assertThat(validated.errors()).extracting("rowNumber").containsExactly(4, 5);
-        assertThat(validated.errors()).extracting("field").containsExactly("银行机构", "联系方式");
-        assertThat(validated.errors()).extracting("rawValue").containsExactly("不存在银行", "");
+        assertThat(validated.validCount()).isEqualTo(1);
+        assertThat(validated.invalidCount()).isEqualTo(3);
+        assertThat(validated.errors()).extracting("rowNumber").containsExactly(3, 4, 5);
+        assertThat(validated.errors()).extracting("field").containsExactly("银行机构", "银行机构", "联系方式");
+        assertThat(validated.errors()).extracting("rawValue").containsExactly("阳光惠农贷", "不存在银行", "");
     }
 
     @Test
@@ -188,6 +188,8 @@ class AdminProductServiceTest
                 .extracting(CbFinancialProduct::getProductName)
                 .contains("惠农e贷三期")
                 .doesNotContain("未知产品");
+        assertThat(fixture.productMapper.adminFiltered("惠农e贷三期", null, null).findFirst())
+                .hasValueSatisfying(product -> assertThat(product.getBankName()).isEqualTo("农业银行大庆分行"));
         assertThatThrownBy(() -> fixture.service.commitImport(validated.importToken()))
                 .isInstanceOf(AdminProductException.class)
                 .hasMessage("导入任务已提交或已失效")
@@ -198,9 +200,9 @@ class AdminProductServiceTest
     private Fixture fixture(Long userId)
     {
         FakeProductMapper productMapper = new FakeProductMapper(List.of(
-                product(2001L, "ABC", "农业银行", "惠农e贷", "AGRICULTURAL"),
-                product(2002L, "CCB", "建设银行", "裕农快贷", "AGRICULTURAL"),
-                product(2003L, "ICBC", "中国工商银行", "小微经营贷", "SMALL_MICRO")));
+                product(2001L, "ABC", "农业银行大庆分行", "惠农e贷", "AGRICULTURAL"),
+                product(2002L, "CCB", "建设银行大庆分行", "裕农快贷", "AGRICULTURAL"),
+                product(2003L, "ICBC", "中国工商银行大庆分行", "小微经营贷", "SMALL_MICRO")));
         FakeAccountExtensionMapper accountMapper = new FakeAccountExtensionMapper(List.of(
                 account(1L, "ADMIN", null, null),
                 account(10L, "OFFICE", "MONETARY_CREDIT", "货币信贷政策管理科"),

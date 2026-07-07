@@ -19,8 +19,8 @@ class PublicProductServiceTest
     void listsPublicProductsWithContractPagination()
     {
         PublicProductService service = new PublicProductService(new FakeProductMapper(List.of(
-                product(2003L, "建设银行", "裕农快贷", "AGRICULTURAL"),
-                product(2001L, "农业银行", "惠农e贷", "AGRICULTURAL"),
+                product(2003L, "建设银行大庆分行", "裕农快贷", "AGRICULTURAL"),
+                product(2001L, "农业银行大庆分行", "惠农e贷", "AGRICULTURAL"),
                 product(2002L, "大庆农商银行", "小微企业流动资金贷款", "SMALL_MICRO"))));
 
         var data = service.list(1, 2);
@@ -30,7 +30,7 @@ class PublicProductServiceTest
         assertThat(data.pageSize()).isEqualTo(2);
         assertThat(data.items()).hasSize(2);
         assertThat(data.items().get(0).id()).isEqualTo(2001L);
-        assertThat(data.items().get(0).bankName()).isEqualTo("农业银行");
+        assertThat(data.items().get(0).bankName()).isEqualTo("农业银行大庆分行");
         assertThat(data.items().get(0).productName()).isEqualTo("惠农e贷");
         assertThat(data.items().get(0).productType()).isEqualTo("AGRICULTURAL");
     }
@@ -49,12 +49,12 @@ class PublicProductServiceTest
     void returnsDetailWithoutInternalFields()
     {
         PublicProductService service = new PublicProductService(new FakeProductMapper(List.of(
-                product(2001L, "农业银行", "惠农e贷", "AGRICULTURAL"))));
+                product(2001L, "农业银行大庆分行", "惠农e贷", "AGRICULTURAL"))));
 
         var detail = service.detail(2001L).orElseThrow();
 
         assertThat(detail.id()).isEqualTo(2001L);
-        assertThat(detail.bankName()).isEqualTo("农业银行");
+        assertThat(detail.bankName()).isEqualTo("农业银行大庆分行");
         assertThat(detail.productName()).isEqualTo("惠农e贷");
         assertThat(detail.productType()).isEqualTo("AGRICULTURAL");
         assertThat(detail.admissionConditions()).isEqualTo("面向涉农经营主体。");

@@ -21,8 +21,14 @@ class FixedOptionsServiceTest
         assertThat(options.offices()).hasSize(14);
         assertThat(options.offices()).extracting("value")
                 .contains("MONETARY_CREDIT", "CURRENCY_GOLD_SILVER", "ZHAOZHOU", "DUMENG");
-        assertThat(options.banks()).hasSize(17);
+        assertThat(options.banks()).hasSize(16);
         assertThat(options.banks()).extracting("value")
-                .contains("ADBC_DAQING", "ABC", "SUNSHINE_AGRICULTURE", "LONGJIANG_BANK");
+                .contains("ADBC_DAQING", "ABC", "LONGJIANG_BANK")
+                .doesNotContain("SUNSHINE_AGRICULTURE");
+        assertThat(options.banks()).extracting("label")
+                .contains("农业银行大庆分行", "哈尔滨银行大庆分行")
+                .doesNotContain("阳光惠农贷");
+        assertThat(service.findBankByValueOrLabel("农业银行"))
+                .hasValueSatisfying(bank -> assertThat(bank.label()).isEqualTo("农业银行大庆分行"));
     }
 }

@@ -30,21 +30,21 @@ class T019InitialDataClosureTest
             assertThat(queryString(connection,
                     "select office_code from cb_account_extension where user_id = 2"))
                             .isEqualTo("MONETARY_CREDIT");
-            assertThat(count(connection, "cb_financial_product")).isEqualTo(10);
+            assertThat(count(connection, "cb_financial_product")).isEqualTo(9);
             assertThat(countWhere(connection, "cb_financial_product", "product_type = 'AGRICULTURAL'"))
-                    .isEqualTo(5);
+                    .isEqualTo(4);
             assertThat(countWhere(connection, "cb_financial_product", "product_type = 'SMALL_MICRO'"))
                     .isEqualTo(5);
             assertThat(countWhere(connection, "cb_financial_product",
-                    "bank_code in ('CCB', 'SUNSHINE_AGRICULTURE', 'CITIC', 'LONGJIANG_BANK', "
+                    "bank_code in ('CCB', 'CITIC', 'LONGJIANG_BANK', "
                             + "'KUNLUN_BANK', 'ICBC', 'ABC', 'BOC', 'HARBIN_BANK')"))
-                    .isEqualTo(10);
+                    .isEqualTo(9);
+            assertThat(countWhere(connection, "cb_financial_product",
+                    "bank_code = 'SUNSHINE_AGRICULTURE' or product_name = '阳光惠农贷'"))
+                    .isEqualTo(0);
             assertThat(queryString(connection,
-                    "select bank_code from cb_financial_product where product_name = '阳光惠农贷'"))
-                            .isEqualTo("SUNSHINE_AGRICULTURE");
-            assertThat(queryString(connection,
-                    "select product_type from cb_financial_product where product_name = '阳光惠农贷'"))
-                            .isEqualTo("AGRICULTURAL");
+                    "select bank_name from cb_financial_product where product_name = '农兴贷'"))
+                            .isEqualTo("哈尔滨银行大庆分行");
         }
     }
 
