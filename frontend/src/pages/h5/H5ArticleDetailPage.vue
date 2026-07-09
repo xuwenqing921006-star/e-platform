@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import type { CSSProperties } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -23,6 +23,10 @@ const dragStartX = ref(0)
 const dragStartY = ref(0)
 const dragStartOffsetX = ref(0)
 const dragStartOffsetY = ref(0)
+const downloadTipVisible = ref(false)
+let downloadTipTimer: number | undefined
+
+const wechatDownloadTip = '微信内暂不支持下载此附件，请点击右上角“…”选择“在浏览器打开”后下载。'
 
 const articleId = computed(() => Number(route.params.id))
 const categoryLabel = computed(() =>
@@ -53,6 +57,34 @@ function resolveAttachmentDownloadUrl(downloadUrl: string) {
   }
 
   return downloadUrl
+}
+
+function isWechatBrowser() {
+  return /MicroMessenger/i.test(window.navigator.userAgent)
+}
+
+function shouldShowWechatDownloadTip(
+  attachment: PublicContentDetailData['attachments'][number],
+) {
+  return isWechatBrowser() && attachment.file_type !== 'PDF'
+}
+
+function showWechatDownloadTip() {
+  downloadTipVisible.value = true
+  window.clearTimeout(downloadTipTimer)
+  downloadTipTimer = window.setTimeout(() => {
+    downloadTipVisible.value = false
+  }, 3600)
+}
+
+function handleAttachmentClick(
+  event: MouseEvent,
+  attachment: PublicContentDetailData['attachments'][number],
+) {
+  if (!shouldShowWechatDownloadTip(attachment)) return
+
+  event.preventDefault()
+  showWechatDownloadTip()
 }
 
 async function loadArticle() {
@@ -162,6 +194,10 @@ function endImageGesture() {
 }
 
 onMounted(loadArticle)
+
+onBeforeUnmount(() => {
+  window.clearTimeout(downloadTipTimer)
+})
 </script>
 
 <template>
@@ -203,6 +239,7 @@ onMounted(loadArticle)
           class="article-attachment-link"
           :download="attachment.file_name"
           :href="resolveAttachmentDownloadUrl(attachment.download_url)"
+          @click="handleAttachmentClick($event, attachment)"
         >
           <AppIcon name="paperclip" />
           <span>{{ attachment.file_name }}</span>
@@ -210,6 +247,15 @@ onMounted(loadArticle)
         </a>
       </section>
     </article>
+
+    <p
+      v-if="downloadTipVisible"
+      class="h5-download-tip"
+      role="status"
+      aria-live="polite"
+    >
+      {{ wechatDownloadTip }}
+    </p>
 
     <div
       v-if="activeImageUrl"

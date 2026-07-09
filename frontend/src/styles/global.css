@@ -574,6 +574,24 @@ select {
   height: 18px;
 }
 
+.h5-download-tip {
+  position: fixed;
+  right: 18px;
+  bottom: calc(22px + env(safe-area-inset-bottom));
+  left: 18px;
+  z-index: 16;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 11px 13px;
+  border-radius: 8px;
+  color: white;
+  background: rgb(18 27 44 / 90%);
+  box-shadow: 0 12px 28px rgb(15 23 42 / 22%);
+  font-size: 14px;
+  line-height: 1.45;
+  text-align: center;
+}
+
 .article-image-viewer {
   position: fixed;
   inset: 0;

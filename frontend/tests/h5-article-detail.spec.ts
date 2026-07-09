@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { createApp, nextTick } from 'vue'
 import { createMemoryHistory } from 'vue-router'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
 import App from '../src/App.vue'
 import { dispatchMockRequest } from '../src/mocks'
@@ -46,6 +46,7 @@ async function mountAppAt(path: string) {
 
 afterEach(() => {
   document.body.innerHTML = ''
+  vi.restoreAllMocks()
 })
 
 describe('T-003 public article detail mock contract', () => {
@@ -226,6 +227,27 @@ describe('T-003 H5 article detail wiring', () => {
     expect(attachmentTypeRule).toContain('font-size: 11px;')
     expect(attachmentIconRule).toContain('width: 18px;')
     expect(attachmentIconRule).toContain('height: 18px;')
+  })
+
+  it('shows a clear browser-download tip for Office attachments inside WeChat', async () => {
+    Object.defineProperty(window.navigator, 'userAgent', {
+      value: 'Mozilla/5.0 MicroMessenger',
+      configurable: true,
+    })
+
+    const { host, unmount } = await mountAppAt('/h5/contents/201')
+    const excelLink = host.querySelector<HTMLAnchorElement>('.article-attachment-link')
+    const clickEvent = new MouseEvent('click', { bubbles: true, cancelable: true })
+
+    expect(excelLink?.dispatchEvent(clickEvent)).toBe(false)
+    await nextTick()
+
+    expect(host.querySelector('.h5-download-tip')?.textContent).toContain(
+      '微信内暂不支持下载此附件',
+    )
+    expect(host.querySelector('.h5-download-tip')?.textContent).toContain('在浏览器打开')
+
+    unmount()
   })
 
   it('does not shrink long rich-text images into a fixed-height preview', () => {
